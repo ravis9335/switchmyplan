@@ -1,8 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<array>
-	<string>csv</string>
-	<string>M12.0-7033.0.134-2</string>
-</array>
-</plist>
+version https://git-lfs.github.com/spec/v1
+oid sha256:78fcdc7741e6663bf31b8200026bf12f2e8a52416e092f4a04d6bd673056a4fc
+size 249
