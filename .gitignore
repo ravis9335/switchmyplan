@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Logs
+*.log.*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Large files and data
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# Development environments
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local configuration files
+.env
+.env.local
+.env.*.local 

@@ -1,6 +1,0 @@
-(() => {
-  if (window.domUpdateObserver) {
-    window.domUpdateObserver.disconnect();
-    delete window.domUpdateObserver;
-  }
-})();
