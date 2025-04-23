@@ -1,0 +1,29 @@
+/Users/ravisolanki/Desktop/Mark-1/Mark1Bot/venv/lib/python3.10/site-packages/flask_limiter/extension.py:333: UserWarning: Using the in-memory storage for tracking rate limits as no storage was explicitly specified. This is not recommended for production use. See: https://flask-limiter.readthedocs.io#configuring-a-storage-backend for documentation about configuring the storage backend.
+  warnings.warn(
+[2025-03-31 18:11:40,296] INFO in new_backend: Blue startup - Logging initialized
+2025-03-31 18:11:40,296 - new_backend - INFO - Blue startup - Logging initialized
+[2025-03-31 18:11:40,298] INFO in new_backend: Successfully loaded CSV with 58 records
+2025-03-31 18:11:40,298 - new_backend - INFO - Successfully loaded CSV with 58 records
+[2025-03-31 18:11:40,298] INFO in new_backend: Added ID column to plans data
+2025-03-31 18:11:40,298 - new_backend - INFO - Added ID column to plans data
+Directory already exists: logs
+Directory already exists: logs
+Successfully loaded CSV with 58 records
+ * Serving Flask app 'new_backend'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.214:5000
+Press CTRL+C to quit
+ * Restarting with stat
+/Users/ravisolanki/Desktop/Mark-1/Mark1Bot/venv/lib/python3.10/site-packages/flask_limiter/extension.py:333: UserWarning: Using the in-memory storage for tracking rate limits as no storage was explicitly specified. This is not recommended for production use. See: https://flask-limiter.readthedocs.io#configuring-a-storage-backend for documentation about configuring the storage backend.
+  warnings.warn(
+[2025-03-31 18:11:40,741] INFO in new_backend: Blue startup - Logging initialized
+2025-03-31 18:11:40,741 - new_backend - INFO - Blue startup - Logging initialized
+[2025-03-31 18:11:40,743] INFO in new_backend: Successfully loaded CSV with 58 records
+2025-03-31 18:11:40,743 - new_backend - INFO - Successfully loaded CSV with 58 records
+[2025-03-31 18:11:40,743] INFO in new_backend: Added ID column to plans data
+2025-03-31 18:11:40,743 - new_backend - INFO - Added ID column to plans data
+ * Debugger is active!
+ * Debugger PIN: 133-693-406

@@ -1,0 +1,2279 @@
+import nest_asyncio
+import asyncio
+import os
+import logging
+from logging.handlers import RotatingFileHandler
+from datetime import datetime
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_caching import Cache
+import agentql
+from playwright.async_api import async_playwright
+import uuid
+import re
+import random
+import pandas as pd
+
+
+# -------------------------------------------------------------------------
+#                          CONFIG / SETUP
+# -------------------------------------------------------------------------
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-key-please-change'
+    SESSION_TIMEOUT = 30  # minutes
+    MAX_RECOMMENDATIONS = 5
+    RPA_TIMEOUT = 300  # seconds  # for the flows
+
+
+def ensure_directories():
+    directories = ['logs']
+    for directory in directories:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+            print(f"Created directory: {directory}")
+        else:
+            print(f"Directory already exists: {directory}")
+
+
+ensure_directories()
+
+
+def setup_logging():
+    ensure_directories()
+    file_handler = RotatingFileHandler('logs/blue.log', maxBytes=1024000, backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.INFO)
+    return file_handler
+
+
+app = Flask(__name__)
+app.config.from_object(Config)
+
+CORS(app)
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+
+# Security headers
+@app.after_request
+def add_security_headers(response):
+    response.headers[
+        'Content-Security-Policy'
+    ] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;"
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    return response
+
+
+handler = setup_logging()
+app.logger.addHandler(handler)
+app.logger.setLevel(logging.INFO)
+
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+))
+console_handler.setLevel(logging.INFO)
+app.logger.addHandler(console_handler)
+
+app.logger.info('Blue startup - Logging initialized')
+
+# Single global event loop
+main_loop = asyncio.new_event_loop()
+nest_asyncio.apply(main_loop)
+
+# Load CSV of plans
+try:
+    plans_data = pd.read_csv("byop_plans.csv")
+except FileNotFoundError as e:
+    print(f"File Load Error: {e}")
+    exit()
+
+# -------------------------------------------------------------------------
+#                          GLOBAL STATE
+# -------------------------------------------------------------------------
+conversation_context = {
+    "state": "greeting",
+    "recommended_plans": [],
+    "plan_info": {},
+    "user_data": {}
+}
+active_rpa_sessions = {}  # If you want to keep the browser open
+
+
+# -------------------------------------------------------------------------
+#                          HELPER: Human-like clicks
+# -------------------------------------------------------------------------
+async def hover_and_click_element(page, locator, random_offset=5):
+    box = await locator.bounding_box()
+    if not box:
+        app.logger.warning("Element bounding box not found (not visible?).")
+        raise Exception("Element bounding box not found.")
+    cx = box["x"] + box["width"] / 2 + random.randint(-random_offset, random_offset)
+    cy = box["y"] + box["height"] / 2 + random.randint(-random_offset, random_offset)
+    await page.mouse.move(cx, cy, steps=10)
+    await page.mouse.down(button="left")
+    await page.wait_for_timeout(100)
+    await page.mouse.up(button="left")
+    app.logger.info(f"Simulated human click at ({cx:.1f},{cy:.1f}).")
+
+
+# -------------------------------------------------------------------------
+#                          KOODO FLOW (One Pass)
+# -------------------------------------------------------------------------
+async def koodo_flow_full(session_id: str, user_data: dict, plan_info: dict, timeout_seconds=180):
+    """
+    Koodo entire activation flow in one pass:
+      1) Go to Koodo BYOP
+      2) Select plan
+      3) Handle 'Get Started', skip add-ons
+      4) Checkout
+      5) Fill billing/shipping info
+      6) Fill credit card info in iframes
+      7) Fill DOB, ID if needed
+      8) Final submission
+      No pausing at credit-check.
+    """
+    from datetime import datetime
+    start_time = datetime.now()
+    app.logger.info(f"=== koodo_flow_full CALLED === (session {session_id})")
+    app.logger.info(f"User data: {user_data}")
+    app.logger.info(f"Plan info: {plan_info}")
+    app.logger.info(f"Timeout set to {timeout_seconds}s")
+
+    first_name = user_data.get("first_name", "")
+    last_name = user_data.get("last_name", "")
+    address = user_data.get("address", "")
+    city = user_data.get("city", "")
+    province = user_data.get("province", "")
+    postal_code = user_data.get("postal_code", "")
+    email = user_data.get("email", "")
+    phone = user_data.get("phone", "")
+    dob = user_data.get("dob", "")
+    card_number = user_data.get("card_number", "")
+    card_expiry = user_data.get("card_expiry", "")
+    cvv = user_data.get("cvv", "")
+    id_type = user_data.get("id_type", "")
+    id_number = user_data.get("id_number", "")
+    plan_name = plan_info.get("plan_name", "UNKNOWN PLAN")
+    number_preference = user_data.get("number_preference", "new")
+    transfer_number = user_data.get("transfer_number", phone)
+
+    browser_resources = {"playwright": None, "browser": None, "context": None, "page": None}
+
+    def check_timeout():
+        elapsed = (datetime.now() - start_time).total_seconds()
+        if elapsed > timeout_seconds:
+            raise TimeoutError(f"Koodo flow timed out after {elapsed:.1f} seconds")
+
+    try:
+        # Launch browser
+        from playwright.async_api import async_playwright
+        playwright = await async_playwright().start()
+        browser_resources["playwright"] = playwright
+
+        browser = await playwright.chromium.launch(
+            channel="chrome", headless=False, slow_mo=100
+        )
+        browser_resources["browser"] = browser
+
+        context = await browser.new_context(
+            user_agent=("Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                        " AppleWebKit/537.36 (KHTML, like Gecko)"
+                        " Chrome/114.0.0.0 Safari/537.36"),
+            viewport={"width": 1280, "height": 800}
+        )
+        browser_resources["context"] = context
+
+        page = await agentql.wrap_async(await context.new_page())
+        browser_resources["page"] = page
+
+        # 1) Go to Koodo BYOP
+        check_timeout()
+        start_url = "https://www.koodomobile.com/en/rate-plans?INTCMP=KMNew_NavMenu_Shop_Plans"
+        await page.goto(start_url)
+        app.logger.info("Navigated to Koodo BYOP page.")
+        await page.wait_for_timeout(20000)  # 20s
+
+        # Helper to dismiss known pop-ups
+        async def dismissPopups():
+            """
+            Attempts to close typical pop-ups, e.g. the bottom-right chat or banner.
+            We'll try different locators that might represent the 'X' button.
+            """
+            # Example: look for bottom 'x' or close button
+            close_selectors = [
+                "button[aria-label='close']",
+                "button[aria-label='Close']",
+                "button:has-text('×')",
+                "button.close-button",  # if there's a known class
+                "div:has-text('X')"  # fallback
+            ]
+            for sel in close_selectors:
+                try:
+                    close_btn = page.locator(sel)
+                    if await close_btn.count() > 0:
+                        await close_btn.first.click(force=True)
+                        app.logger.info(f"Closed popup using selector: {sel}")
+                        await page.wait_for_timeout(500)
+                except:
+                    pass
+
+        # 2) Dismiss pop-ups
+        await dismissPopups()
+        # Possibly wait again to ensure pop-ups are gone
+        await page.wait_for_timeout(1000)
+
+        # 2) Select plan
+        check_timeout()
+        screenshot_path = f"logs/koodo_initial_page_{session_id}.png"
+        await page.screenshot(path=screenshot_path)
+        app.logger.info(f"Saved initial page screenshot {screenshot_path}")
+
+        def normalize_text(t):
+            t = t.lower().strip()
+            t = t.replace("&", " and ")
+            t = re.sub(r"[^\w\s]", "", t)
+            t = re.sub(r"\s+", " ", t)
+            return t.strip()
+
+        raw_plan_name = plan_name.strip()
+        normalized_plan_name = normalize_text(raw_plan_name)
+        app.logger.info(f"Looking for exact plan heading: '{normalized_plan_name}'")
+
+        # Each plan container is a DIV that has an h1 (the plan heading)
+        # and also has a button for "Add to cart."
+        # This locator finds all such containers
+        plan_cards = await page.locator(
+            # We find DIVs that contain an h1 AND a button with text 'Add to cart'
+            "div:has(h1):has(button:has-text('Add to cart'))"
+        ).all()
+
+        if not plan_cards:
+            app.logger.warning(
+                "No plan cards found with an <h1> and 'Add to cart' button. The page might have changed.")
+        else:
+            matched_card = None
+            for c in plan_cards:
+                # Extract the text from the <h1> inside this card
+                h1_text = await c.locator("h1").first.inner_text()
+                if normalized_plan_name in normalize_text(h1_text):
+                    matched_card = c
+                    break
+
+            if matched_card:
+                # Found the correct plan card. Now click the "Add to cart" inside it
+                add_btn = matched_card.locator("button:has-text('Add to cart')")
+                if await add_btn.count() > 0:
+                    await add_btn.first.click(force=True)
+                    app.logger.info(f"Clicked 'Add to cart' for the '{plan_name}' plan.")
+                else:
+                    app.logger.warning(f"No 'Add to cart' button found in the matched plan card for '{plan_name}'.")
+            else:
+                app.logger.warning(
+                    f"Didn't find any <h1> that matched '{raw_plan_name}'. Falling back to the first card.")
+                if len(plan_cards) > 0:
+                    fallback_btn = plan_cards[0].locator("button:has-text('Add to cart')")
+                    if await fallback_btn.count() > 0:
+                        await fallback_btn.first.click(force=True)
+                        app.logger.info("Clicked 'Add to cart' on the first plan card as fallback.")
+                else:
+                    app.logger.warning("No plan cards exist. Cannot proceed.")
+        await page.wait_for_timeout(5000)
+
+        # 3) Handle 'Get Started' pop-up, wait 10s
+        check_timeout()
+        try:
+            button_prompts = ["Get Started", "Continue", "Next"]
+            found_button = False
+            for prompt in button_prompts:
+                get_started_btn = await page.get_by_prompt(prompt)
+                if get_started_btn:
+                    await hover_and_click_element(page, get_started_btn)
+                    app.logger.info(f"Clicked '{prompt}'. Wait 10s.")
+                    found_button = True
+                    await page.wait_for_timeout(10000)
+                    break
+
+            if not found_button:
+                # try some default locators
+                get_started_locators = [
+                    page.locator("button:has-text('Get Started')").first,
+                    page.locator("button:has-text('Continue')").first,
+                    page.locator("button:has-text('Next')").first
+                ]
+                for locator in get_started_locators:
+                    if await locator.count() > 0:
+                        await hover_and_click_element(page, locator)
+                        app.logger.info(f"Clicked button using locator. Waiting 10s...")
+                        found_button = True
+                        await page.wait_for_timeout(10000)
+                        break
+
+                if not found_button:
+                    app.logger.warning("No 'Get Started' or similar button found. Continuing with flow...")
+        except Exception as e:
+            app.logger.error(f"Error handling get-started pop-up: {e}")
+
+        # 4) Skip add-ons
+        check_timeout()
+        try:
+            skip_prompts = ["Skip add-ons", "Skip", "No thanks", "Continue without add-ons"]
+            for prompt in skip_prompts:
+                skip_btn = await page.get_by_prompt(prompt)
+                if skip_btn:
+                    await hover_and_click_element(page, skip_btn)
+                    app.logger.info(f"Clicked '{prompt}' skip.")
+                    break
+
+            skip_locators = [
+                page.locator("button:has-text('Skip add-ons')").first,
+                page.locator("button:has-text('Skip')").first,
+                page.locator("button:has-text('No thanks')").first
+            ]
+            for locator in skip_locators:
+                if await locator.count() > 0:
+                    await hover_and_click_element(page, locator)
+                    app.logger.info("Clicked skip add-ons via locator.")
+                    break
+        except Exception as e:
+            app.logger.warning(f"Error skipping add-ons: {e}")
+
+        # 5) Click 'Checkout'
+        check_timeout()
+        try:
+            checkout_prompts = ["Checkout", "Proceed to checkout", "Continue to checkout"]
+            for prompt in checkout_prompts:
+                checkout_btn = await page.get_by_prompt(prompt)
+                if checkout_btn:
+                    await hover_and_click_element(page, checkout_btn)
+                    app.logger.info(f"Clicked '{prompt}' for checkout.")
+                    break
+
+            checkout_locators = [
+                page.locator("button:has-text('Checkout')").first,
+                page.locator("button:has-text('Proceed to checkout')").first
+            ]
+            for locator in checkout_locators:
+                if await locator.count() > 0:
+                    await hover_and_click_element(page, locator)
+                    app.logger.info("Clicked checkout using locator.")
+                    break
+        except Exception as e:
+            app.logger.warning(f"Error clicking 'Checkout': {e}")
+
+        await page.wait_for_timeout(5000)
+
+        # 6) Fill billing & shipping info
+        check_timeout()
+        app.logger.info("Filling out customer info (name, address, phone, email)...")
+
+        # Example: fill "First name", "Last name" from old approach
+        try:
+            fn_field = await page.get_by_prompt("First name")
+            if fn_field:
+                await fn_field.fill(first_name)
+                app.logger.info(f"Filled 'First name' with {first_name}")
+        except:
+            pass
+
+        try:
+            ln_field = await page.get_by_prompt("Last name")
+            if ln_field:
+                await ln_field.fill(last_name)
+                app.logger.info(f"Filled 'Last name' with {last_name}")
+        except:
+            pass
+
+        # Combine address + city if Koodo does address in one line
+        full_address = f"{address} {city}".strip()
+        try:
+            addr_field = await page.get_by_prompt("Street address")
+            if addr_field:
+                await addr_field.click(force=True)
+                await addr_field.fill(full_address)
+                app.logger.info(f"Filled 'Street address' with: {full_address}")
+                await page.wait_for_timeout(2000)
+                # possibly arrow down for suggestions
+                await addr_field.press("ArrowDown")
+                await page.wait_for_timeout(500)
+                await addr_field.press("ArrowDown")
+                await page.wait_for_timeout(500)
+                await addr_field.press("Enter")
+                app.logger.info("Selected first autocomplete suggestion for address.")
+        except:
+            pass
+
+        # Email
+        try:
+            email_field = await page.get_by_prompt("Email address")
+            if email_field:
+                await email_field.fill(email)
+                app.logger.info(f"Filled 'Email address' with {email}")
+        except:
+            pass
+
+        # Confirm email
+        try:
+            confirm_email_field = await page.get_by_prompt("Confirm email address")
+            if confirm_email_field:
+                await confirm_email_field.fill(email)
+                app.logger.info("Filled 'Confirm email address' field.")
+        except:
+            pass
+
+        # Phone
+        try:
+            phone_field = await page.get_by_prompt("Phone number")
+            if phone_field:
+                await phone_field.clear()
+                for digit in phone:
+                    await phone_field.type(digit, delay=100)
+                app.logger.info(f"Typed phone digits: {phone}")
+        except Exception as e:
+            app.logger.warning(f"Error typing phone digits: {e}")
+
+        # Handle number preference (transfer or new)
+        try:
+            # Look for number transfer option
+            if number_preference == "transfer":
+                app.logger.info("Looking for number transfer option...")
+                transfer_options = [
+                    "Transfer my current number",
+                    "Bring my own number",
+                    "Transfer your number",
+                    "Port my number"
+                ]
+
+                for option in transfer_options:
+                    transfer_option = await page.get_by_prompt(option)
+                    if transfer_option:
+                        await transfer_option.click(force=True)
+                        app.logger.info(f"Clicked '{option}' to transfer number")
+                        await page.wait_for_timeout(3000)
+                        break
+
+                # Try to fill transfer number field
+                transfer_number_field = await page.get_by_prompt("Phone number to transfer")
+                if transfer_number_field:
+                    await transfer_number_field.fill(transfer_number)
+                    app.logger.info(f"Filled transfer number: {transfer_number}")
+                    await page.wait_for_timeout(2000)
+
+                # Look for confirmation/verify button
+                verify_buttons = ["Verify", "Confirm", "Continue"]
+                for button in verify_buttons:
+                    verify_btn = await page.get_by_prompt(button)
+                    if verify_btn:
+                        await verify_btn.click(force=True)
+                        app.logger.info(f"Clicked '{button}' to verify transfer")
+                        await page.wait_for_timeout(5000)
+                        break
+            else:
+                app.logger.info("Looking for new number option...")
+                new_number_options = [
+                    "Get a new number",
+                    "New phone number",
+                    "Select a new number"
+                ]
+
+                for option in new_number_options:
+                    new_number_option = await page.get_by_prompt(option)
+                    if new_number_option:
+                        await new_number_option.click(force=True)
+                        app.logger.info(f"Clicked '{option}' to get new number")
+                        await page.wait_for_timeout(3000)
+                        break
+        except Exception as e:
+            app.logger.warning(f"Error handling number preference: {e}")
+
+        await page.wait_for_timeout(3000)
+
+        # Possibly check T&C
+        try:
+            checkbox_locator = page.locator("span.checkbox[role='button']")
+            cnt = await checkbox_locator.count()
+            if cnt > 0:
+                await checkbox_locator.first.click(force=True)
+                app.logger.info("Checked the T&C checkbox.")
+        except Exception as e:
+            app.logger.warning(f"No T&C checkbox or error clicking: {e}")
+
+        await page.wait_for_timeout(3000)
+
+        # Possibly a 'Next >' button
+        try:
+            next_btn = page.locator("input.checkout-submit[type='submit'][value='Next >']")
+            for _ in range(50):
+                classes = await next_btn.get_attribute("class") or ""
+                if "disabled" not in classes:
+                    break
+                await page.wait_for_timeout(100)
+            if await next_btn.is_enabled():
+                await next_btn.click(force=True)
+                app.logger.info("Clicked the 'Next >' button successfully.")
+            else:
+                app.logger.warning("The 'Next >' button is disabled.")
+        except Exception as e:
+            app.logger.warning(f"Error clicking 'Next >': {e}")
+
+        await page.wait_for_timeout(3000)
+
+        # 7) Fill credit card info in secure iframes
+        check_timeout()
+        try:
+            if "/" in card_expiry:
+                month_digits, year_digits = card_expiry.split("/")
+            else:
+                month_digits, year_digits = ("01", "25")
+
+            # Card Number
+            card_frame = page.frame_locator("iframe#iframe_cardNumber")
+            await card_frame.locator("input[name='cardNumber_EpsCardNumber']").wait_for(timeout=5000)
+            await card_frame.locator("input[name='cardNumber_EpsCardNumber']").fill(card_number)
+            masked_num = "**** **** **** " + card_number[-4:] if len(card_number) >= 4 else "****"
+            app.logger.info(f"Koodo: filled card number {masked_num}")
+
+            # Expiry
+            expiry_frame = page.frame_locator("iframe#iframe_expiryDate")
+            await expiry_frame.locator("input[name='expiryDate_EpsExpiryDate']").wait_for(timeout=5000)
+            await expiry_frame.locator("input[name='expiryDate_EpsExpiryDate']").fill(f"{month_digits}/{year_digits}")
+            app.logger.info(f"Koodo: filled expiry {month_digits}/{year_digits}")
+
+            # CVV
+            cvv_frame = page.frame_locator("iframe#iframe_cvv")
+            await cvv_frame.locator("input[name='cvv_EpsCvv']").wait_for(timeout=5000)
+            await cvv_frame.locator("input[name='cvv_EpsCvv']").fill(cvv)
+            app.logger.info("Koodo: filled CVV in secure iframe")
+        except Exception as e:
+            app.logger.error(f"Error filling CC iframes: {e}")
+
+        # Possibly click 'Submit' or 'Continue'
+        try:
+            submit_btn = page.locator("button:has-text('Submit'), button:has-text('Continue'), input[type='submit']")
+            if await submit_btn.count() > 0:
+                await submit_btn.first.wait_for(state="visible", timeout=10000)
+                await submit_btn.first.click(force=True)
+                app.logger.info("Clicked CC Submit/Continue for Koodo.")
+        except Exception as e:
+            app.logger.warning(f"Error clicking CC submit: {e}")
+
+        await page.wait_for_timeout(3000)
+
+        # 8) Fill DOB if Koodo wants again
+        try:
+            dob_parts = dob.split("-")
+            if len(dob_parts) == 3:
+                year_val, month_val, day_val = dob_parts
+
+                day_dropdown = page.locator("select[name='dob-day'], select#dob-day").first
+                if await day_dropdown.count() > 0:
+                    await day_dropdown.select_option(str(int(day_val)))
+                    app.logger.info(f"Selected day: {day_val}")
+
+                month_dropdown = page.locator("select[name='dob-month'], select#dob-month").first
+                if await month_dropdown.count() > 0:
+                    await month_dropdown.select_option(str(int(month_val)))
+                    app.logger.info(f"Selected month: {month_val}")
+
+                year_field = page.locator("input[name='dob-year'], input#dob-year").first
+                if await year_field.count() > 0:
+                    await year_field.fill(year_val)
+                    app.logger.info(f"Filled year: {year_val}")
+            else:
+                app.logger.warning(f"DOB not in correct format: {dob}")
+        except Exception as e:
+            app.logger.warning(f"Error filling Koodo DOB: {e}")
+
+        # Possibly fill ID
+        try:
+            if id_type == "drivers_license":
+                dl_field = page.locator("input[name='driversLicense']")
+                if await dl_field.count() > 0:
+                    await dl_field.fill(id_number)
+                    app.logger.info(f"Filled driver license with {id_number}")
+            elif id_type == "sin":
+                sin_field = page.locator("input[name='sinNumber']")
+                if await sin_field.count() > 0:
+                    await sin_field.fill(id_number)
+                    app.logger.info(f"Filled SIN with {id_number}")
+        except Exception as e:
+            app.logger.warning(f"Error filling ID field: {e}")
+
+        # Possibly final Next/Continue
+        try:
+            final_btn = page.locator("button:has-text('Next'), button:has-text('Continue'), input[type='submit']")
+            if await final_btn.count() > 0:
+                await final_btn.first.wait_for(state="visible", timeout=10000)
+                await final_btn.first.click(force=True)
+                app.logger.info("Clicked final Next/Continue button.")
+        except Exception as e:
+            app.logger.warning(f"Error clicking final Next/Continue: {e}")
+
+        app.logger.info("Koodo flow done in one pass (no pause).")
+        active_rpa_sessions[session_id] = {
+            "playwright": playwright,
+            "browser": browser,
+            "context": context,
+            "page": page
+        }
+
+    except TimeoutError as te:
+        app.logger.error(f"Koodo flow timed out: {te}")
+        if browser_resources["page"]:
+            try:
+                await browser_resources["page"].screenshot(path=f"logs/koodo_timeout_{session_id}.png")
+                app.logger.info("Saved Koodo timeout screenshot.")
+            except Exception as e:
+                app.logger.warning(f"Screenshot failed: {e}")
+        raise te
+
+    except Exception as e:
+        app.logger.error(f"Unexpected error in Koodo flow: {e}")
+        if browser_resources["page"]:
+            try:
+                await browser_resources["page"].screenshot(path=f"logs/koodo_error_{session_id}.png")
+                app.logger.info("Saved Koodo error screenshot.")
+            except Exception as se:
+                app.logger.warning(f"Screenshot failed: {se}")
+        raise e
+
+    finally:
+        elapsed = (datetime.now() - start_time).total_seconds()
+        app.logger.info(f"Koodo flow completed after {elapsed:.1f} seconds")
+
+
+# -------------------------------------------------------------------------
+#                          VIRGIN FLOW (One Pass)
+# -------------------------------------------------------------------------
+async def virgin_flow_full(session_id: str, user_data: dict, plan_info: dict):
+    """
+    Virgin entire activation flow in one pass:
+      1) Navigate to Virgin's BYOP
+      2) Select plan
+      3) Fill personal info
+      4) Fill credit card info, DOB, ID
+      5) Final submission
+      No pause at credit-check.
+    """
+    from datetime import datetime
+    start_time = datetime.now()
+    print("=== virgin_flow_full CALLED === session:", session_id)
+    print("User data:", user_data)
+    print("Plan info:", plan_info)
+
+    first_name = user_data.get("first_name", "")
+    last_name = user_data.get("last_name", "")
+    address = user_data.get("address", "")
+    city = user_data.get("city", "")
+    province = user_data.get("province", "")
+    postal_code = user_data.get("postal_code", "")
+    email = user_data.get("email", "")
+    phone = user_data.get("phone", "")
+    dob = user_data.get("dob", "")
+    card_number = user_data.get("card_number", "")
+    card_expiry = user_data.get("card_expiry", "")
+    cvv = user_data.get("cvv", "")
+    id_type = user_data.get("id_type", "")
+    id_number = user_data.get("id_number", "")
+    plan_name = plan_info.get("plan_name", "UNKNOWN PLAN")
+    number_preference = user_data.get("number_preference", "new")
+    transfer_number = user_data.get("transfer_number", phone)
+
+    browser_resources = {}
+
+    try:
+        playwright = await async_playwright().start()
+        browser = await playwright.chromium.launch(
+            channel="chrome", headless=False, slow_mo=100
+        )
+        context = await browser.new_context(
+            user_agent=("Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                        " AppleWebKit/537.36 (KHTML, like Gecko)"
+                        " Chrome/114.0.0.0 Safari/537.36"),
+            viewport={"width": 1280, "height": 800}
+        )
+        page = await agentql.wrap_async(await context.new_page())
+
+        # 1) Navigate to Virgin BYOP
+        start_url = "https://www.virginplus.ca/en/plans/postpaid.html#!/BYOP/research"
+        await page.goto(start_url, wait_until="networkidle", timeout=60000)
+        print("Navigated to Virgin BYOP offers page.")
+        await page.wait_for_timeout(10000)
+
+        # 2) Select plan (similar to old code)
+        def normalize_text(t):
+            t = t.lower().strip()
+            t = t.replace("&", " and ")
+            t = re.sub(r"[^\w\s]", "", t)
+            t = re.sub(r"\s+", " ", t)
+            return t.strip()
+
+        raw_plan_name = plan_name.strip()
+        if raw_plan_name.endswith("."):
+            raw_plan_name = raw_plan_name[:-1].strip()
+        normalized_plan_name = normalize_text(raw_plan_name)
+
+        containers = await page.locator("div.plan", has_text=plan_name).all()
+        container_count = len(containers)
+        if container_count == 0:
+            containers = await page.locator("div[class*='plan']", has_text=plan_name).all()
+            container_count = len(containers)
+            if container_count == 0:
+                containers = await page.locator("div", has_text=plan_name).all()
+                container_count = len(containers)
+
+        if container_count == 0:
+            print(f"No container found for plan: '{plan_name}'.")
+        else:
+            selected_container = None
+            for idx, c in enumerate(containers):
+                txt = await c.inner_text()
+                if normalize_text(txt).startswith(normalized_plan_name):
+                    selected_container = c
+                    break
+            if not selected_container and containers:
+                selected_container = containers[0]
+            if selected_container:
+                select_button = selected_container.locator("a[role=button]:has-text('Select plan')")
+                if await select_button.count() > 0:
+                    await select_button.first.click(force=True)
+                    print(f"Clicked 'Select plan' for: {plan_name}")
+
+        await page.wait_for_timeout(3000)
+
+        # Possibly handle "Get Started" pop-up
+        try:
+            got_started_btn = await page.get_by_prompt("Get Started")
+            if got_started_btn:
+                await got_started_btn.click(force=True)
+                print("Clicked 'Get Started' from popup.")
+        except:
+            pass
+        await page.wait_for_timeout(10000)
+
+        # Possibly handle "Next Step"
+        try:
+            next_step1 = await page.get_by_prompt("Next Step")
+            if next_step1:
+                await next_step1.click(force=True)
+                print("Clicked first 'Next Step'.")
+        except Exception as e:
+            print("Error clicking first 'Next Step':", e)
+        await page.wait_for_timeout(5000)
+
+        # Possibly handle "Order a SIM card"
+        try:
+            order_sim = await page.get_by_prompt("Order a SIM card")
+            if order_sim:
+                await order_sim.click(force=True)
+                print("Clicked 'Order a SIM card'.")
+        except Exception as e:
+            print("Error clicking 'Order a SIM card':", e)
+        await page.wait_for_timeout(5000)
+
+        # Possibly handle "Add to cart"
+        try:
+            add_to_cart = await page.get_by_prompt("Add to cart")
+            if add_to_cart:
+                await add_to_cart.click(force=True)
+                print("Clicked 'Add to cart'.")
+        except Exception as e:
+            print("Error clicking 'Add to cart':", e)
+        await page.wait_for_timeout(5000)
+
+        try:
+            proceed_checkout = await page.get_by_prompt("Proceed to checkout")
+            if proceed_checkout:
+                await proceed_checkout.click(force=True)
+                print("Clicked 'Proceed to checkout'.")
+        except Exception as e:
+            print("Error clicking 'Proceed to checkout':", e)
+        await page.wait_for_timeout(5000)
+
+        print("Filling personal info on Virgin page...")
+        await page.wait_for_timeout(5000)
+
+        # 3) Fill personal info
+        try:
+            fn_field = await page.get_by_prompt("First name")
+            if fn_field:
+                await fn_field.fill(first_name)
+        except:
+            pass
+        try:
+            ln_field = await page.get_by_prompt("Last name")
+            if ln_field:
+                await ln_field.fill(last_name)
+        except:
+            pass
+
+        full_address = f"{address} {city}".strip()
+        try:
+            addr_field = await page.get_by_prompt("Street address")
+            if addr_field:
+                await addr_field.click(force=True)
+                await addr_field.fill(full_address)
+                await page.wait_for_timeout(2000)
+                await addr_field.press("Enter")
+        except:
+            pass
+
+        try:
+            email_field = await page.get_by_prompt("Email address")
+            if email_field:
+                await email_field.fill(email)
+        except:
+            pass
+        try:
+            confirm_email_field = await page.get_by_prompt("Confirm email address")
+            if confirm_email_field:
+                await confirm_email_field.fill(email)
+        except:
+            pass
+        try:
+            phone_field = await page.get_by_prompt("Phone number")
+            if phone_field:
+                await phone_field.fill(phone)
+        except:
+            pass
+
+        # Possibly "Continue"
+        try:
+            cont_btn = await page.get_by_prompt("Continue")
+            if cont_btn:
+                await cont_btn.click(force=True)
+        except:
+            pass
+        await page.wait_for_timeout(5000)
+
+        # Possibly "Confirm"
+        try:
+            confirm_add_btn = await page.get_by_prompt("Confirm")
+            if confirm_add_btn:
+                await confirm_add_btn.click(force=True)
+                print("Clicked 'Confirm' on popup.")
+        except:
+            pass
+        await page.wait_for_timeout(10000)
+
+        # Possibly fill phone number preference (transfer vs new), etc.
+        if number_preference == "transfer":
+            try:
+                transfer_option = await page.get_by_prompt("Transfer your current number to Virgin Plus")
+                if transfer_option:
+                    await transfer_option.click(force=True)
+                await page.wait_for_timeout(5000)
+            except:
+                pass
+            try:
+                phone_transfer_field = await page.get_by_prompt("Phone number to transfer")
+                if phone_transfer_field:
+                    await phone_transfer_field.fill(transfer_number)
+                await page.wait_for_timeout(3000)
+            except:
+                pass
+            try:
+                verify_btn = await page.get_by_prompt("Verify transferability")
+                if verify_btn:
+                    await verify_btn.click(force=True)
+                await page.wait_for_timeout(5000)
+            except:
+                pass
+            try:
+                checkbox_locator = page.locator("input[type='checkbox'][name='termsAndConditions']")
+                count = await checkbox_locator.count()
+                if count > 0:
+                    await checkbox_locator.first.click(force=True)
+                    print("Checked the T&C checkbox.")
+                else:
+                    print("No T&C checkbox found with that selector.")
+                await page.wait_for_timeout(3000)
+            except Exception as e:
+                print("Error checking T&C checkbox:", e)
+            try:
+                confirm_transfer_btn = await page.get_by_prompt("Confirm number transfer")
+                if confirm_transfer_btn:
+                    await confirm_transfer_btn.click(force=True)
+                await page.wait_for_timeout(5000)
+            except:
+                pass
+        else:
+            try:
+                new_num_option = await page.get_by_prompt("Select a new number")
+                if new_num_option:
+                    await new_num_option.click(force=True)
+                await page.wait_for_timeout(5000)
+            except:
+                pass
+            try:
+                cont_new_btn = await page.get_by_prompt("Continue")
+                if cont_new_btn:
+                    await cont_new_btn.click(force=True)
+                await page.wait_for_timeout(5000)
+            except:
+                pass
+
+        try:
+            credit_continue_btn = await page.get_by_prompt("Continue")
+            if credit_continue_btn:
+                await credit_continue_btn.click(force=True)
+                print("Clicked 'Continue' to proceed to the credit-check page.")
+            else:
+                print("Could not find 'Continue' button for credit-check page.")
+        except Exception as e:
+            print("Error clicking 'Continue' for credit check:", e)
+        await page.wait_for_timeout(5000)
+        # 4) Fill credit card info + DOB here, in the same pass (like old resume_credit_check_flow for Virgin)
+        if "/" in card_expiry:
+            month_digits, year_digits = card_expiry.split("/")
+        else:
+            month_digits, year_digits = ("04", "25")
+
+            # define year_full (otherwise references to year_full will fail)
+        if len(year_digits) == 2:
+            year_full = f"20{year_digits}"
+        else:
+            year_full = year_digits
+
+            # Fill expiry month
+        try:
+            month_button = page.locator("#CreditCard_ExpirationDataMM")
+            await month_button.click()
+            await page.wait_for_timeout(1000)
+            month_option = page.locator(f'li[role="option"] >> text="{month_digits}"')
+            await month_option.first.wait_for(state="attached", timeout=5000)
+            await month_option.first.click(force=True)
+            print(f"Selected month: {month_digits}")
+        except Exception as e:
+            print(f"Error selecting Virgin month {month_digits}: {str(e)}")
+
+            # Fill expiry year
+        try:
+            year_button = page.locator("#CreditCard_ExpirationDateYY")
+            await hover_and_click_element(page, year_button, random_offset=2)
+            await page.wait_for_timeout(1200)
+            year_option = page.locator(f'li[role="option"] >> text="{year_full}"')
+            await year_option.first.wait_for(state="visible", timeout=5000)
+            await hover_and_click_element(page, year_option.first, random_offset=2)
+            print(f"Selected year: {year_full}")
+        except Exception as e:
+            print(f"Error selecting Virgin year '{year_full}': {str(e)}")
+
+            # Card number
+        try:
+            card_number_field = await page.get_by_prompt("Card number")
+            if card_number_field:
+                await card_number_field.fill(card_number)
+                masked = "**** **** **** " + card_number[-4:] if len(card_number) >= 4 else "****"
+                print(f"Filled card number with: {masked}")
+            else:
+                print("Card number field not found.")
+        except Exception as e:
+            print(f"Error filling card number: {str(e)}")
+
+            # CVV
+        try:
+            cvv_field = await page.get_by_prompt("Card security code")
+            if cvv_field:
+                await cvv_field.fill(cvv)
+                print("Filled card security code.")
+            else:
+                print("Card security code field not found.")
+        except Exception as e:
+            print(f"Error filling card security code: {str(e)}")
+
+            # DOB
+        try:
+            dob_field = await page.get_by_prompt("Date of birth")
+            if dob_field:
+                await dob_field.fill(dob)
+                print(f"Filled date of birth with: {dob}")
+            else:
+                print("Date of birth field not found.")
+        except Exception as e:
+            print(f"Error filling date of birth: {str(e)}")
+
+            # final submit/continue
+        try:
+            final_btn = page.locator("button:has-text('Submit'), button:has-text('Continue')").first
+            if await final_btn.count() > 0:
+                await final_btn.click(force=True)
+                print("Clicked final submit/continue on Virgin form.")
+            else:
+                print("Final submit/continue button not found on Virgin form.")
+        except Exception as e:
+            print(f"Error clicking final Virgin button: {str(e)}")
+
+        print("Virgin flow done, in one pass, no pause.")
+        browser_resources = {
+            "playwright": playwright,
+            "browser": browser,
+            "context": context,
+            "page": page
+        }
+        active_rpa_sessions[session_id] = browser_resources
+
+    except Exception as e:
+        print("Virgin flow error:", e)
+        raise e
+    finally:
+        elapsed = (datetime.now() - start_time).total_seconds()
+        print(f"Virgin flow completed after {elapsed:.1f}s")
+
+
+# -------------------------------------------------------------------------
+#                          FIDO FLOW (One Pass)
+# -------------------------------------------------------------------------
+async def fido_flow_full(session_id: str, user_data: dict, plan_info: dict, timeout_seconds=180):
+    """
+    Fido entire activation flow in one pass:
+      1) Go to Fido BYOD page
+      2) Select the correct plan
+      3) Click 'Continue'
+      4) Skip add-ons, click 'Continue' again
+      5) Pop-up -> 'Continue without device protection'
+      6) 'Cannot find my device' link
+      7) Check eSIM compatibility -> select 'Yes'
+      8) 'Continue'
+      9) Wait for save, then 'Add to Cart'
+      10) 'Proceed to Checkout'
+      11) Fill customer info (email, name, contact number, billing address)
+      12) Click 'Continue'
+      13) Fill credit evaluation: DOB (dropdowns), card info (typed slowly), ID type, ID number
+      14) Final submission
+    """
+    from datetime import datetime
+    import re
+    import random
+
+    app.logger.info(f"=== fido_flow_full CALLED === (session {session_id})")
+    start_time = datetime.now()
+
+    # Extract user data
+    email = user_data.get("email", "")
+    first_name = user_data.get("first_name", "")
+    last_name = user_data.get("last_name", "")
+    phone = user_data.get("phone", "")
+    address = user_data.get("address", "")
+    city = user_data.get("city", "")
+    province = user_data.get("province", "")
+    postal_code = user_data.get("postal_code", "")
+    dob = user_data.get("dob", "")  # expecting YYYY-MM-DD
+    card_number = user_data.get("card_number", "")
+    card_expiry = user_data.get("card_expiry", "")  # "MM/YY"
+    cvv = user_data.get("cvv", "")
+    id_type = user_data.get("id_type", "drivers_license")
+    id_number = user_data.get("id_number", "")
+
+    plan_name = plan_info.get("plan_name", "UNKNOWN PLAN")
+
+    browser_resources = {
+        "playwright": None,
+        "browser": None,
+        "context": None,
+        "page": None
+    }
+
+    def check_timeout():
+        elapsed = (datetime.now() - start_time).total_seconds()
+        if elapsed > timeout_seconds:
+            raise TimeoutError(f"Fido flow timed out after {elapsed:.1f} seconds")
+
+    def normalize_text(t: str) -> str:
+        t = t.lower().strip()
+        t = t.replace("&", " and ")
+        t = re.sub(r"[^\w\s]", "", t)
+        t = re.sub(r"\s+", " ", t)
+        return t
+
+    try:
+        from playwright.async_api import async_playwright
+        from playwright_stealth import stealth_async
+
+        # 1) Launch browser with stealth (WebKit)
+        playwright = await async_playwright().start()
+        browser = await playwright.webkit.launch(headless=False, slow_mo=100)
+        context = await browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/605.1.15 (KHTML, like Gecko) "
+                "Version/15.0 Safari/604.1"
+            ),
+            viewport={"width": 1280, "height": 800}
+        )
+        page = await context.new_page()
+
+        # Navigate to Fido BYOD
+        await page.goto("https://www.fido.ca/phones/bring-your-own-device?icid=F_WIR_CNV_GRM6LG&flowType=byod")
+
+        # Apply stealth
+        await stealth_async(page)
+
+        # Wrap page with agentql if needed
+        page = await agentql.wrap_async(page)
+
+        # Save references
+        browser_resources.update({
+            "playwright": playwright,
+            "browser": browser,
+            "context": context,
+            "page": page
+        })
+
+        # --------------------------
+        # 2) Locate exact plan text
+        # --------------------------
+        app.logger.info(f"Looking for plan text: '{plan_name}'")
+        plan_locator = page.get_by_text(plan_name, exact=False)
+        plan_count = await plan_locator.count()
+        if plan_count == 0:
+            app.logger.warning(f"No element found with text '{plan_name}'. Fallback to first radio.")
+            fallback_radio = page.locator("input[type='radio']").first
+            if await fallback_radio.count() > 0:
+                await fallback_radio.click(force=True)
+                app.logger.info("Clicked first radio as fallback.")
+        else:
+            plan_element = plan_locator.first
+            try:
+                radio_locator = plan_element.locator(
+                    "xpath=ancestor::span[contains(@class,'ds-selection__labelContainer')]//input[@type='radio']"
+                )
+                if await radio_locator.count() > 0:
+                    await radio_locator.first.click(force=True)
+                    app.logger.info(f"Clicked radio input for plan '{plan_name}'.")
+                else:
+                    app.logger.warning("No radio input found in ancestor. Attempting direct click on plan element.")
+                    await plan_element.click(force=True)
+                    app.logger.info(f"Clicked the plan element directly: '{plan_name}'.")
+            except Exception as e:
+                app.logger.warning(f"Error clicking plan element or its radio. Fallback to direct click: {e}")
+                await plan_element.click(force=True)
+
+        await page.wait_for_timeout(3000)
+
+        # 3) Press "Continue" for add-ons (twice in your code)
+        check_timeout()
+        for _ in range(2):
+            clicked_continue = False
+            continue_btns = [
+                page.locator("button:has-text('Continue')"),
+                page.locator("button:has-text('Next')")
+            ]
+            for cbtn in continue_btns:
+                if await cbtn.count() > 0:
+                    await cbtn.first.click(force=True)
+                    app.logger.info("Clicked 'Continue' for add-ons.")
+                    clicked_continue = True
+                    break
+            if not clicked_continue:
+                app.logger.warning("No 'Continue' button found for add-ons step.")
+            await page.wait_for_timeout(5000)
+
+        # 4) "Continue without device protection" if it appears
+        try:
+            no_protection_btn = page.locator(
+                "button:has-text('Continue without device protection'), "
+                "button:has-text('No device protection')"
+            )
+            if await no_protection_btn.count() > 0:
+                await no_protection_btn.first.click(force=True)
+                app.logger.info("Clicked 'Continue without device protection' from pop-up.")
+            else:
+                app.logger.warning("No 'Continue without device protection' button found.")
+        except Exception as e:
+            app.logger.warning(f"Error handling device protection pop-up: {e}")
+        await page.wait_for_timeout(3000)
+
+        # 5) "Cannot find my device" if it appears
+        try:
+            cannot_find_btn = page.locator(
+                "button:has-text('Cannot find my device'), a:has-text('Cannot find my device')")
+            if await cannot_find_btn.count() > 0:
+                await cannot_find_btn.first.click(force=True)
+                app.logger.info("Clicked 'Cannot find my device' button/link.")
+            else:
+                app.logger.warning("No 'Cannot find my device' button found.")
+        except Exception as e:
+            app.logger.warning(f"Error clicking 'Cannot find my device': {e}")
+        await page.wait_for_timeout(2000)
+
+        # 6) eSIM Compatibility -> select "Yes"
+        try:
+            yes_container = page.locator(
+                "label.ds-radioLabel:has-text('Yes'), "
+                "div.ds-radioLabel_container:has-text('Yes'), "
+                "button:has-text('Yes')"
+            )
+            if await yes_container.count() > 0:
+                await yes_container.first.click(force=True)
+                app.logger.info("Selected 'Yes' for eSIM compatibility by clicking label/container.")
+            else:
+                app.logger.warning("No label/container with text 'Yes' found. Trying direct input approach...")
+                yes_radio = page.locator("input[type='radio'][name*='Yes'], input[type='radio'][aria-label*='Yes']")
+                if await yes_radio.count() > 0:
+                    await yes_radio.first.click(force=True)
+                    app.logger.info("Selected 'Yes' for eSIM by clicking the radio input.")
+                else:
+                    app.logger.warning("No 'Yes' radio input found for eSIM compatibility.")
+        except Exception as e:
+            app.logger.warning(f"Error selecting 'Yes' for eSIM: {e}")
+        await page.wait_for_timeout(3000)
+
+        # 7) "Continue" after eSIM question
+        try:
+            continue_btn = page.locator("button.ds-button:has-text('Continue'), button:has-text('Continue')").first
+
+            # 1) Scroll page in small increments so the button becomes visible
+            for _ in range(10):
+                await page.mouse.wheel(0, 300)
+                if await continue_btn.is_visible():
+                    break
+                await page.wait_for_timeout(300)
+
+            # 2) Wait for state=visible
+            await continue_btn.wait_for(state="visible", timeout=5000)
+
+            # 3) Wait for it to be enabled
+            for _ in range(50):
+                disabled_attr = await continue_btn.get_attribute("disabled")
+                classes = await continue_btn.get_attribute("class") or ""
+                if not disabled_attr and "ds-button--disabled" not in classes:
+                    break
+                await page.wait_for_timeout(200)
+
+            # 4) Try normal .click()
+            try:
+                await continue_btn.click(force=True)
+                app.logger.info("Clicked 'Continue' after eSIM question.")
+            except Exception as ex:
+                app.logger.warning(f"Normal click failed: {ex}. Trying evaluate-click fallback.")
+                await page.evaluate("(btn) => btn.click()", continue_btn)
+                app.logger.info("Clicked 'Continue' after eSIM question via evaluate.")
+        except Exception as e:
+            app.logger.warning(f"Could not click 'Continue' after eSIM question: {e}")
+        await page.wait_for_timeout(5000)
+
+        # 8) Add to Cart
+        check_timeout()
+        try:
+            add_to_cart_btn = page.locator(
+                "button.ds-button:has-text('Add to Cart'), button:has-text('Add to Cart')").first
+            await add_to_cart_btn.wait_for(state="visible", timeout=10000)
+
+            # Wait for it to be enabled
+            for _ in range(50):
+                disabled_attr = await add_to_cart_btn.get_attribute("disabled")
+                classes = await add_to_cart_btn.get_attribute("class") or ""
+                if not disabled_attr and "ds-button--disabled" not in classes:
+                    break
+                await page.wait_for_timeout(200)
+
+            await add_to_cart_btn.click(force=True)
+            app.logger.info("Clicked 'Add to Cart'.")
+        except Exception as e:
+            app.logger.warning(f"Could not click 'Add to Cart': {e}")
+        await page.wait_for_timeout(5000)
+
+        # 9) Proceed to Checkout
+        proceed_checkout_btn = page.locator("button:has-text('Proceed to Checkout')")
+        if await proceed_checkout_btn.count() > 0:
+            await proceed_checkout_btn.first.click(force=True)
+            app.logger.info("Clicked 'Proceed to Checkout'.")
+        else:
+            app.logger.warning("No 'Proceed to Checkout' button found.")
+        await page.wait_for_timeout(10000)
+
+        # 10) Fill customer info
+        check_timeout()
+        app.logger.info("Filling out customer info on Fido page...")
+
+        # Email (avoid strict-mode violation by filtering more precisely)
+        try:
+            # We'll try to differentiate "E-mail Address" from "Confirm E-mail Address"
+            # by searching for a container that EXACTLY has "E-mail Address" but not "Confirm"
+            # or by using a label with matching text. If you see multiple matches, we pick the first.
+
+            # 1) Attempt a more direct label-based approach, ignoring 'Confirm'
+            #    If your site uses a label "E-mail Address" for the first field, do:
+            email_label = page.locator("label.ds-formField__labelWrapper").filter(
+                has_text=re.compile(r"^\s*E-mail Address\s*$", re.IGNORECASE)
+            )
+
+            if await email_label.count() > 0:
+                # We'll find the input in the same formField ancestor
+                email_container = email_label.locator("xpath=ancestor::div[contains(@class,'ds-formField')]")
+            else:
+                # 2) Fallback: container that has text "E-mail Address" but not "Confirm"
+                email_container = page.locator("div.ds-formField__inputContainer").filter(
+                    has_text=re.compile(r"E-mail Address(?!.*Confirm)", re.IGNORECASE)
+                )
+
+            if await email_container.count() > 1:
+                # If there's more than one match, pick the first
+                email_container = email_container.nth(0)
+
+            if await email_container.count() == 0:
+                app.logger.warning("No container found exclusively for 'E-mail Address'. Trying direct fallback.")
+                # direct fallback to input[name='email']
+                email_input = page.locator("input[name='email']")
+                if await email_input.count() > 0:
+                    await email_input.first.click()
+                    for ch in email:
+                        await email_input.first.type(ch, delay=80)
+                    app.logger.info(f"Typed 'E-mail Address' with {email}")
+            else:
+                # Found a container. Wait for it to be visible.
+                await email_container.wait_for(state="visible", timeout=10000)
+                await email_container.scroll_into_view_if_needed()
+
+                # Inside that container, look for the actual input
+                email_input = email_container.locator("input[type='text'], input[type='email'], input[name='email']")
+                if await email_input.count() > 0:
+                    await email_input.first.click()
+                    for ch in email:
+                        await email_input.first.type(ch, delay=80)
+                    app.logger.info(f"Typed 'E-mail Address' with {email}")
+                else:
+                    app.logger.warning("No <input> found in the 'E-mail Address' container.")
+        except Exception as e:
+            app.logger.warning(f"Error filling 'E-mail Address': {e}")
+
+        # Confirm Email
+        confirm_email_field = page.get_by_label("Confirm E-mail Address", exact=False)
+        if await confirm_email_field.count() == 0:
+            confirm_email_field = page.get_by_role("textbox", name="Confirm E-mail Address", exact=False)
+        if await confirm_email_field.count() == 0:
+            confirm_email_field = page.locator("input[name='confirmEmail']")
+        if await confirm_email_field.count() > 0:
+            await confirm_email_field.first.click()
+            for ch in email:
+                await confirm_email_field.first.type(ch, delay=80)
+            app.logger.info(f"Typed 'Confirm E-mail Address' with {email}")
+
+        # First Name
+        fname_field = page.get_by_label("First Name", exact=False)
+        if await fname_field.count() == 0:
+            fname_field = page.get_by_role("textbox", name="First Name", exact=False)
+        if await fname_field.count() == 0:
+            fname_field = page.locator("input[name='firstName']")
+        if await fname_field.count() > 0:
+            await fname_field.first.click()
+            for ch in first_name:
+                await fname_field.first.type(ch, delay=80)
+            app.logger.info(f"Typed 'First Name' with {first_name}")
+
+        # Last Name
+        lname_field = page.get_by_label("Last Name", exact=False)
+        if await lname_field.count() == 0:
+            lname_field = page.get_by_role("textbox", name="Last Name", exact=False)
+        if await lname_field.count() == 0:
+            lname_field = page.locator("input[name='lastName']")
+        if await lname_field.count() > 0:
+            await lname_field.first.click()
+            for ch in last_name:
+                await lname_field.first.type(ch, delay=80)
+            app.logger.info(f"Typed 'Last Name' with {last_name}")
+
+        # Contact Number
+        contact_field = page.get_by_label("Contact Number", exact=False)
+        if await contact_field.count() == 0:
+            contact_field = page.get_by_role("textbox", name="Contact Number", exact=False)
+        if await contact_field.count() == 0:
+            contact_field = page.locator("input[name='contactNumber']")
+        if await contact_field.count() > 0:
+            await contact_field.first.click()
+            for ch in phone:
+                await contact_field.first.type(ch, delay=80)
+            app.logger.info(f"Typed 'Contact Number' with {phone}")
+
+        # Billing Address
+
+        # --- Billing Address ---
+        full_address = f"{address} {city}".strip()
+        try:
+            # Locate the container using an exact label match if possible.
+            billing_label = page.locator("label.ds-formField__labelWrapper").filter(
+                has_text=re.compile(r"^\s*Billing Address\s*$", re.IGNORECASE)
+            )
+            if await billing_label.count() > 0:
+                billing_container = billing_label.locator("xpath=ancestor::div[contains(@class,'ds-formField')]")
+            else:
+                # Fallback: any container that contains "Billing Address"
+                billing_container = page.locator("div.ds-formField__inputContainer").filter(
+                    has_text=re.compile(r"Billing Address", re.IGNORECASE)
+                )
+
+            if await billing_container.count() > 1:
+                billing_container = billing_container.nth(0)
+
+            if await billing_container.count() == 0:
+                app.logger.warning("No container found for 'Billing Address'. Trying direct fallback.")
+                billing_input = page.locator("input[name='addressLine1']")
+                if await billing_input.count() > 0:
+                    await billing_input.first.click()
+                    for ch in full_address:
+                        await billing_input.first.type(ch, delay=80)
+                    app.logger.info("Typed 'Billing Address' with fallback approach.")
+            else:
+                await billing_container.wait_for(state="visible", timeout=10000)
+                await billing_container.scroll_into_view_if_needed()
+
+                billing_input = billing_container.locator("input[type='text'], input[name='addressLine1']")
+                if await billing_input.count() > 0:
+                    await billing_input.first.click()
+                    await billing_input.first.fill("")  # clear any existing text
+                    for ch in full_address:
+                        await billing_input.first.type(ch, delay=80)
+                    app.logger.info(f"Typed 'Billing Address' with: {full_address}")
+
+                    # Allow time for autosuggestions to load.
+                    await page.wait_for_timeout(2000)
+                    # Attempt to locate the autosuggestion element and click it.
+                    suggestion = page.locator(
+                        "li[role='option'], div.ds-autosuggest__option, ul.autocomplete-options li").first
+                    if await suggestion.count() > 0:
+                        await suggestion.wait_for(state="visible", timeout=5000)
+                        await suggestion.click(force=True)
+                        app.logger.info("Clicked first autosuggestion for Billing Address.")
+                    else:
+                        app.logger.warning("No autosuggestion element found; using fallback keys.")
+                        # Fallback: press ArrowDown twice then Enter.
+                        await billing_input.first.press("ArrowDown")
+                        await page.wait_for_timeout(500)
+                        await billing_input.first.press("ArrowDown")
+                        await page.wait_for_timeout(500)
+                        await billing_input.first.press("Enter")
+                        app.logger.info("Pressed ArrowDown twice and Enter for Billing Address.")
+                else:
+                    app.logger.warning("No <input> found in the 'Billing Address' container.")
+        except Exception as e:
+            app.logger.warning(f"Error filling Billing Address: {e}")
+        await page.wait_for_timeout(500)
+
+        # 12) Click "Continue" to go to credit evaluation
+        check_timeout()
+        continue_checkout_btn = page.locator("button:has-text('Continue')")
+        if await continue_checkout_btn.count() > 0:
+            await continue_checkout_btn.first.click(force=True)
+            app.logger.info("Clicked 'Continue' to proceed to credit evaluation.")
+        else:
+            app.logger.warning("No 'Continue' button found after personal info.")
+        await page.wait_for_timeout(10000)
+
+
+        # 13) Fill credit evaluation
+        app.logger.info("Filling credit evaluation on Fido page...")
+
+        # Date of Birth: "Year", "Month", "Day"
+        try:
+            dob_parts = dob.split("-")  # expecting YYYY-MM-DD
+            if len(dob_parts) == 3:
+                year_val, month_val, day_val = dob_parts
+                # Year dropdown
+                year_dropdown = page.locator("select[name='dobYear']")
+                if await year_dropdown.count() > 0:
+                    await year_dropdown.first.select_option(year_val)
+                    app.logger.info(f"Selected Year: {year_val}")
+
+                # Month dropdown (1 to 12)
+                month_dropdown = page.locator("select[name='dobMonth']")
+                if await month_dropdown.count() > 0:
+                    await month_dropdown.first.select_option(str(int(month_val)))
+                    app.logger.info(f"Selected Month: {month_val}")
+
+                # Day dropdown
+                day_dropdown = page.locator("select[name='dobDay']")
+                if await day_dropdown.count() > 0:
+                    await day_dropdown.first.select_option(str(int(day_val)))
+                    app.logger.info(f"Selected Day: {day_val}")
+            else:
+                app.logger.warning(f"DOB not in correct YYYY-MM-DD format: {dob}")
+        except Exception as e:
+            app.logger.warning(f"Error filling Fido DOB: {e}")
+
+        # Card Number - typed one digit at a time
+        try:
+            card_num_field = page.locator("input[name='creditCardNumber']")
+            if await card_num_field.count() > 0:
+                await card_num_field.first.click()
+                for digit in card_number:
+                    await card_num_field.first.type(digit, delay=120)  # type slowly
+                masked_num = "**** **** **** " + card_number[-4:] if len(card_number) >= 4 else "****"
+                app.logger.info(f"Fido: typed card number {masked_num}")
+        except Exception as e:
+            app.logger.error(f"Error filling card number: {e}")
+
+        # Expiry Date (MM/YY)
+        try:
+            expiry_field = page.locator("input[name='creditCardExpiry']")
+            if await expiry_field.count() > 0:
+                await expiry_field.first.fill(card_expiry)
+                app.logger.info(f"Fido: filled card expiry {card_expiry}")
+        except Exception as e:
+            app.logger.warning(f"Error filling expiry date: {e}")
+
+        # Possibly fill CVV if required (some carriers do it on same page, some later)
+        try:
+            cvv_field = page.locator("input[name='creditCardCvv']")
+            if await cvv_field.count() > 0:
+                await cvv_field.first.fill(cvv)
+                app.logger.info("Fido: filled CVV.")
+        except Exception as e:
+            app.logger.warning(f"Error filling CVV: {e}")
+
+        # ID Type selection
+        try:
+            id_type_dropdown = page.locator("select[name='idType']")
+            if await id_type_dropdown.count() > 0:
+                if id_type == "drivers_license":
+                    await id_type_dropdown.first.select_option("drivers_license")
+                    app.logger.info("Selected ID type: Driver's License")
+                else:
+                    # assume "sin" is the other choice
+                    await id_type_dropdown.first.select_option("sin")
+                    app.logger.info("Selected ID type: Social Insurance Number")
+        except Exception as e:
+            app.logger.warning(f"Error selecting ID type: {e}")
+
+        # ID Number
+        try:
+            if id_type == "drivers_license":
+                dl_field = page.locator("input[name='driversLicenseNumber']")
+                if await dl_field.count() > 0:
+                    await dl_field.first.fill(id_number)
+                    app.logger.info(f"Filled Driver's License Number: {id_number}")
+            else:
+                sin_field = page.locator("input[name='sinNumber']")
+                if await sin_field.count() > 0:
+                    await sin_field.first.fill(id_number)
+                    app.logger.info(f"Filled Social Insurance Number: {id_number}")
+        except Exception as e:
+            app.logger.warning(f"Error filling ID number: {e}")
+
+        # Possibly final checkboxes or T&C
+        try:
+            # If there's a checkbox for T&C or "I authorize credit check," check it
+            tnc_checkbox = page.locator("input[type='checkbox'], label:has-text('I authorize')")
+            if await tnc_checkbox.count() > 0:
+                await tnc_checkbox.first.click(force=True)
+                app.logger.info("Checked the T&C / credit authorization checkbox.")
+        except:
+            pass
+
+        # Possibly a final "Continue" or "Submit" button
+        try:
+            final_btn = page.locator("button:has-text('Continue'), button:has-text('Submit'), button:has-text('Next')")
+            if await final_btn.count() > 0:
+                await final_btn.first.click(force=True)
+                app.logger.info("Clicked final button on credit evaluation page.")
+        except Exception as e:
+            app.logger.warning(f"Error clicking final button on Fido credit page: {e}")
+
+        app.logger.info("Fido flow done in one pass (no pause).")
+        active_rpa_sessions[session_id] = {
+            "playwright": playwright,
+            "browser": browser,
+            "context": context,
+            "page": page
+        }
+
+    except Exception as e:
+        app.logger.error(f"Flow error: {e}")
+        if browser_resources["page"]:
+            try:
+                await browser_resources["page"].screenshot(path=f"logs/fido_error_{session_id}.png")
+                app.logger.info("Saved Fido error screenshot.")
+            except Exception as se:
+                app.logger.warning(f"Screenshot failed: {se}")
+        raise e
+    finally:
+        elapsed = (datetime.now() - start_time).total_seconds()
+        app.logger.info(f"Fido flow completed after {elapsed:.1f} seconds")
+
+
+# -------------------------------------------------------------------------
+#                          FLASK ROUTES
+# -------------------------------------------------------------------------
+@app.route('/search', methods=['POST'])
+def search():
+    global conversation_context
+    data = request.json
+    user_query = data.get('query', '').strip().lower()
+
+    if conversation_context["state"] == "greeting":
+        conversation_context["state"] = "awaiting_confirmation"
+        return jsonify({"response":
+                            "Hello! I'm Mark-1 (BLUE) your plan advisor. "
+                            "Could you provide your current plan details or monthly cost/data usage? "
+                            "Answer 'yes' or 'no'."
+                        })
+
+    if conversation_context["state"] == "awaiting_confirmation":
+        if "yes" in user_query:
+            conversation_context["state"] = "awaiting_plan_details"
+            return jsonify({"response":
+                                "Great! Please provide your plan details. Once submitted, I'll process them."
+                            })
+        elif "no" in user_query:
+            return jsonify({"response": "No problem! Let me know when you're ready."})
+        else:
+            return jsonify({"response": "Please answer with 'yes' or 'no'."})
+
+    return jsonify({"response": "I encountered an issue. Please restart the conversation."})
+
+
+@app.route('/submit_plan_details', methods=['POST'])
+def submit_plan_details():
+    global conversation_context
+    data = request.json
+    conversation_context.update({
+        "budget": float(data.get("current_price", 0)),
+        "data_usage": float(data.get("current_data_usage", 0)),
+        "current_provider": data.get("current_provider", "").lower(),
+        "open_to_switching": data.get("open_to_switching", "").lower() in ["y", "yes", "true"],
+        "state": "processing",
+    })
+    return jsonify({"response": "Details received! Let me find the best plan for you."})
+
+
+@app.route('/recommend_plan', methods=['GET'])
+def recommend_plan():
+    global conversation_context, plans_data
+    budget = conversation_context.get("budget", 0)
+    data_usage = conversation_context.get("data_usage", 0)
+    open_to_switching = conversation_context.get("open_to_switching", True)
+    current_provider = conversation_context.get("current_provider", "")
+
+    filtered = plans_data[
+        (plans_data["plan_price"] <= budget) & (plans_data["plan_data"] >= data_usage)
+        ]
+    if not open_to_switching:
+        filtered = filtered[filtered["carrier"].str.lower() == current_provider]
+
+    if filtered.empty:
+        return jsonify({"response": "No suitable plan found. Adjust your criteria."})
+
+    filtered = filtered.sort_values(by=["plan_price", "plan_data"]).reset_index(drop=True)
+    top5 = filtered.head(5)
+    conversation_context["recommended_plans"] = top5.to_dict(orient="records")
+    conversation_context["state"] = "recommendation_made"
+
+    resp_text = "Here are the best plans for you:\n"
+    for idx, row in top5.iterrows():
+        resp_text += (
+            f"- [{idx}] Carrier: {row['carrier']}, "
+            f"Plan: {row['plan_name']}, "
+            f"Data: {row['plan_data']}GB, "
+            f"Price: ${row['plan_price']}\n"
+        )
+    return jsonify({"response": resp_text})
+
+
+@app.route('/select_plan', methods=['POST'])
+def select_plan():
+    global conversation_context
+    data = request.json
+    idx_str = data.get('plan_index', '').strip()
+    recommended = conversation_context.get("recommended_plans", [])
+
+    if not recommended:
+        return jsonify({"response": "No recommended plans found. Please run recommend_plan again."})
+
+    try:
+        plan_idx = int(idx_str)
+    except ValueError:
+        return jsonify({"response": "Invalid plan index. Must be a number."})
+
+    if plan_idx < 0 or plan_idx >= len(recommended):
+        return jsonify({"response": f"Index out of range. 0 to {len(recommended) - 1}."})
+
+    selected_plan = recommended[plan_idx]
+    conversation_context["plan_info"] = {
+        "carrier": selected_plan["carrier"],
+        "plan_name": selected_plan["plan_name"],
+        "plan_price": selected_plan["plan_price"],
+        "plan_data": selected_plan["plan_data"]
+    }
+    conversation_context["state"] = "plan_selected"
+
+    msg = (
+        f"Selected plan [{plan_idx}].\n"
+        f"- Carrier: {selected_plan['carrier']}\n"
+        f"- Plan: {selected_plan['plan_name']}\n"
+        f"- Data: {selected_plan['plan_data']}GB\n"
+        f"- Price: ${selected_plan['plan_price']}\n\n"
+        "Now proceed to /checkout to fill in all your details."
+    )
+    return jsonify({"response": msg})
+
+
+# -------------------------------------------------------------------------
+#                 SINGLE CHECKOUT PAGE & SUBMISSION
+# -------------------------------------------------------------------------
+@app.route('/checkout', methods=['GET'])
+def checkout():
+    """
+    Renders a single page that gathers personal info, address, DOB, card info, etc.
+    Then the user hits 'Activate' -> /checkout_submit -> runs entire RPA flow in one pass.
+    """
+    global conversation_context
+    plan_info = conversation_context.get("plan_info", {})
+    carrier = plan_info.get("carrier", "").lower()
+    plan_name = plan_info.get("plan_name", "")
+    plan_price = plan_info.get("plan_price", 0)
+    plan_data = plan_info.get("plan_data", 0)
+
+    # Start HTML with static content
+    html = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Complete Your Activation</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #f5f5f7;
+                color: #333;
+                line-height: 1.5;
+            }
+            .container {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+            header {
+                background-color: white;
+                padding: 15px 0;
+                border-bottom: 1px solid #e1e1e1;
+            }
+            .header-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .logo {
+                font-size: 18px;
+                font-weight: 600;
+                color: #0066cc;
+            }
+
+            /* Style for the logo text parts */
+            .logo-black {
+                color: #333;
+            }
+
+            .logo-blue {
+                color: #0066cc;
+            }
+            
+            main {
+                padding: 40px 0;
+            }
+            .checkout-layout {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 30px;
+            }
+            .checkout-form {
+                flex: 1;
+                min-width: 300px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                padding: 30px;
+            }
+            .checkout-summary {
+                width: 320px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                padding: 30px;
+                align-self: flex-start;
+            }
+            h1 {
+                font-size: 24px;
+                font-weight: 600;
+                margin: 0 0 30px 0;
+                color: #333;
+            }
+            h2 {
+                font-size: 18px;
+                font-weight: 600;
+                margin: 0 0 20px 0;
+                color: #333;
+            }
+            .section {
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #e1e1e1;
+            }
+            .section:last-child {
+                border-bottom: none;
+            }
+            .field-row {
+                margin-bottom: 15px;
+            }
+            .field-group {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 15px;
+            }
+            .field {
+                flex: 1;
+            }
+            label {
+                display: block;
+                font-size: 14px;
+                font-weight: 500;
+                margin-bottom: 5px;
+                color: #555;
+            }
+            input, select {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 15px;
+                transition: border-color 0.2s;
+            }
+            input:focus, select:focus {
+                outline: none;
+                border-color: #0066cc;
+            }
+            select {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 12px center;
+                appearance: none;
+                padding-right: 40px;
+            }
+            .hidden {
+                display: none;
+            }
+            button {
+                background-color: #0066cc;
+                color: white;
+                border: none;
+                padding: 14px 20px;
+                border-radius: 4px;
+                font-size: 16px;
+                font-weight: 500;
+                cursor: pointer;
+                width: 100%;
+                transition: background-color 0.2s;
+            }
+            button:hover {
+                background-color: #0055aa;
+            }
+            .summary-item {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 12px;
+                font-size: 15px;
+            }
+            .summary-total {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 1px solid #e1e1e1;
+                font-size: 18px;
+                font-weight: 600;
+            }
+            .security-badge {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 15px;
+                margin-top: 20px;
+                background-color: #f5f5f7;
+                border-radius: 4px;
+                font-size: 14px;
+                color: #666;
+            }
+            .badge-icon {
+                color: #0066cc;
+                font-size: 18px;
+            }
+            .plan-info {
+                padding: 15px 0;
+                margin-bottom: 15px;
+                border-bottom: 1px solid #e1e1e1;
+            }
+            .plan-title {
+                font-weight: 600;
+                margin-bottom: 5px;
+            }
+            .plan-details {
+                font-size: 14px;
+                color: #666;
+            }
+
+            @media (max-width: 768px) {
+                .checkout-layout {
+                    flex-direction: column;
+                }
+                .checkout-summary {
+                    width: 100%;
+                }
+                .field-group {
+                    flex-direction: column;
+                    gap: 15px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo"><span class="logo-black">Switch</span> <span class="logo-blue">My</span> <span class="logo-black">Plan</span></div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="container">
+                <h1>Complete Your Activation</h1>
+
+                <div class="checkout-layout">
+                    <div class="checkout-form">
+                        <form method="POST" action="/checkout_submit">
+    """
+
+    # Add the hidden fields
+    html += "<input type=\"hidden\" name=\"carrier\" value=\"" + carrier + "\">\n"
+    html += "<input type=\"hidden\" name=\"plan_name\" value=\"" + plan_name + "\">\n"
+    html += "<input type=\"hidden\" name=\"plan_price\" value=\"" + str(plan_price) + "\">\n"
+
+    # Continue with the static form
+    html += """                            
+                            <!-- Personal Information Section -->
+                            <div class="section">
+                                <h2>Personal Information</h2>
+
+                                <div class="field-group">
+                                    <div class="field">
+                                        <label for="first_name">First Name</label>
+                                        <input type="text" id="first_name" name="first_name" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="last_name">Last Name</label>
+                                        <input type="text" id="last_name" name="last_name" required>
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+
+                                <div class="field-row">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" name="phone" required>
+                                </div>
+                            </div>
+
+                            <!-- Address Section -->
+                            <div class="section">
+                                <h2>Address</h2>
+
+                                <div class="field-row">
+                                    <label for="address">Street Address</label>
+                                    <input type="text" id="address" name="address" required>
+                                </div>
+
+                                <div class="field-group">
+                                    <div class="field">
+                                        <label for="city">City</label>
+                                        <input type="text" id="city" name="city" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="province">Province</label>
+                                        <select id="province" name="province" required>
+                                            <option value="">Select Province</option>
+                                            <option value="AB">Alberta</option>
+                                            <option value="BC">British Columbia</option>
+                                            <option value="MB">Manitoba</option>
+                                            <option value="NB">New Brunswick</option>
+                                            <option value="NL">Newfoundland and Labrador</option>
+                                            <option value="NS">Nova Scotia</option>
+                                            <option value="NT">Northwest Territories</option>
+                                            <option value="NU">Nunavut</option>
+                                            <option value="ON">Ontario</option>
+                                            <option value="PE">Prince Edward Island</option>
+                                            <option value="QC">Quebec</option>
+                                            <option value="SK">Saskatchewan</option>
+                                            <option value="YT">Yukon</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <label for="postal_code">Postal Code</label>
+                                    <input type="text" id="postal_code" name="postal_code" required>
+                                </div>
+                            </div>
+
+                            <!-- Phone Number Preference -->
+                            <div class="section">
+                                <h2>Phone Number Preference</h2>
+
+                                <div class="field-row">
+                                    <label for="number_preference">Number Preference</label>
+                                    <select id="number_preference" name="number_preference" required onchange="toggleTransferNumberField()">
+                                        <option value="">Select Preference</option>
+                                        <option value="new">Get a New Number</option>
+                                        <option value="transfer">Transfer My Existing Number</option>
+                                    </select>
+                                </div>
+
+                                <div id="transfer_number_field" class="field-row hidden">
+                                    <label for="transfer_number">Number to Transfer</label>
+                                    <input type="tel" id="transfer_number" name="transfer_number" placeholder="Enter the number you want to transfer">
+                                </div>
+                            </div>
+
+                            <!-- Credit Check Information -->
+                            <div class="section">
+                                <h2>Credit Check Information</h2>
+
+                                <div class="field-row">
+                                    <label for="dob">Date of Birth (YYYY-MM-DD)</label>
+                                    <input type="text" id="dob" name="dob" placeholder="YYYY-MM-DD" required>
+                                </div>
+    """
+
+    # Add ID Info section - only for non-Virgin carriers
+    if carrier != 'virgin':
+        html += """
+                                <!-- ID Information -->
+                                <div class="field-row">
+                                    <label for="id_type">ID Type</label>
+                                    <select id="id_type" name="id_type" required>
+                                        <option value="">Select ID Type</option>
+                                        <option value="drivers_license">Driver's License</option>
+                                        <option value="sin">Social Insurance Number (SIN)</option>
+                                    </select>
+                                </div>
+
+                                <div class="field-row">
+                                    <label for="id_number">ID Number</label>
+                                    <input type="text" id="id_number" name="id_number" required>
+                                </div>
+        """
+
+    html += """
+                            </div>
+
+                            <!-- Payment Information -->
+                            <div class="section">
+                                <h2>Payment Information</h2>
+
+                                <div class="field-row">
+                                    <label for="card_number">Card Number</label>
+                                    <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" required>
+                                </div>
+
+                                <div class="field-group">
+                                    <div class="field">
+                                        <label for="card_expiry">Expiry Date (MM/YY)</label>
+                                        <input type="text" id="card_expiry" name="card_expiry" placeholder="MM/YY" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="cvv">Security Code (CVV)</label>
+                                        <input type="text" id="cvv" name="cvv" placeholder="123" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit">Complete Activation</button>
+                        </form>
+                    </div>
+    """
+
+    # Add the order summary section with direct string concatenation
+    html += "<div class=\"checkout-summary\">\n"
+    html += "<h2>Order Summary</h2>\n"
+
+    html += "<div class=\"plan-info\">\n"
+    html += "<div class=\"plan-title\">" + carrier.capitalize() + " " + plan_name + "</div>\n"
+    html += "<div class=\"plan-details\">" + str(plan_data) + "GB Data Plan</div>\n"
+    html += "<div class=\"plan-price\">$" + str(plan_price) + "/mo</div>\n"
+    html += "</div>\n"
+
+    html += "<div class=\"summary-item\">\n"
+    html += "<span>Monthly fee</span>\n"
+    html += "<span>$" + str(plan_price) + "</span>\n"
+    html += "</div>\n"
+
+    html += "<div class=\"summary-item\">\n"
+    html += "<span>Activation fee</span>\n"
+    html += "<span>$0.00</span>\n"
+    html += "</div>\n"
+
+    html += "<div class=\"summary-item\">\n"
+    html += "<span>Estimated tax</span>\n"
+    html += "<span>$8.00</span>\n"
+    html += "</div>\n"
+
+    html += "<div class=\"summary-total\">\n"
+    html += "<span>Total</span>\n"
+    html += "<span>$" + str(plan_price) + "/mo</span>\n"
+    html += "</div>\n"
+
+    html += """
+                        <div class="security-badge">
+                            <span class="badge-icon">🔒</span>
+                            <span>Your payment information is securely encrypted</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            function toggleTransferNumberField() {
+                const preference = document.getElementById('number_preference').value;
+                const transferField = document.getElementById('transfer_number_field');
+
+                if (preference === 'transfer') {
+                    transferField.classList.remove('hidden');
+                    document.getElementById('transfer_number').required = true;
+                } else {
+                    transferField.classList.add('hidden');
+                    document.getElementById('transfer_number').required = false;
+                }
+            }
+        </script>
+    </body>
+    </html>
+    """
+
+    return html
+
+
+@app.route('/checkout_submit', methods=['POST'])
+def checkout_submit():
+    """
+    We gather all user data in one shot, then call the RPA flow for
+    either Koodo or Virgin in a single pass (no separate credit check).
+    """
+    global conversation_context
+
+    carrier = request.form.get('carrier', '').lower()
+    plan_name = request.form.get('plan_name', '')
+    plan_price = request.form.get('plan_price', '0')
+
+    # Get number preference and transfer number
+    number_preference = request.form.get('number_preference', 'new')
+    transfer_number = request.form.get('transfer_number', '')
+
+    # If transfer was selected but no number provided, use the main phone number
+    if number_preference == 'transfer' and not transfer_number:
+        transfer_number = request.form.get('phone', '')
+
+    user_data = {
+        "first_name": request.form.get('first_name', ''),
+        "last_name": request.form.get('last_name', ''),
+        "dob": request.form.get('dob', ''),
+        "address": request.form.get('address', ''),
+        "city": request.form.get('city', ''),
+        "province": request.form.get('province', ''),
+        "postal_code": request.form.get('postal_code', ''),
+        "email": request.form.get('email', ''),
+        "phone": request.form.get('phone', ''),
+        "card_number": request.form.get('card_number', ''),
+        "card_expiry": request.form.get('card_expiry', ''),
+        "cvv": request.form.get('cvv', ''),
+        "number_preference": number_preference,
+        "transfer_number": transfer_number,
+    }
+
+    # Add ID info fields only if the carrier requires them (non-Virgin)
+    if carrier != 'virgin':
+        user_data.update({
+            "id_type": request.form.get('id_type', ''),
+            "id_number": request.form.get('id_number', ''),
+        })
+
+    conversation_context["user_data"] = user_data
+
+    plan_info = {
+        "plan_name": plan_name,
+        "plan_price": float(plan_price),
+    }
+
+    session_id = str(uuid.uuid4())
+    asyncio.set_event_loop(main_loop)
+
+    try:
+        if carrier == 'koodo':
+            app.logger.info(f"Running Koodo flow in one pass for session {session_id}...")
+            main_loop.run_until_complete(
+                koodo_flow_full(session_id, user_data, plan_info, timeout_seconds=Config.RPA_TIMEOUT)
+            )
+            return jsonify({"status": "success",
+                            "message": "Koodo flow completed (no pause).",
+                            "session_id": session_id})
+
+        elif carrier == 'virgin':
+            app.logger.info(f"Running Virgin flow in one pass for session {session_id}...")
+            main_loop.run_until_complete(
+                virgin_flow_full(session_id, user_data, plan_info)
+            )
+            return jsonify({"status": "success",
+                            "message": "Virgin flow completed (no pause).",
+                            "session_id": session_id})
+
+        elif carrier == 'fido':
+            app.logger.info(f"Running Fido flow in one pass for session {session_id}...")
+            main_loop.run_until_complete(
+                fido_flow_full(session_id, user_data, plan_info, timeout_seconds=Config.RPA_TIMEOUT)
+            )
+            return jsonify({
+                "status": "success",
+                "message": "Fido flow completed (no pause).",
+                "session_id": session_id
+            })
+
+        else:
+            return jsonify({"status": "error",
+                            "message": f"Unsupported carrier: {carrier}"}), 400
+
+    except Exception as e:
+        app.logger.error(f"Flow error: {str(e)}")
+        return jsonify({"status": "error",
+                        "message": f"RPA error: {str(e)}"}), 500
+
+
+# Optional function to close browser
+def cleanup_session(session_id):
+    sess = active_rpa_sessions.pop(session_id, None)
+    if sess and sess.get("browser"):
+        # If you want to close it:
+        # await sess["browser"].close()
+        pass
+
+
+# -------------------------------------------------------------------------
+#                         RUN THE APP
+# -------------------------------------------------------------------------
+if __name__ == "__main__":
+    app.run(debug=True)

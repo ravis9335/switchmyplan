@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SwitchMyPlan - Compare and switch to the best mobile plans in Canada. Switch, Save, Smile!">
+<title>SwitchMyPlan | Switch, Save, Smile! | Mobile Plan Comparison</title>
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230066FF' d='M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-11v6h2v-6h-2zm0-4v2h2V7h-2z'/%3E%3C/svg%3E">
+
+<!-- Stylesheets -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting.css" />
+<link rel="stylesheet" href="https://unpkg.com/locomotive-scroll/dist/locomotive-scroll.css" />
+
+<!-- Apple Garamond Font -->
+<style>
+@font-face {
+  font-family: 'Apple Garamond';
+  src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot');
+  src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot?#iefix') format('embedded-opentype'),
+       url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff2') format('woff2'),
+       url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff') format('woff'),
+       url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.ttf') format('truetype'),
+       url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.svg#Apple Garamond') format('svg');
+}
+</style>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          accent: '#4470FF',
+          tertiary: '#7C4DFF',
+        },
+        fontFamily: {
+          sans: ['Outfit', 'system-ui', 'sans-serif'],
+          display: ['Space Grotesk', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  }
+</script>
+
+<style>
+:root {
+  --color-bg: #f0f4ff;
+  --color-text: #2a3158;
+  --color-text-light: #5a6184;
+  --color-accent: #4470FF;
+  --color-tertiary: #7C4DFF;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f5f7ff;
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in: cubic-bezier(0.63, 0.03, 0.33, 0.8);
+  --ease-elastic: cubic-bezier(0.65, 0, 0.35, 1.5);
+  --accent-rgb: 68, 112, 255;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+  color: #2a3158;
+  cursor: default;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.noise-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.04;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes glow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.2); }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes keep-upright {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+@keyframes shrink-in {
+  0% { transform: scale(1.1); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-up {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-left {
+  0% { transform: translateX(20px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-right {
+  0% { transform: translateX(-20px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s var(--ease) infinite;
+}
+
+.animate-glow {
+  animation: glow 3s var(--ease) infinite;
+}
+
+.animate-spin-slow {
+  animation: rotate 15s linear infinite;
+}
+
+.animate-shrink-in {
+  animation: shrink-in 0.8s var(--ease-out) forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.8s var(--ease-out) forwards;
+}
+
+.animate-slide-left {
+  animation: slide-left 0.8s var(--ease-out) forwards;
+}
+
+.animate-slide-right {
+  animation: slide-right 0.8s var(--ease-out) forwards;
+}
+
+/* Cursor effects */
+.custom-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  pointer-events: none;
+  mix-blend-mode: exclusion;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  transition: width 0.3s, height 0.3s, background-color 0.3s;
+}
+
+.cursor-text {
+  position: fixed;
+  background-color: var(--color-accent);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Magnetic buttons */
+.magnetic-btn {
+  position: relative;
+  border-radius: 9999px;
+  z-index: 1;
+  transition: transform 0.3s var(--ease);
+  overflow: hidden;
+}
+
+.magnetic-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+}
+
+.magnetic-btn:hover::before {
+  opacity: 1;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(90deg, #4470FF 0%, #7C4DFF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Orbit effect */
+.orbit-container {
+  position: relative;
+}
+
+.orbit {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: rotate 20s linear infinite;
+}
+
+.orbit-item {
+  position: absolute;
+  transform-origin: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s var(--ease-out);
+}
+
+.orbit-item img {
+  border-radius: 50%;
+  transition: all 0.3s var(--ease);
+}
+
+.orbit-item:hover img {
+  transform: scale(1.3);
+  box-shadow: 0 0 30px rgba(0, 102, 255, 0.3);
+}
+
+/* Hero section 3D effect */
+.hero-card {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.hero-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.hero-tilt-element {
+  transform-style: preserve-3d;
+  transform: translateZ(20px);
+}
+
+/* Carrier cards */
+.carrier-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.5s var(--ease-out);
+}
+
+.carrier-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  z-index: -1;
+}
+
+.carrier-card::after {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 20%);
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-out);
+  z-index: -1;
+}
+
+.carrier-card:hover::after {
+  opacity: 1;
+}
+
+.carrier-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Marquee animation */
+.marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.marquee-content {
+  display: flex;
+  animation: marquee 20s linear infinite;
+}
+
+.marquee-content-reversed {
+  animation-direction: reverse;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Reveal animations */
+.reveal-fade {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out);
+}
+
+.reveal-slide-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+
+.reveal-slide-left {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+
+.reveal-slide-right {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+
+.reveal-rotate {
+  opacity: 0;
+  transform: rotate(5deg);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+
+.is-revealed {
+  opacity: 1;
+  transform: translate(0) scale(1) rotate(0);
+}
+
+/* Plan cards */
+.plan-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 20;
+  height: 100%;
+  min-height: 600px;
+  max-height: 600px;
+  transform: translateZ(0);
+  display: flex !important;
+  flex-direction: column;
+}
+
+.plan-card:hover {
+  border-color: rgba(var(--accent-rgb), 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+#planCarousel {
+  display: flex !important;
+  width: 100%;
+  transition: transform 0.5s ease-out;
+  gap: 1rem;
+  will-change: transform;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: translateZ(0);
+}
+
+/* Ensure mobile responsiveness */
+@media (max-width: 768px) {
+  #planCarousel > div {
+    min-width: 100%;
+  }
+  
+  .plan-card {
+    min-height: 520px;
+  }
+}
+
+.plan-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-tertiary));
+  z-index: 1;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.plan-card:hover::before {
+  transform: scaleX(1);
+}
+
+.plan-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at 50% 0%, 
+    rgba(0, 102, 255, 0.15) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.plan-card:hover::after {
+  opacity: 1;
+}
+
+.plan-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.carrier-logo-gradient {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  opacity: 0.7;
+  filter: blur(10px);
+  z-index: -1;
+  transition: all 0.3s var(--ease);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .carrier-logo-gradient {
+    opacity: 0.4;
+    filter: blur(5px);
+  }
+  
+  .plan-card {
+    border-radius: 1.2rem;
+  }
+}
+
+/* Carrier logo styles for free-floating logos */
+.carrier-logo {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10;
+}
+
+.carrier-logo:hover {
+  transform: scale(1.5) !important;
+  z-index: 20 !important;
+}
+
+.carrier-logo img {
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+  transform-origin: center center;
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  animation: keep-upright 60s linear infinite;
+}
+
+.carrier-logo:hover img {
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4));
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* Keep logos upright while orbiting */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes keep-upright {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+.carrier-orbit {
+  animation: spin 60s linear infinite;
+}
+
+  .carrier-logo img {
+  animation: keep-upright 60s linear infinite;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+  transform-origin: center center;
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Button and card styles for light theme */
+.bg-accent {
+  background-color: var(--color-accent);
+}
+
+.text-accent {
+  color: var(--color-accent);
+}
+
+.card-hover, .plan-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* Update text colors for better contrast on light background */
+.text-white {
+  color: var(--color-text);
+}
+
+.text-white\/70 {
+  color: var(--color-text-light);
+}
+
+.text-white\/60 {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.text-white\/40 {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+
+
+/* Plan carousel styles */
+.plan-carousel-container {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  padding: 0 2rem;
+}
+
+.plan-carousel {
+  display: flex;
+  gap: 1rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  background: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 20;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.carousel-button:hover {
+  background: #f9fafb;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.carousel-button.prev {
+  left: -1rem;
+}
+
+.carousel-button.next {
+  right: -1rem;
+}
+
+.carousel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: translateY(-50%) scale(1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* End of carousel styles */
+
+/* Plan selection and loading states */
+.select-plan-btn.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.select-plan-btn.loading:after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  right: 20px;
+  margin-top: -10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spinner .6s linear infinite;
+}
+
+@keyframes spinner {
+  to {transform: rotate(360deg);}
+}
+</style>
+
+<!-- Update carousel HTML structure -->
+
+</head>
+<body class="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]">
+  <!-- Background noise -->
+  <div class="noise-bg"></div>
+
+  <!-- Navigation -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-5 transition-all">
+    <div class="container mx-auto px-6">
+      <div class="flex items-center justify-between">
+        <!-- Logo -->
+        <a href="/" class="text-4xl font-['Apple_Garamond'] font-bold" style="font-size: 2.5rem;">
+          <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+        </a>
+
+        <!-- Desktop menu -->
+        <div class="hidden md:flex items-center gap-8">
+          <a href="#plans" class="text-gray-700 hover:text-black transition-colors">Plans</a>
+          <a href="#carriers" class="text-gray-700 hover:text-black transition-colors">Carriers</a>
+          <a href="#faq" class="text-gray-700 hover:text-black transition-colors">FAQ</a>
+          <a href="#about" class="text-gray-700 hover:text-black transition-colors">About</a>
+    </div>
+
+        <!-- CTA buttons -->
+        <div class="flex items-center gap-4">
+          <a href="#signin" class="text-gray-700 hover:text-black transition-colors">Sign In</a>
+          <a href="#compare" class="magnetic-btn py-2 px-6 rounded-full bg-accent text-black font-medium hover:shadow-lg hover:shadow-accent/20 transition-all">
+            Compare Plans
+          </a>
+        </div>
+
+        <!-- Mobile menu button -->
+        <button id="menu-toggle" class="md:hidden text-gray-700 hover:text-black transition-colors">
+          <i class="ri-menu-line text-2xl"></i>
+      </button>
+            </div>
+            </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="fixed inset-0 bg-white/80 backdrop-blur-xl z-40 hidden flex-col">
+    <div class="container mx-auto px-6 py-8">
+      <div class="flex justify-end mb-8">
+        <button id="close-menu" class="text-gray-700 hover:text-black transition-colors">
+          <i class="ri-close-line text-2xl"></i>
+      </button>
+    </div>
+      <div class="flex flex-col gap-6 text-center">
+        <a href="#plans" class="text-xl text-gray-700 hover:text-black transition-colors">Plans</a>
+        <a href="#carriers" class="text-xl text-gray-700 hover:text-black transition-colors">Carriers</a>
+        <a href="#faq" class="text-xl text-gray-700 hover:text-black transition-colors">FAQ</a>
+        <a href="#about" class="text-xl text-gray-700 hover:text-black transition-colors">About</a>
+  </div>
+            </div>
+            </div>
+
+  <!-- Main content -->
+  <main class="pt-32">
+  <!-- Hero Section -->
+    <section class="relative min-h-screen pt-32 overflow-hidden flex items-center" id="hero" style="z-index: 40;">
+      <!-- Background gradient effects -->
+      <div class="absolute inset-0" style="z-index: 1;">
+        <div class="absolute top-[-20%] right-[-10%] w-[60%] h-[70%] rounded-full blur-[120px] bg-blue-300/30 animate-pulse-slow"></div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-[50%] h-[60%] rounded-full blur-[120px] bg-indigo-300/30 animate-pulse-slow" style="animation-delay: -2s"></div>
+        </div>
+
+      <!-- Floating particles - updated for light theme -->
+      <div class="particles-container absolute inset-0 opacity-30" style="z-index: 2;"></div>
+      
+      <div class="container mx-auto px-6" style="z-index: 3;">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <div class="max-w-xl">
+            <!-- Animated welcome text -->
+            <div class="overflow-hidden mb-3">
+              <span class="inline-block text-accent/90 font-medium uppercase tracking-wider text-sm animate-slide-up" style="animation-delay: 0.1s">
+                Mobile plans reimagined
+              </span>
+            </div>
+
+            <!-- Main headline -->
+            <div class="overflow-hidden mb-2">
+              <h1 class="font-display text-5xl md:text-6xl lg:text-7xl font-bold leading-tight animate-slide-up text-[#2a3158]" style="animation-delay: 0.2s">
+                <span>Find Your</span>
+                <span class="relative inline-block">
+                  <span class="gradient-text">Perfect</span>
+                  <svg class="absolute -bottom-3 left-0 w-full" viewBox="0 0 400 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 30.4917C45.0045 15.4002 148.009 -13.2319 195 30.4917C242.068 74.3086 344.019 42.6234 398 30.4917" stroke="url(#paint0_linear_102_83)" stroke-width="4" stroke-linecap="round"/>
+                    <defs>
+                      <linearGradient id="paint0_linear_102_83" x1="2" y1="32" x2="398" y2="32" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#4470FF"/>
+                        <stop offset="1" stop-color="#7C4DFF"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </span>
+              </h1>
+            </div>
+            
+            <!-- Subheadline -->
+            <p class="text-lg md:text-xl mb-8 text-[#5a6184] leading-relaxed animate-slide-up" style="animation-delay: 0.3s">
+              Compare and find the best mobile phone plans from all major carriers. Save up to 40% on your monthly bill.
+            </p>
+
+            <!-- Tagline -->
+            <div class="overflow-hidden mb-8">
+              <h2 class="text-3xl md:text-4xl gradient-text font-bold animate-slide-up" style="animation-delay: 0.3s">
+                Switch, Save, Smile!
+              </h2>
+            </div>
+
+            <!-- Description -->
+            <div class="overflow-hidden mb-10">
+              <p class="text-black text-lg animate-slide-up" style="animation-delay: 0.4s">
+                Compare all major Canadian carriers in seconds. Find the best plan tailored to your needs with our AI-powered recommendation engine.
+              </p>
+            </div>
+
+            <!-- CTA buttons -->
+            <div class="flex flex-wrap gap-4 animate-slide-up" style="animation-delay: 0.5s">
+              <a href="#compare" class="magnetic-btn py-4 px-8 rounded-full bg-accent hover:bg-accent/90 text-white font-medium shadow-lg shadow-accent/25 transition-all flex items-center gap-2">
+                <span>Find My Plan</span>
+                <i class="ri-arrow-right-line"></i>
+              </a>
+              <a href="#carriers" class="magnetic-btn py-4 px-8 rounded-full bg-white/5 backdrop-blur border border-white/10 hover:bg-white/10 text-black font-medium transition-all">
+                Browse Carriers
+              </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="mt-12 grid grid-cols-3 gap-6 animate-slide-up" style="animation-delay: 0.6s">
+              <div>
+                <div class="text-2xl font-display font-bold gradient-text">8+</div>
+                <div class="text-black text-sm">Major Carriers</div>
+            </div>
+              <div>
+                <div class="text-2xl font-display font-bold gradient-text">100+</div>
+                <div class="text-black text-sm">Plans Compared</div>
+            </div>
+              <div>
+                <div class="text-2xl font-display font-bold gradient-text">24/7</div>
+                <div class="text-black text-sm">AI Assistance</div>
+            </div>
+          </div>
+        </div>
+        
+          <!-- 3D Carrier orbit visualization -->
+          <div class="lg:h-[90vh] flex items-center justify-center relative">
+            <div class="relative w-[500px] h-[500px] md:w-[600px] md:h-[600px] hero-card">
+              <!-- Circular gradient backgrounds - removed -->
+              
+              <!-- Center glow - removed -->
+              
+              <!-- Center element - removed -->
+              
+              <!-- Orbit rings - removed -->
+              
+              <!-- Carrier logos placed in orbital positions - keeping just the logos -->
+            <div class="carrier-orbit absolute inset-0">
+                <!-- Bell -->
+                <div class="carrier-logo absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[100px]">
+                  <img src="/carrierlogos/images.png" alt="Bell" class="w-28 h-28 object-contain">
+      </div>
+                
+                <!-- Rogers -->
+                <div class="carrier-logo absolute top-[13.4%] right-[13.4%] translate-x-[70px] -translate-y-[70px]">
+                  <img src="/carrierlogos/Rogers_logo.svg.png" alt="Rogers" class="w-28 h-28 object-contain">
+    </div>
+                
+                <!-- Telus -->
+                <div class="carrier-logo absolute top-1/2 right-0 translate-x-[100px] -translate-y-1/2">
+                  <img src="/carrierlogos/Telus-Logo-1996.png" alt="Telus" class="w-28 h-28 object-contain">
+    </div>
+        
+                <!-- Virgin -->
+                <div class="carrier-logo absolute bottom-[13.4%] right-[13.4%] translate-x-[70px] translate-y-[70px]">
+                  <img src="/carrierlogos/Virgin_Plus_Web.png" alt="Virgin" class="w-28 h-28 object-contain">
+            </div>
+                
+                <!-- Fido -->
+                <div class="carrier-logo absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[100px]">
+                  <img src="/carrierlogos/Fido_Solutions_logo.svg.png" alt="Fido" class="w-28 h-28 object-contain">
+          </div>
+                
+                <!-- Koodo -->
+                <div class="carrier-logo absolute bottom-[13.4%] left-[13.4%] -translate-x-[70px] translate-y-[70px]">
+                  <img src="/carrierlogos/Koodo_Mobile_-_Color.png" alt="Koodo" class="w-28 h-28 object-contain">
+        </div>
+        
+                <!-- Freedom -->
+                <div class="carrier-logo absolute top-1/2 left-0 -translate-x-[100px] -translate-y-1/2">
+                  <img src="/carrierlogos/Freedom_Mobile_logo.svg.png" alt="Freedom" class="w-28 h-28 object-contain">
+            </div>
+                
+                <!-- Chatr -->
+                <div class="carrier-logo absolute top-[13.4%] left-[13.4%] -translate-x-[70px] -translate-y-[70px]">
+                  <img src="/carrierlogos/png-clipart-chatr-mobile-phones-rogers-wireless-mobile-service-provider-company-lucky-mobile-chatr-purple-violet.png" alt="Chatr" class="w-28 h-28 object-contain">
+          </div>
+        </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Scroll indicator -->
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-pulse-slow">
+        <span class="text-black/60 text-sm">Scroll to explore</span>
+        <i class="ri-arrow-down-line text-black/60"></i>
+      </div>
+    </section>
+
+    <!-- Featured Plans Section -->
+    <section id="featured-plans" class="py-20 relative">
+      <div class="container mx-auto px-6">
+        <h2 class="text-4xl font-display font-bold text-center mb-12">Featured Plans</h2>
+        <!-- Featured Plans Carousel -->
+        <div class="plan-carousel-container">
+          <div class="plan-carousel" id="planCarousel">
+            <!-- Plan cards will be dynamically inserted here -->
+          </div>
+          <button id="planCarouselPrev" class="carousel-button prev" onclick="slidePlans('prev')">
+            <i class="ri-arrow-left-s-line text-2xl text-gray-700"></i>
+      </button>
+          <button id="planCarouselNext" class="carousel-button next" onclick="slidePlans('next')">
+            <i class="ri-arrow-right-s-line text-2xl text-gray-700"></i>
+      </button>
+        </div>
+    </div>
+  </section>
+
+    <!-- Prepaid Plans Section -->
+    <section id="prepaid-plans" class="py-20 relative">
+      <div class="container mx-auto px-6">
+        <h2 class="text-4xl font-display font-bold text-center mb-12">Prepaid Plans</h2>
+        <!-- Prepaid Plans Carousel -->
+        <div class="plan-carousel-container">
+          <div class="plan-carousel" id="prepaidCarousel">
+            <!-- Prepaid plan cards will be dynamically inserted here -->
+          </div>
+          <button id="prepaidCarouselPrev" class="carousel-button prev" onclick="slidePrepaidPlans('prev')">
+            <i class="ri-arrow-left-s-line text-2xl text-gray-700"></i>
+      </button>
+          <button id="prepaidCarouselNext" class="carousel-button next" onclick="slidePrepaidPlans('next')">
+            <i class="ri-arrow-right-s-line text-2xl text-gray-700"></i>
+      </button>
+        </div>
+    </div>
+  </section>
+
+    <!-- AI Recommendation Section -->
+    <section class="py-24 relative bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]" id="compare">
+      <!-- Background accents -->
+      <div class="absolute inset-0 overflow-hidden -z-10">
+        <div class="absolute top-1/2 right-0 w-[50vw] h-[50vw] rounded-full bg-accent/10 filter blur-[100px] animate-pulse-slow"></div>
+        <div class="absolute top-1/3 left-0 w-[40vw] h-[40vw] rounded-full bg-tertiary/10 filter blur-[100px] animate-pulse-slow" style="animation-delay: -3s"></div>
+          </div>
+      
+      <div class="container mx-auto px-6">
+        <!-- Section header -->
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h3 class="text-sm uppercase tracking-wider text-accent mb-2 font-medium">Intelligent Recommendations</h3>
+          <h2 class="text-4xl md:text-5xl font-display font-bold mb-6 text-black">Meet Blue, Your Personal Plan Advisor</h2>
+          <p class="text-gray-700">Our AI assistant analyzes your usage patterns to recommend the perfect plan for your needs.</p>
+        </div>
+        
+        <!-- AI assistant section with chat demo -->
+        <div class="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto relative">
+          <!-- Info column -->
+          <div class="bg-white rounded-2xl p-8 shadow-xl border border-accent/10">
+            <div class="space-y-8">
+              <div class="space-y-6">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-white">
+                    <i class="ri-brain-line text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-display font-bold text-black">Smart Recommendations</h3>
+                    <p class="text-gray-700">Analyzes your data to find the best match</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-white">
+                    <i class="ri-time-line text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-display font-bold text-black">Save Time</h3>
+                    <p class="text-gray-700">No more hours spent comparing plans</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-white">
+                    <i class="ri-money-dollar-circle-line text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-display font-bold text-black">Save Money</h3>
+                    <p class="text-gray-700">Our users save $240/year on average</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-8">
+                <a href="#chat" class="block w-full py-4 px-8 rounded-full bg-accent text-white font-medium text-center shadow-lg shadow-accent/25 transition-all hover:bg-accent/90">
+                  <span class="flex items-center justify-center gap-2">
+                    <i class="ri-message-3-line text-lg"></i>
+          <span>Talk to Blue</span>
+                  </span>
+                </a>
+              </div>
+            </div>
+      </div>
+      
+          <!-- Chat visualization -->
+          <div class="bg-white rounded-2xl shadow-xl border border-accent/10 overflow-hidden">
+            <div class="p-4 border-b border-accent/10 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-white">
+                  <i class="ri-robot-line text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="font-display font-bold text-black">Blue</h3>
+                  <div class="flex items-center gap-1.5 text-xs text-gray-700">
+                    <span class="block w-2 h-2 rounded-full bg-green-400"></span>
+                    <span>Online now</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-6 space-y-6 min-h-[400px] bg-gray-50">
+              <!-- AI message -->
+              <div class="flex items-start gap-3 max-w-[80%]">
+                <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
+                  <i class="ri-robot-line text-sm"></i>
+                </div>
+                <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-md">
+                  <p class="text-black">Hi there! 👋 I'm Blue, your personal plan advisor. I can help you find the perfect mobile plan based on your needs.</p>
+                </div>
+              </div>
+              
+              <!-- User message -->
+              <div class="flex items-start gap-3 max-w-[80%] ml-auto flex-row-reverse">
+                <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
+                  <i class="ri-user-line text-sm"></i>
+                </div>
+                <div class="bg-accent/10 rounded-2xl rounded-tr-none p-4">
+                  <p class="text-black">I need a plan with lots of data for streaming.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-4 border-t border-accent/10 bg-white">
+              <div class="relative">
+                <input type="text" placeholder="Type your message..." class="w-full bg-gray-50 border border-accent/10 rounded-full py-3 px-5 pr-12">
+                <button class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white">
+                  <i class="ri-send-plane-fill"></i>
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us Section -->
+    <section class="py-24 relative bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]" id="about">
+      <div class="container mx-auto px-6">
+        <!-- Section header -->
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h3 class="text-sm uppercase tracking-wider text-accent mb-2 font-medium">Why SwitchMyPlan</h3>
+          <h2 class="text-4xl md:text-5xl font-display font-bold mb-6 text-black">The Smart Way to Choose</h2>
+          <p class="text-gray-700">We've built the most advanced mobile plan comparison platform in Canada.</p>
+        </div>
+        
+        <!-- Features grid -->
+        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <!-- Feature 1 -->
+          <div class="bg-white rounded-2xl p-8 shadow-xl border border-accent/10">
+            <div class="w-14 h-14 rounded-full bg-accent flex items-center justify-center text-white mb-6">
+              <i class="ri-shield-check-line text-2xl"></i>
+      </div>
+            <h3 class="text-xl font-display font-bold mb-3 text-black">Trusted Comparisons</h3>
+            <p class="text-gray-700">We analyze thousands of plans to ensure you get the best deal possible.</p>
+            
+            <div class="mt-6 pt-6 border-t border-gray-100">
+              <div class="flex items-center gap-2 text-gray-700">
+                <i class="ri-check-line text-accent"></i>
+                <span>Daily updated plan details</span>
+        </div>
+      </div>
+        </div>
+          
+          <!-- Feature 2 -->
+          <div class="bg-white rounded-2xl p-8 shadow-xl border border-accent/10">
+            <div class="w-14 h-14 rounded-full bg-accent flex items-center justify-center text-white mb-6">
+              <i class="ri-robot-line text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-display font-bold mb-3 text-black">AI-Powered</h3>
+            <p class="text-gray-700">Blue provides personalized recommendations based on your usage.</p>
+            
+            <div class="mt-6 pt-6 border-t border-gray-100">
+              <div class="flex items-center gap-2 text-gray-700">
+                <i class="ri-check-line text-accent"></i>
+                <span>Smart suggestions</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Feature 3 -->
+          <div class="bg-white rounded-2xl p-8 shadow-xl border border-accent/10">
+            <div class="w-14 h-14 rounded-full bg-accent flex items-center justify-center text-white mb-6">
+              <i class="ri-timer-line text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-display font-bold mb-3 text-black">Save Time & Money</h3>
+            <p class="text-gray-700">Our users save an average of $240 annually on their plans.</p>
+            
+            <div class="mt-6 pt-6 border-t border-gray-100">
+              <div class="flex items-center gap-2 text-gray-700">
+                <i class="ri-check-line text-accent"></i>
+                <span>Quick comparison</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our Mission Section -->
+    <section class="py-24 relative bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]">
+      <div class="container mx-auto px-6">
+        <div class="max-w-5xl">
+          <h3 class="text-4xl md:text-6xl font-display font-bold mb-6 text-black">Our Mission</h3>
+          <p class="text-2xl md:text-4xl leading-relaxed text-gray-700">
+            At SwitchMyPlan, our mission is to empower customers with clear and unbiased plan comparisons. We understand that carriers often favor new subscribers, leaving long-time customers with outdated, costly plans. Our technology-driven service, guided by our virtual advisor Blue, simplifies switching so you get the fair value and respect you deserve.
+          </p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+    <footer class="backdrop-blur-sm border-t border-accent/10 py-16 relative">
+      <!-- Background pattern -->
+      <div class="absolute inset-0 z-0 opacity-5">
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent"></div>
+        <div class="grid grid-cols-10 h-full">
+          <div class="border-r border-accent/10"></div>
+          <div class="border-r border-accent/10"></div>
+          <div class="border-r border-accent/10"></div>
+          <div class="border-r border-accent/10"></div>
+          <div class="border-r border-accent/10"></div>
+          <div class="border-r border-accent/10"></div>
+          <div class="border-r border-accent/10"></div>
+          <div class="border-r border-accent/10"></div>
+          <div class="border-r border-accent/10"></div>
+          <div></div>
+        </div>
+      </div>
+      
+      <!-- Tagline scroller -->
+      <div class="relative overflow-hidden mb-16 border-y border-accent/10 py-4">
+        <div class="marquee-content flex gap-4 text-lg font-display font-semibold text-accent whitespace-nowrap">
+          <div class="flex gap-12 items-center">
+            <span>Switch, Save, Smile!</span>
+            <span class="w-2 h-2 rounded-full bg-accent/30"></span>
+            <span>Switch, Save, Smile!</span>
+            <span class="w-2 h-2 rounded-full bg-accent/30"></span>
+            <span>Switch, Save, Smile!</span>
+            <span class="w-2 h-2 rounded-full bg-accent/30"></span>
+            <span>Switch, Save, Smile!</span>
+            <span class="w-2 h-2 rounded-full bg-accent/30"></span>
+            <span>Switch, Save, Smile!</span>
+            <span class="w-2 h-2 rounded-full bg-accent/30"></span>
+            <span>Switch, Save, Smile!</span>
+          </div>
+          <div class="flex gap-12 items-center">
+            <span>Switch, Save, Smile!</span>
+            <span class="w-2 h-2 rounded-full bg-accent/30"></span>
+            <span>Switch, Save, Smile!</span>
+            <span class="w-2 h-2 rounded-full bg-accent/30"></span>
+            <span>Switch, Save, Smile!</span>
+            <span class="w-2 h-2 rounded-full bg-accent/30"></span>
+            <span>Switch, Save, Smile!</span>
+            <span class="w-2 h-2 rounded-full bg-accent/30"></span>
+            <span>Switch, Save, Smile!</span>
+            <span class="w-2 h-2 rounded-full bg-accent/30"></span>
+            <span>Switch, Save, Smile!</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="container mx-auto px-6 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+          <!-- Brand section -->
+          <div class="space-y-6">
+            <a href="#" class="text-4xl font-['Apple_Garamond'] font-bold" style="font-size: 2.5rem;">
+              <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+            </a>
+            <p class="text-gray-600">Helping Canadians find the best mobile plans.</p>
+            
+            <!-- Social icons -->
+        <div class="flex space-x-4">
+              <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
+                <i class="ri-twitter-fill"></i>
+              </a>
+              <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
+                <i class="ri-facebook-fill"></i>
+              </a>
+              <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
+                <i class="ri-instagram-line"></i>
+              </a>
+              <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
+                <i class="ri-linkedin-fill"></i>
+              </a>
+        </div>
+      </div>
+          
+          <!-- Plans -->
+      <div>
+            <h4 class="font-bold text-lg mb-6 text-gray-800">Plans</h4>
+            <ul class="space-y-4">
+              <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">BYOD Plans</a></li>
+              <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">Prepaid Plans</a></li>
+        </ul>
+      </div>
+          
+          <!-- Company -->
+      <div>
+            <h4 class="font-bold text-lg mb-6 text-gray-800">Company</h4>
+            <ul class="space-y-4">
+              <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">About Us</a></li>
+              <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">Blog</a></li>
+              <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">Careers</a></li>
+              <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">Contact</a></li>
+        </ul>
+      </div>
+          
+          <!-- Legal -->
+      <div>
+            <h4 class="font-bold text-lg mb-6 text-gray-800">Legal</h4>
+            <ul class="space-y-4">
+              <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">Terms of Service</a></li>
+              <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">Privacy Policy</a></li>
+              <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">Cookie Policy</a></li>
+              <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">CRTC</a></li>
+        </ul>
+      </div>
+    </div>
+        
+        <!-- Bottom links -->
+        <div class="mt-16 pt-8 border-t border-accent/10 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+          <div>© 2025 SwitchMyPlan. All rights reserved.</div>
+          
+          <div class="flex gap-6 mt-4 md:mt-0">
+            <a href="#" class="hover:text-accent transition-colors">Sitemap</a>
+            <a href="#" class="hover:text-accent transition-colors">Carriers</a>
+            <a href="#" class="hover:text-accent transition-colors">FAQ</a>
+            <a href="#" class="hover:text-accent transition-colors">Support</a>
+          </div>
+        </div>
+    </div>
+  </footer>
+</main>
+
+  <!-- External Libraries -->
+  <script src="https://unpkg.com/splitting/dist/splitting.js"></script>
+  <script src="https://unpkg.com/scrollreveal"></script>
+  <script src="https://unpkg.com/vanilla-tilt"></script>
+
+  <!-- Initialize components -->
+<script>
+    // Initialize ScrollReveal
+    ScrollReveal().reveal('.reveal-fade', { 
+      distance: '0px',
+      duration: 1000,
+      easing: 'cubic-bezier(0.5, 0, 0, 1)',
+      interval: 100
+    });
+
+    ScrollReveal().reveal('.reveal-slide-up', {
+      distance: '20px',
+      origin: 'bottom',
+      duration: 1000,
+      easing: 'cubic-bezier(0.5, 0, 0, 1)',
+      interval: 100
+    });
+
+    // Initialize Splitting
+    Splitting();
+
+    // Initialize VanillaTilt for cards
+    VanillaTilt.init(document.querySelectorAll(".hero-card"), {
+      max: 5,
+      speed: 400,
+      glare: true,
+      "max-glare": 0.2,
+    });
+
+    // Magnetic buttons
+    const buttons = document.querySelectorAll('.magnetic-btn');
+    buttons.forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const deltaX = x - centerX;
+        const deltaY = y - centerY;
+        
+        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+        const maxDistance = Math.sqrt(centerX ** 2 + centerY ** 2);
+        
+        const strength = 0.5;
+        const targetX = deltaX * strength * (distance / maxDistance);
+        const targetY = deltaY * strength * (distance / maxDistance);
+        
+        btn.style.transform = `translate(${targetX}px, ${targetY}px)`;
+      });
+      
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+      });
+    });
+
+    // Mobile menu
+    const menuToggle = document.getElementById('menu-toggle');
+    const closeMenu = document.getElementById('close-menu');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    });
+    
+    closeMenu.addEventListener('click', () => {
+      mobileMenu.style.display = 'none';
+      document.body.style.overflow = '';
+    });
+
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    let lastScroll = 0;
+    
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      
+      if (currentScroll <= 0) {
+        navbar.classList.remove('bg-white/80', 'backdrop-blur-md', 'shadow-lg');
+  } else {
+        navbar.classList.add('bg-white/80', 'backdrop-blur-md', 'shadow-lg');
+      }
+      
+      lastScroll = currentScroll;
+    });
+
+    // Create background particles
+    function createParticles() {
+      const container = document.querySelector('.particles-container');
+      const particleCount = 50;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'absolute w-1 h-1 rounded-full bg-accent/20';
+        
+        // Random position
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        
+        // Random size
+        const size = Math.random() * 3 + 1;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        
+        // Random animation
+        particle.style.animation = `float ${Math.random() * 3 + 3}s ease-in-out infinite`;
+        particle.style.animationDelay = Math.random() * 5 + 's';
+        
+        container.appendChild(particle);
+      }
+    }
+
+    // Create stars
+    function createStars() {
+      const container = document.querySelector('.particles-container');
+      const starCount = 20;
+      
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'absolute';
+        
+        // Star shape using box-shadow
+        star.style.boxShadow = '0 0 2px 2px rgba(68, 112, 255, 0.3)';
+        star.style.width = '2px';
+        star.style.height = '2px';
+        star.style.borderRadius = '50%';
+        star.style.backgroundColor = 'rgba(68, 112, 255, 0.5)';
+        
+        // Random position
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        
+        // Random animation
+        star.style.animation = `pulse ${Math.random() * 2 + 2}s ease-in-out infinite`;
+        star.style.animationDelay = Math.random() * 3 + 's';
+        
+        container.appendChild(star);
+      }
+    }
+
+    // Initialize particles and stars
+    document.addEventListener('DOMContentLoaded', () => {
+      createParticles();
+      createStars();
+      loadPlans(); // Add this line to load the plans when the page loads
+    });
+
+    // Variables for carousel navigation
+    let currentSlide = 0;
+    let slideCount = 0;
+    const slidesPerView = window.innerWidth < 768 ? 1 : 3;
+
+    // Function to get the correct logo filename for a carrier
+    function getCarrierLogoFilename(carrier) {
+      const logoMap = {
+        'Virgin': 'Virgin_Plus_Web.png',
+        'Fido': 'Fido_Solutions_logo.svg.png',
+        'Koodo': 'Koodo_Mobile_-_Color.png',
+        'Freedom': 'Freedom_Mobile_logo.svg.png',
+        'Bell': 'images.png',
+        'Rogers': 'Rogers_logo.svg.png',
+        'Telus': 'Telus-Logo-1996.png',
+        'Chatr': 'png-clipart-chatr-mobile-phones-rogers-wireless-mobile-service-provider-company-lucky-mobile-chatr-purple-violet.png',
+        'Public Mobile': 'public-mobile-logo.png',
+        'Lucky': 'lucky-mobile-logo.png'
+      };
+      return logoMap[carrier] || `${carrier.toLowerCase()}_logo.png`;
+    }
+
+    // Function to create a plan card
+    function createPlanCard(plan) {
+      const bestValueBadge = plan.best_value ? `
+        <div class="absolute -top-3 -right-3 bg-accent/20 backdrop-blur-sm text-base px-3 py-1 rounded-full text-gray-800 border border-accent/30">Best Value</div>
+      ` : '';
+
+      // Define carrier-specific network speeds and features
+      const networkSpeedText = ['Chatr', 'Lucky', 'Public Mobile'].includes(plan.carrier) ? '4G network speeds' : 
+                              ['Virgin', 'Fido', 'Koodo'].includes(plan.carrier) ? '4G network speeds' : '5G network speeds';
+      
+      let carrierFeatures = [];
+      switch(plan.carrier) {
+        case 'Virgin':
+          carrierFeatures = [
+            { text: 'Unlimited Talk & Text', included: true },
+            { text: 'Unlimited calling to US, India, UK and other countries', included: true },
+            { text: 'Unlimited International Texting', included: true }
+          ];
+          break;
+        case 'Fido':
+          carrierFeatures = [
+            { text: 'Unlimited Talk & Text', included: true },
+            { text: 'Unlimited calls & texts to US, India, Mexico and other countries', included: true },
+            { text: '5 Extra hours of Data every month', included: true },
+            { text: 'Data Overage Protection', included: true }
+          ];
+          break;
+        case 'Koodo':
+          carrierFeatures = [
+            { text: 'Unlimited Talk & Text', included: true },
+            { text: '1 free perk to choose from:', included: true },
+            { text: 'Rollover Data', included: true },
+            { text: 'Unlimited Long Distance Pack and other perks', included: true }
+          ];
+          break;
+        case 'Freedom':
+          carrierFeatures = [
+            { text: 'CA/US/MEX', included: true },
+            { text: 'Unlimited Data, Talk & Text', included: true },
+            { text: '1000 min International Long Distance for 14 countries', included: true }
+          ];
+          break;
+        case 'Bell':
+        case 'Rogers':
+        case 'Telus':
+          carrierFeatures = [
+            { text: 'Unlimited Data, Talk & Text', included: true },
+            { text: 'Unlimited International Text', included: true },
+            { text: '5G/5G+ Network Access', included: true }
+          ];
+          break;
+        default:
+          carrierFeatures = plan.features || [];
+      }
+
+      return `
+        <div class="min-w-full md:min-w-[33.333%] p-4">
+          <div class="plan-card p-6 group reveal-slide-up relative shadow-xl hover:shadow-2xl transition-all" style="display: flex !important; flex-direction: column;">
+            <!-- Card header -->
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center">
+                <div class="w-28 h-28 rounded-full bg-white/5 backdrop-blur flex items-center justify-center p-3 border border-white/10">
+                  <img src="/carrierlogos/${getCarrierLogoFilename(plan.carrier)}" alt="${plan.carrier}" class="w-full h-full object-contain">
+      </div>
+              </div>
+              <div class="relative">
+                <div class="text-4xl font-display font-bold text-gray-800">$${plan.price}<span class="text-lg text-gray-500">/mo</span></div>
+                ${bestValueBadge}
+              </div>
+            </div>
+            
+            <!-- Data amount -->
+            <div class="bg-white/5 rounded-xl p-4 mb-4 backdrop-blur-sm">
+              <div class="flex items-end gap-2">
+                <div class="text-5xl font-display font-bold text-accent">${plan.data ? plan.data : (plan.plan_data + ' GB')}</div>
+                <div class="text-lg text-gray-500 mb-1">data</div>
+              </div>
+              <div class="mt-2 flex items-center gap-2 text-gray-600 text-lg">
+                <i class="ri-speed-up-line text-lg"></i>
+                <span>${networkSpeedText}</span>
+              </div>
+            </div>
+            
+            <!-- Features -->
+            <div class="flex-grow overflow-y-auto mb-6" style="min-height: 160px; max-height: 160px;">
+              <ul class="space-y-4">
+                ${carrierFeatures.map(feature => `
+                  <li class="flex items-center gap-3">
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center ${feature.included ? 'bg-accent/10 text-accent' : 'bg-white/5 text-gray-400'}">
+                      <i class="ri-${feature.included ? 'check' : 'close'}-line text-lg"></i>
+                    </div>
+                    <span class="${feature.included ? 'text-gray-700' : 'text-gray-400'} text-lg leading-tight">${feature.text}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+            
+            <!-- Terms and CTA -->
+            <div class="mt-auto pt-2">
+              <div class="text-xs text-gray-500 mb-4">New activations only. No Contract. No Connection fee.</div>
+              <a href="#" class="select-plan-btn block w-full py-4 rounded-full font-medium text-xl text-center bg-accent hover:bg-accent/90 transition-all relative overflow-hidden group-hover:shadow-lg group-hover:shadow-accent/20"
+                 data-carrier="${plan.carrier}" 
+                 data-plan-id="${plan.id || ''}" 
+                 data-price="${plan.price}"
+                 data-data="${plan.data}">
+                <span class="absolute inset-0 w-full scale-x-0 group-hover:scale-x-100 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 origin-left"></span>
+                <span class="relative text-black">Select ${plan.carrier} Plan</span>
+              </a>
+            </div>
+      </div>
+    </div>
+  `;
+    }
+
+    // Function to normalize data to GB
+    function normalizeDataToGB(dataStr) {
+      const value = parseFloat(dataStr);
+      if (dataStr.toLowerCase().includes('mb')) {
+        return value / 1024;  // Convert MB to GB
+      }
+      return value;  // Already in GB
+    }
+
+    // Function to load and display plans
+    async function loadPlans() {
+      const planCarousel = document.getElementById('planCarousel');
+      const prepaidCarousel = document.getElementById('prepaidCarousel');
+      
+      if (!planCarousel || !prepaidCarousel) {
+        console.error('Could not find carousel elements');
+        return;
+      }
+      
+      planCarousel.innerHTML = '<div class="w-full flex items-center justify-center min-h-[520px]"><div class="animate-spin rounded-full h-12 w-12 border-4 border-accent border-t-transparent"></div></div>';
+      prepaidCarousel.innerHTML = '<div class="w-full flex items-center justify-center min-h-[520px]"><div class="animate-spin rounded-full h-12 w-12 border-4 border-accent border-t-transparent"></div></div>';
+
+      // Define mock data for fallback
+      const mockPlans = [
+        { carrier: 'Virgin', plan_name: 'BYOD Plan', plan_price: 45, plan_data: 60, id: 'virgin_60gb_45', plan_type: 'postpaid' },
+        { carrier: 'Fido', plan_name: 'BYOD Plan', plan_price: 50, plan_data: 50, id: 'fido_50gb_50', plan_type: 'postpaid' },
+        { carrier: 'Koodo', plan_name: 'BYOD Plan', plan_price: 40, plan_data: 40, id: 'koodo_40gb_40', plan_type: 'postpaid' },
+        { carrier: 'Freedom', plan_name: 'BYOD Plan', plan_price: 35, plan_data: 30, id: 'freedom_30gb_35', plan_type: 'postpaid' },
+        { carrier: 'Bell', plan_name: 'BYOD Plan', plan_price: 55, plan_data: 70, id: 'bell_70gb_55', plan_type: 'postpaid' },
+        { carrier: 'Rogers', plan_name: 'BYOD Plan', plan_price: 60, plan_data: 80, id: 'rogers_80gb_60', plan_type: 'postpaid' },
+        { carrier: 'Telus', plan_name: 'BYOD Plan', plan_price: 65, plan_data: 90, id: 'telus_90gb_65', plan_type: 'postpaid' },
+        { carrier: 'Chatr', plan_name: 'BYOD Plan', plan_price: 30, plan_data: 20, id: 'chatr_20gb_30', plan_type: 'prepaid' },
+        { carrier: 'Lucky', plan_name: 'BYOD Plan', plan_price: 25, plan_data: 10, id: 'lucky_10gb_25', plan_type: 'prepaid' },
+        { carrier: 'Public Mobile', plan_name: 'BYOD Plan', plan_price: 35, plan_data: 15, id: 'public_15gb_35', plan_type: 'prepaid' }
+      ];
+
+      // Try to fetch plans, fall back to mock data if it fails
+      let plansToUse;
+      try {
+        console.log('Fetching plans from API...');
+        const response = await fetch('http://127.0.0.1:5000/api/plans');
+        console.log('API Response Status:', response.status);
+        
+        if (response.ok) {
+          const allPlans = await response.json();
+          console.log('API Response Data Count:', allPlans.length);
+          console.log('Sample Plan:', allPlans[0]);
+          
+          if (allPlans && allPlans.length > 0) {
+            plansToUse = allPlans;
+            console.log('Successfully loaded plans from API');
+          } else {
+            console.log('API returned empty plans array, using mock data');
+            plansToUse = mockPlans;
+          }
+        } else {
+          console.log('API request failed, using mock data');
+          plansToUse = mockPlans;
+        }
+      } catch (error) {
+        console.error('Error fetching plans:', error);
+        console.log('Using mock data due to fetch error');
+        plansToUse = mockPlans;
+      }
+      
+      // Split plans into featured and prepaid
+      const prepaidCarriers = ['Chatr', 'Lucky', 'Public Mobile'];
+      const featuredPlans = plansToUse.filter(plan => !prepaidCarriers.includes(plan.carrier));
+      const prepaidPlans = plansToUse.filter(plan => prepaidCarriers.includes(plan.carrier));
+      
+      // Define target criteria
+      const TARGET_PRICE = 50;  // Average plan price
+      const MIN_DATA_GB = 1;    // Minimum 1GB data
+      const TARGET_DATA = 30;   // Target data in GB
+      
+      try {
+        // Function to score a plan based on our criteria
+        function scorePlan(plan) {
+          // Extract numeric data value
+          const normalizedData = typeof plan.plan_data === 'number' ? plan.plan_data : 
+                                 parseFloat(plan.plan_data.toString().replace(/[^0-9.]/g, ''));
+          
+          // Skip plans with too little data
+          if (normalizedData < MIN_DATA_GB) {
+            return { plan, score: -1 };
+          }
+          
+          const priceScore = plan.plan_price <= TARGET_PRICE ? 1 : 0;
+          const dataScore = normalizedData >= TARGET_DATA ? 1 : 
+                          normalizedData >= TARGET_DATA * 0.8 ? 0.8 : 
+                          normalizedData / TARGET_DATA;
+          
+          // Calculate value ratio (data per dollar)
+          const valueRatio = normalizedData / plan.plan_price;
+          
+          return {
+            plan,
+            score: priceScore + dataScore + valueRatio,
+            normalizedData
+          };
+        }
+
+        // Function to get best plan for each carrier
+        function getBestPlanForCarrier(plans, carrier) {
+          const carrierPlans = plans.filter(plan => plan.carrier === carrier);
+          if (!carrierPlans.length) return null;
+          
+          const scoredPlans = carrierPlans.map(scorePlan)
+            .filter(scored => scored.score > 0)  // Filter out plans with too little data
+            .sort((a, b) => b.score - a.score);
+          
+          return scoredPlans.length > 0 ? scoredPlans[0].plan : null;
+        }
+
+        // Filter and get best plans for each carrier
+        const priorityCarriers = ['Virgin', 'Fido', 'Koodo', 'Freedom', 'Bell', 'Rogers', 'Telus'];
+        const selectedPlans = priorityCarriers
+          .map(carrier => getBestPlanForCarrier(featuredPlans, carrier))
+          .filter(plan => plan !== null);
+
+        // Filter prepaid plans
+        const filteredPrepaidPlans = prepaidPlans
+          .filter(plan => {
+            const normalizedData = typeof plan.plan_data === 'number' ? plan.plan_data : 
+                                   parseFloat(plan.plan_data.toString().replace(/[^0-9.]/g, ''));
+            return prepaidCarriers.includes(plan.carrier) && normalizedData >= MIN_DATA_GB;
+          })
+          .sort((a, b) => prepaidCarriers.indexOf(a.carrier) - prepaidCarriers.indexOf(b.carrier));
+
+        // Insert plans into carousels
+        if (selectedPlans.length > 0) {
+          planCarousel.innerHTML = selectedPlans
+            .map(plan => createPlanCard({
+              ...plan,
+              best_value: determineBestValue(plan, selectedPlans),
+              // Ensure properties match the expected format for display
+              price: plan.plan_price,
+              data: plan.plan_data + (typeof plan.plan_data === 'number' ? ' GB' : '')
+            }))
+            .join('');
+        } else {
+          planCarousel.innerHTML = '<div class="w-full text-center py-8">No featured plans available at the moment.</div>';
+        }
+
+        if (filteredPrepaidPlans.length > 0) {
+          prepaidCarousel.innerHTML = filteredPrepaidPlans
+            .map(plan => createPlanCard({
+              ...plan,
+              best_value: determineBestValue(plan, filteredPrepaidPlans),
+              // Ensure properties match the expected format for display
+              price: plan.plan_price,
+              data: plan.plan_data + (typeof plan.plan_data === 'number' ? ' GB' : '')
+            }))
+            .join('');
+        } else {
+          prepaidCarousel.innerHTML = '<div class="w-full text-center py-8">No prepaid plans available at the moment.</div>';
+        }
+
+        // Initialize carousel functionality
+        initializeCarousel();
+      } catch (error) {
+        console.error('Error processing plans:', error);
+        const errorMessage = `
+          <div class="w-full flex flex-col items-center justify-center min-h-[520px] text-center p-8">
+            <i class="ri-error-warning-line text-4xl text-red-500 mb-4"></i>
+            <p class="text-gray-700 mb-2">Unable to load plans at the moment.</p>
+            <p class="text-sm text-gray-500 mb-4">${error.message}</p>
+            <button onclick="loadPlans()" class="px-6 py-2 bg-accent text-white rounded-full hover:bg-accent/90 transition-colors">
+              Try Again
+            </button>
+          </div>
+        `;
+        
+        if (planCarousel) planCarousel.innerHTML = errorMessage;
+        if (prepaidCarousel) prepaidCarousel.innerHTML = errorMessage;
+      }
+    }
+
+    // Helper function to determine if a plan is the best value
+    function determineBestValue(plan, allPlans) {
+      // Ensure the plan has an ID (generate one if needed)
+      if (!plan.id) {
+        plan.id = `${plan.carrier.toLowerCase()}_${plan.plan_data}_${plan.plan_price}`.replace(/\s+/g, '_');
+      }
+      
+      const normalizedPlans = allPlans.map(p => ({
+        ...p,
+        normalizedData: typeof p.plan_data === 'number' ? p.plan_data : 
+                        parseFloat(p.plan_data.toString().replace(/[^0-9.]/g, ''))
+      }));
+      
+      // Calculate scores
+      const scores = normalizedPlans.map(p => ({
+        plan: p,
+        ratio: p.normalizedData / p.plan_price,
+        priceScore: p.plan_price <= 50 ? 1 : 0,
+        dataScore: p.normalizedData >= 30 ? 1 : p.normalizedData / 30
+      }));
+      
+      // Calculate total score
+      scores.forEach(s => {
+        s.totalScore = s.ratio + s.priceScore + s.dataScore;
+      });
+      
+      // Sort by total score
+      scores.sort((a, b) => b.totalScore - a.totalScore);
+      
+      // Return true if this plan has the best score
+      return scores[0].plan === plan;
+    }
+
+    // Initialize carousel functionality
+    function initializeCarousel() {
+      const carousels = ['planCarousel', 'prepaidCarousel'];
+      carousels.forEach(carouselId => {
+        const carousel = document.getElementById(carouselId);
+        if (!carousel) return;
+        
+        // Reset current slide
+        currentSlide = 0;
+        carousel.style.transform = 'translateX(0)';
+        
+        // Update slide count
+        slideCount = carousel.children.length;
+        
+        // Update button states
+        updateCarouselButtons(carouselId.replace('Carousel', ''));
+      });
+    }
+
+    // Function to slide plans
+    function slidePlans(direction) {
+      const carousel = document.getElementById('planCarousel');
+      if (!carousel) return;
+      
+      const cards = carousel.children;
+      slideCount = cards.length;
+      
+      // Calculate the width of a single card including gap
+      const cardWidth = cards[0]?.offsetWidth || 0;
+      const gap = 16; // 1rem = 16px
+      const slideWidth = cardWidth + gap;
+      
+      if (direction === 'next' && currentSlide < slideCount - slidesPerView) {
+        currentSlide++;
+      } else if (direction === 'prev' && currentSlide > 0) {
+        currentSlide--;
+      }
+      
+      const translateX = -currentSlide * slideWidth;
+      carousel.style.transform = `translateX(${translateX}px)`;
+      
+      // Update button states
+      updateCarouselButtons('plan');
+    }
+
+    // Function to slide prepaid plans
+    function slidePrepaidPlans(direction) {
+      const carousel = document.getElementById('prepaidCarousel');
+      if (!carousel) return;
+      
+      const cards = carousel.children;
+      slideCount = cards.length;
+      
+      const cardWidth = cards[0]?.offsetWidth || 0;
+      const gap = 16;
+      const slideWidth = cardWidth + gap;
+      
+      if (direction === 'next' && currentSlide < slideCount - slidesPerView) {
+        currentSlide++;
+      } else if (direction === 'prev' && currentSlide > 0) {
+        currentSlide--;
+      }
+      
+      const translateX = -currentSlide * slideWidth;
+      carousel.style.transform = `translateX(${translateX}px)`;
+      
+      // Update button states
+      updateCarouselButtons('prepaid');
+    }
+
+    // Function to update carousel button states
+    function updateCarouselButtons(type) {
+      const prevBtn = document.querySelector(`#${type}CarouselPrev`);
+      const nextBtn = document.querySelector(`#${type}CarouselNext`);
+      
+      if (prevBtn) {
+        prevBtn.disabled = currentSlide === 0;
+        prevBtn.style.opacity = currentSlide === 0 ? '0.5' : '1';
+      }
+      
+      if (nextBtn) {
+        const maxSlide = slideCount - slidesPerView;
+        nextBtn.disabled = currentSlide >= maxSlide;
+        nextBtn.style.opacity = currentSlide >= maxSlide ? '0.5' : '1';
+      }
+    }
+
+    // Call initializeCarousel when the page loads
+    window.addEventListener('load', initializeCarousel);
+
+    // Plan selection handler
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.addEventListener('click', function(event) {
+        // Check if clicked element is a plan selection button
+        const button = event.target.closest('.select-plan-btn');
+        if (button) {
+          event.preventDefault();
+          
+          const carrier = button.dataset.carrier;
+          const planId = button.dataset.planId;
+          const price = button.dataset.price;
+          const data = button.dataset.data;
+          
+          console.log('Selected plan:', {carrier, planId, price, data});
+          
+          // For now, only handle Virgin plans
+          if (carrier === 'Virgin') {
+            // Show loading state
+            const originalText = button.innerHTML;
+            button.classList.add('loading');
+            button.disabled = true;
+            button.classList.add('opacity-75');
+            
+            // Send the selection to the backend
+            fetch('http://127.0.0.1:5000/select_plan', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                carrier: carrier,
+                plan_id: planId || 'default_plan',
+                price: parseFloat(price),
+                data: data,
+                features: {
+                  unlimited_talk_text: true,
+                  international_calling: carrier === 'Virgin',
+                  network_type: carrier === 'Virgin' ? '4G' : '5G'
+                },
+                selected_from: 'featured_plans',
+                source: 'web_ui',
+                user_interaction: {
+                  device_type: 'desktop',
+                  browser: navigator.userAgent
+                }
+              }),
+              mode: 'cors',
+              credentials: 'include' // Include cookies for session management
+            })
+            .then(response => {
+              console.log('Select plan response:', response);
+              if (response.ok) {
+                return response.json().then(data => {
+                  console.log('Select plan success:', data);
+                  // Redirect to checkout on success
+                  window.location.href = 'http://127.0.0.1:5000/checkout';
+                });
+              } else {
+                // Reset button and show error
+                button.innerHTML = originalText;
+                button.disabled = false;
+                button.classList.remove('opacity-75');
+                button.classList.remove('loading');
+                
+                // Show error notification
+                alert('Failed to select plan. Please try again.');
+                console.error('Failed to select plan');
+                return response.json().then(errorData => {
+                  console.error('Error details:', errorData);
+                });
+              }
+            })
+            .catch(error => {
+              // Reset button on error
+              button.innerHTML = originalText;
+              button.disabled = false;
+              button.classList.remove('opacity-75');
+              button.classList.remove('loading');
+              
+              console.error('Error:', error);
+              alert('An error occurred. Please try again.');
+            });
+          } else {
+            // For other carriers, show a notification that they're coming soon
+            alert(`${carrier} selection will be available soon!`);
+          }
+        }
+      });
+    });
+</script>
+</body>
+</html>

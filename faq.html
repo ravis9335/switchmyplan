@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Frequently Asked Questions about SwitchMyPlan - Learn how we help Canadians find the best mobile plans.">
+    <title>FAQ | SwitchMyPlan</title>
+
+    <!-- Stylesheets -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+
+    <!-- Apple Garamond Font -->
+    <style>
+        @font-face {
+            font-family: 'Apple Garamond';
+            src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot');
+            src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot?#iefix') format('embedded-opentype'),
+                url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff2') format('woff2'),
+                url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff') format('woff'),
+                url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.ttf') format('truetype'),
+                url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.svg#Apple Garamond') format('svg');
+        }
+
+        :root {
+            --color-accent: #4470FF;
+            --color-tertiary: #7C4DFF;
+            --accent-rgb: 68, 112, 255;
+            --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+            --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+            --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+            color: #2a3158;
+            cursor: default;
+            overflow-x: hidden;
+        }
+
+        .font-display {
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .noise-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.04;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Navigation styles */
+        #navbar {
+            background: linear-gradient(135deg, #f0f4ff, #d2e0f9);
+            transition: all 0.3s var(--ease-out);
+        }
+
+        #navbar.scrolled {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s var(--ease);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-accent), var(--color-tertiary));
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s var(--ease-out);
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .nav-link:hover {
+            color: var(--color-accent);
+        }
+
+        /* Mobile menu */
+        .mobile-menu-button {
+            display: none;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s var(--ease);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-button {
+                display: block;
+            }
+
+            .desktop-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 1rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .desktop-menu.active {
+                display: block;
+            }
+
+            .nav-link {
+                display: block;
+                padding: 0.75rem 1rem;
+                border-radius: 0.5rem;
+            }
+
+            .nav-link:hover {
+                background: rgba(var(--accent-rgb), 0.1);
+            }
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(90deg, #4470ff 0%, #7C4DFF 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Section divider */
+        .section-divider {
+            height: 2px;
+            width: 100px;
+            margin: 3rem auto;
+            background: linear-gradient(90deg, var(--color-accent), var(--color-tertiary));
+            border-radius: 1px;
+        }
+
+        /* FAQ Accordion */
+        .faq-item {
+            border-bottom: 1px solid rgba(var(--accent-rgb), 0.1);
+            transition: all 0.3s var(--ease);
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            padding: 1.5rem 0;
+            cursor: pointer;
+            transition: color 0.3s var(--ease);
+        }
+
+        .faq-question:hover {
+            color: var(--color-accent);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s var(--ease-out);
+        }
+
+        .faq-answer.active {
+            max-height: 1000px;
+        }
+
+        /* Magnetic button effect */
+        .magnetic-btn {
+            position: relative;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
+            color: white !important;
+            font-weight: 500;
+            padding: 0.8rem 1.5rem;
+            border-radius: 9999px;
+            transition: all 0.3s var(--ease-bounce);
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        .magnetic-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+            opacity: 0;
+            transition: opacity 0.3s var(--ease);
+        }
+
+        .magnetic-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(var(--accent-rgb), 0.25);
+        }
+
+        .magnetic-btn:hover::before {
+            opacity: 1;
+        }
+
+        .magnetic-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff] font-['Helvetica',_sans-serif]">
+    <!-- Background noise -->
+    <div class="noise-bg"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-5 transition-all">
+        <div class="container mx-auto px-6 flex justify-center">
+            <div class="flex items-center justify-between w-full">
+                <!-- Logo -->
+                <a href="/" class="text-4xl font-['Apple_Garamond'] font-semibold" style="font-size: 3.5rem;">
+                    <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+                </a>
+
+                <!-- Mobile menu button -->
+                <button class="mobile-menu-button md:hidden" aria-label="Toggle menu">
+                    <i class="ri-menu-line text-2xl"></i>
+                </button>
+
+                <!-- Desktop menu -->
+                <div class="desktop-menu hidden md:flex items-center gap-8 justify-center">
+                    <a href="all-plans.html" class="nav-link">Plans</a>
+                    <a href="faq.html" class="nav-link">FAQ</a>
+                    <a href="about.html" class="nav-link">About</a>
+                </div>
+
+                <!-- CTA buttons -->
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="all-plans.html" class="magnetic-btn">
+                        Compare Plans
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile menu overlay -->
+    <div class="mobile-menu-overlay fixed inset-0 bg-white/95 backdrop-blur-sm z-40 hidden">
+        <div class="container mx-auto px-6 py-8">
+            <div class="flex justify-end mb-8">
+                <button class="mobile-menu-close text-gray-700 hover:text-black transition-colors">
+                    <i class="ri-close-line text-2xl"></i>
+                </button>
+            </div>
+            <div class="flex flex-col gap-6 text-center">
+                <a href="all-plans.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Plans</a>
+                <a href="faq.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">FAQ</a>
+                <a href="about.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">About</a>
+                <a href="all-plans.html" class="magnetic-btn mt-4 mx-auto inline-block" style="font-family: Helvetica, Arial, sans-serif;">Compare Plans</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero section -->
+    <section class="pt-60 md:pt-30 pb-10 md:pb-5 relative">
+        <!-- Background gradient effects -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-[-20%] right-[-10%] w-[60%] h-[70%] rounded-full blur-[120px] bg-blue-300/30 animate-pulse-slow"></div>
+            <div class="absolute bottom-[-10%] left-[-5%] w-[50%] h-[60%] rounded-full blur-[120px] bg-indigo-300/30 animate-pulse-slow" style="animation-delay: -2s"></div>
+        </div>
+        
+        <div class="container mx-auto px-6 relative z-5">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                    Frequently Asked Questions
+                </h1>
+                <p class="text-xl text-gray-700 max-w-2xl mx-auto" style="font-family: Helvetica, Arial, sans-serif;">
+                    Find answers to common questions about SwitchMyPlan and how we help you find the perfect mobile plan.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 md:py-2 relative">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="section-divider"></div>
+                
+                <div class="space-y-6">
+                    <!-- FAQ Item 1 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                What is Switch My Plan?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                Switch My Plan is an online platform dedicated to helping Canadians compare and switch mobile phone plans effortlessly. We aim to provide transparent, unbiased information, enabling you to make informed decisions about your mobile services.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 2 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                How does Switch My Plan work?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                We aggregate mobile plans from various carriers, presenting them in an easy-to-compare format. For certain providers like Bell and Virgin, we offer direct activation through our platform. For others, we redirect you to the carrier's offer page to complete the process. Our goal is to simplify your mobile plan shopping experience.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 3 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                Which carriers can I activate directly through Switch My Plan?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                Currently, we have direct activation capabilities with Bell and Virgin. For other carriers, we provide comprehensive plan details and redirect you to their respective websites for activation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 4 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                Do you display plans from all mobile carriers in Canada?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                We strive to include a wide range of carriers to provide a comprehensive comparison experience. Our platform features plans from major providers as well as regional carriers to ensure you have access to the best options available.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 5 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                Which provinces does Switch My Plan currently serve?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                At present, our services are focused on Ontario. We plan to expand to other provinces in the near future to assist more Canadians in finding the best mobile plans.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 6 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                How does Switch My Plan handle my personal information?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                Your privacy is of utmost importance to us. We do not collect or store any personal information unless you explicitly provide it for specific services, such as signing up for newsletters or alerts. Any information you provide is handled with strict confidentiality and is not shared with third parties without your consent.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 7 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                Does Switch My Plan use cookies or tracking technologies?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                Our website may use cookies to enhance user experience and gather analytics. These cookies do not collect personal information and are used solely to improve our services. You have the option to disable cookies through your browser settings if you prefer.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 8 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                Is there a cost to use Switch My Plan?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                No, our platform is completely free for users. We aim to provide unbiased information to help you make informed decisions without any cost.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 9 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                How does Switch My Plan sustain its operations if the service is free?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                Currently, we operate without direct compensation from carriers. Our goal is to establish partnerships and become an independent dealer or affiliate in the future. This approach ensures that our recommendations remain unbiased and focused on your best interests.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 10 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                How often are the mobile plans updated on Switch My Plan?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                We regularly update our database to reflect the latest plans and promotions from carriers. However, as offers can change frequently, we recommend verifying the details on the carrier's official website before making a decision.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 11 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                Can I purchase mobile devices through Switch My Plan?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                Currently, our focus is on Bring Your Own Device (BYOD) plans. In the future, we plan to offer options for purchasing devices on contract through our platform, providing a seamless experience similar to traditional independent dealers but entirely online.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 12 -->
+                    <div class="faq-item">
+                        <div class="faq-question flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+                                How can I contact Switch My Plan for further assistance?
+                            </h3>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-500 transition-transform"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
+                                If you have additional questions or require assistance, please reach out to us through our Contact Us page. We're here to help you navigate your mobile plan options with ease.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 md:py-24 relative">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto bg-gradient-to-r from-accent to-tertiary rounded-2xl p-8 md:p-12 shadow-xl text-black text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6" style="font-family: Helvetica, Arial, sans-serif;">Ready to find your perfect plan?</h2>
+                <p class="text-lg md:text-xl opacity-90 mb-8 max-w-lg mx-auto" style="font-family: Helvetica, Arial, sans-serif;">
+                    Join thousands of Canadians who've simplified their mobile plan search with SwitchMyPlan.
+                </p>
+                <a href="all-plans.html" class="magnetic-btn bg-#7C4DFF text-accent font-medium px-8 py-4 rounded-full hover:shadow-lg hover:shadow-black/20 transition-all" style="font-family: Helvetica, Arial, sans-serif;">
+                    Find Your Perfect
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="backdrop-blur-sm border-t border-accent/10 py-16 relative">
+        <!-- Background pattern -->
+        <div class="absolute inset-0 z-0 opacity-5">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent"></div>
+            <div class="grid grid-cols-10 h-full">
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div></div>
+            </div>
+        </div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <!-- Logo & about -->
+                <div class="col-span-1 md:col-span-2">
+                    <a href="/" class="text-3xl font-['Apple_Garamond'] font-semibold inline-block mb-4">
+                        <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+                    </a>
+                    <p class="text-gray-600 mb-6 max-w-sm" style="font-family: Helvetica, Arial, sans-serif;">
+                        Helping Canadians find the perfect mobile plan without the sales pressure or confusion.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-accent hover:text-white transition-colors">
+                            <i class="ri-twitter-x-line"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-accent hover:text-white transition-colors">
+                            <i class="ri-linkedin-line"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-accent hover:text-white transition-colors">
+                            <i class="ri-instagram-line"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick links -->
+                <div>
+                    <h3 class="text-gray-900 font-medium mb-4" style="font-family: Helvetica, Arial, sans-serif;">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="all-plans.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">All Plans</a></li>
+                        <li><a href="faq.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">FAQ</a></li>
+                        <li><a href="about.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Legal links -->
+                <div>
+                    <h3 class="text-gray-900 font-medium mb-4" style="font-family: Helvetica, Arial, sans-serif;">Legal</h3>
+                    <ul class="space-y-3">
+                        <li><a href="privacy-policy.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Privacy Policy</a></li>
+                        <li><a href="https://crtc.gc.ca/eng/internet/codesimpl.htm" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">CRTC</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 mt-12 pt-6 text-center text-gray-500 text-sm" style="font-family: Helvetica, Arial, sans-serif;">
+                &copy; 2025 SwitchMyPlan. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-button');
+            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+            const mobileMenuClose = document.querySelector('.mobile-menu-close');
+            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-overlay a');
+            
+            if (mobileMenuBtn && mobileMenuOverlay && mobileMenuClose) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.toggle('hidden');
+                    document.body.style.overflow = 'hidden';
+                });
+                
+                mobileMenuClose.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.add('hidden');
+                    document.body.style.overflow = '';
+                });
+                
+                mobileMenuLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenuOverlay.classList.add('hidden');
+                        document.body.style.overflow = '';
+                    });
+                });
+            }
+
+            // Navbar scroll effect
+            let lastScroll = 0;
+            const navbar = document.getElementById('navbar');
+            
+            if (navbar) {
+                window.addEventListener('scroll', () => {
+                    const currentScroll = window.pageYOffset;
+                    
+                    if (currentScroll <= 0) {
+                        navbar.classList.remove('scrolled');
+                        return;
+                    }
+                    
+                    if (currentScroll > lastScroll && !navbar.classList.contains('scrolled')) {
+                        // Scrolling down
+                        navbar.classList.add('scrolled');
+                    } else if (currentScroll < lastScroll && navbar.classList.contains('scrolled')) {
+                        // Scrolling up
+                        navbar.classList.remove('scrolled');
+                    }
+                    
+                    lastScroll = currentScroll;
+                });
+            }
+
+            // Magnetic button effect
+            const magneticBtns = document.querySelectorAll('.magnetic-btn');
+            
+            magneticBtns.forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const deltaX = (x - centerX) / centerX;
+                    const deltaY = (y - centerY) / centerY;
+                    
+                    btn.style.transform = `translate(${deltaX * 5}px, ${deltaY * 5}px)`;
+                });
+                
+                btn.addEventListener('mouseleave', () => {
+                    btn.style.transform = '';
+                });
+            });
+
+            // FAQ Accordion
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                const arrow = item.querySelector('.ri-arrow-down-s-line');
+                
+                question.addEventListener('click', () => {
+                    const isActive = answer.classList.contains('active');
+                    
+                    // Close all other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.querySelector('.faq-answer').classList.remove('active');
+                            otherItem.querySelector('.ri-arrow-down-s-line').style.transform = 'rotate(0deg)';
+                        }
+                    });
+                    
+                    // Toggle current item
+                    answer.classList.toggle('active');
+                    arrow.style.transform = isActive ? 'rotate(0deg)' : 'rotate(180deg)';
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

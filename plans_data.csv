@@ -1,0 +1,8 @@
+carrier,plan_name,data(GB),price in $
+Fido,BYOP,2,37.50
+Fido,BYOP,50,55.00
+Fido,BYOP,75,65.00
+Telus,N/A,100,60
+Telus,N/A,150,80
+Telus,N/A,200,95
+Telus,N/A,3,15

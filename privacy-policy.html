@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Privacy Policy - SwitchMyPlan's commitment to protecting your privacy and personal information.">
+    <title>Privacy Policy | SwitchMyPlan</title>
+
+    <!-- Stylesheets -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+
+    <!-- Apple Garamond Font -->
+    <style>
+        @font-face {
+            font-family: 'Apple Garamond';
+            src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot');
+            src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot?#iefix') format('embedded-opentype'),
+                url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff2') format('woff2'),
+                url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff') format('woff'),
+                url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.ttf') format('truetype'),
+                url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.svg#Apple Garamond') format('svg');
+        }
+
+        :root {
+            --color-accent: #4470FF;
+            --color-tertiary: #7C4DFF;
+            --accent-rgb: 68, 112, 255;
+            --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+            --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+            --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #4470ff 0%, #7C4DFF 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s var(--ease);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-accent), var(--color-tertiary));
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s var(--ease-out);
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .nav-link:hover {
+            color: var(--color-accent);
+        }
+
+        .magnetic-btn {
+            position: relative;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
+            color: white !important;
+            font-weight: 500;
+            padding: 0.8rem 1.5rem;
+            border-radius: 9999px;
+            transition: all 0.3s var(--ease-bounce);
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        .magnetic-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(var(--accent-rgb), 0.25);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]">
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-5 transition-all">
+        <div class="container mx-auto px-6 flex justify-center">
+            <div class="flex items-center justify-between w-full">
+                <!-- Logo -->
+                <a href="/" class="text-4xl font-['Apple_Garamond'] font-semibold" style="font-size: 3.5rem;">
+                    <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+                </a>
+
+                <!-- Desktop menu -->
+                <div class="desktop-menu hidden md:flex items-center gap-8 justify-center">
+                    <a href="all-plans.html" class="nav-link">Plans</a>
+                    <a href="faq.html" class="nav-link">FAQ</a>
+                    <a href="about.html" class="nav-link">About</a>
+                </div>
+
+                <!-- CTA buttons -->
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="all-plans.html" class="magnetic-btn">
+                        Compare Plans
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="pt-32 pb-16">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <div class="bg-white rounded-2xl p-8 md:p-12 shadow-xl">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900">Privacy Policy</h1>
+                <p class="text-lg text-gray-600 mb-8">Last Updated: April 11, 2025</p>
+
+                <div class="prose prose-lg max-w-none space-y-8">
+                    <div class="text-gray-700">
+                        <p class="mb-6">
+                            Switch My Plan Inc. ("Switch My Plan", "we", "us" or "our") is committed to protecting the privacy and confidentiality of personal information in our possession and control. This Privacy Policy explains the measures we take to fulfill these commitments and describes the manner in which Switch My Plan collects, uses, maintains, discloses and otherwise treats personal information of users (each, a "User") of our website at www.switchmyplan.ca (collectively with all subpages and successor pages, the "Site") as well as through other products and services offered by Switch My Plan (collectively the "Services") and other interactions with our clients and prospective clients.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Your Consent</h2>
+                        <p class="mb-6">
+                            By using the Site, registering for or obtaining a Service and/or providing us with personal information, you consent to the collection, use and disclosure of your personal information as described in this Privacy Policy. In order to exercise any of your rights described herein you can contact us using the details in the "Contacting Us" section below.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Personal Information We Collect</h2>
+                        <p class="mb-6">
+                            We collect personal information from Users directly, through their interactions with the Site and the Services, and through third parties, as described below.
+                        </p>
+                        <p class="mb-6">
+                            We may collect personal information from Users in a variety of ways, including but not limited to: name, email address, phone number, address, and mobile plan preferences. When Users initiate activations through providers like Bell or Virgin, we may temporarily transmit sensitive information such as billing address or credit card data to the respective carrier, but we do not store or log such sensitive information.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Information We Collect Automatically Through Our Site</h2>
+                        <p class="mb-6">
+                            We may collect browser type, device type, operating system, IP address, general location data, and browsing behavior when Users visit the Site. This helps us understand User interactions and improve our Services.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Cookies and Similar Technologies</h2>
+                        <p class="mb-6">
+                            The Site uses cookies to enhance User experience and help deliver personalized offers and content. Cookies also help us analyze site usage and optimize performance. You can modify your browser settings to reject some or all cookies, though certain features may not function as intended.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Tracer Tags & Web Beacons</h2>
+                        <p class="mb-6">
+                            We may use web beacons to track User engagement with specific pages and content. This allows us to improve user experience and site performance.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Online Advertising</h2>
+                        <p class="mb-6">
+                            We may use cookies and similar tools to personalize ads you see on our Site or on third-party platforms. These cookies do not store personal information such as names or credit card details.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">How We Use Collected Information</h2>
+                        <p class="mb-4">We may collect and use Users' personal information for the following purposes:</p>
+                        <ul class="list-disc pl-6 mb-6 space-y-2">
+                            <li>To facilitate service activations with third-party mobile carriers</li>
+                            <li>To notify Users of better plan options based on their preferences</li>
+                            <li>To improve customer service and user experience</li>
+                            <li>To personalize the Site experience</li>
+                            <li>To process transactions and fulfill requested Services</li>
+                            <li>To send periodic communications with User consent</li>
+                            <li>For legal, analytical, or fraud-prevention purposes</li>
+                        </ul>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">How We Protect Your Information</h2>
+                        <p class="mb-6">
+                            We implement appropriate physical, technical, and organizational safeguards to secure personal information against loss, theft, and unauthorized access. Sensitive information such as credit card data is never stored by Switch My Plan and is transmitted securely to partner carriers.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Sharing Your Personal Information</h2>
+                        <p class="mb-4">We may disclose personal information to:</p>
+                        <ul class="list-disc pl-6 mb-6 space-y-2">
+                            <li>Third-party carriers like Bell and Virgin for activation purposes</li>
+                            <li>Service providers assisting in platform functionality (e.g., hosting, analytics)</li>
+                            <li>Legal authorities, if required by law</li>
+                        </ul>
+                        <p class="mb-6">We do not sell, rent, or share personal data with advertisers or marketers.</p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Your Choices</h2>
+                        <p class="mb-6">
+                            You may update or delete your personal information or unsubscribe from communications at any time by contacting us. If you withdraw consent, certain Services may be unavailable.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Children's Privacy</h2>
+                        <p class="mb-6">
+                            Our Site and Services are not directed to children under the age of 16. We do not knowingly collect personal information from children under 16.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Third Party Websites</h2>
+                        <p class="mb-6">
+                            Links to external sites are not under our control. We are not responsible for the privacy practices or content of third-party websites.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Safeguarding Credit Card Information</h2>
+                        <p class="mb-6">
+                            We take all necessary precautions to ensure that sensitive financial information is transmitted securely and never stored. Our logs and systems mask any such data to prevent misuse.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Retaining Your Personal Information</h2>
+                        <p class="mb-6">
+                            We retain personal data only as long as needed to fulfill the purposes outlined in this policy or as required by law. Once data is no longer necessary, it is securely deleted or anonymized.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Changes to Our Privacy Policy</h2>
+                        <p class="mb-6">
+                            Switch My Plan may update this policy periodically. Changes will be posted on this page with a revised date.
+                        </p>
+
+                        <h2 class="text-2xl font-bold mt-12 mb-4 text-gray-900">Contacting Us</h2>
+                        <p class="mb-6">
+                            To request access to, correction of, or deletion of your personal information, or if you have any questions about our privacy practices, contact us at:
+                        </p>
+                        <p class="mb-6">
+                            Switch My Plan<br>
+                            www.switchmyplan.ca<br>
+                            privacy@switchmyplan.ca
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="backdrop-blur-sm border-t border-accent/10 py-16 relative">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <!-- Logo & about -->
+                <div class="col-span-1 md:col-span-2">
+                    <a href="/" class="text-3xl font-['Apple_Garamond'] font-semibold inline-block mb-4">
+                        <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+                    </a>
+                    <p class="text-gray-600 mb-6 max-w-sm">
+                        Helping Canadians find the perfect mobile plan without the sales pressure or confusion.
+                    </p>
+                </div>
+                
+                <!-- Quick links -->
+                <div>
+                    <h3 class="text-gray-900 font-medium mb-4">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="all-plans.html" class="text-gray-600 hover:text-accent transition-colors">All Plans</a></li>
+                        <li><a href="faq.html" class="text-gray-600 hover:text-accent transition-colors">FAQ</a></li>
+                        <li><a href="about.html" class="text-gray-600 hover:text-accent transition-colors">About Us</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Legal links -->
+                <div>
+                    <h3 class="text-gray-900 font-medium mb-4">Legal</h3>
+                    <ul class="space-y-3">
+                        <li><a href="privacy-policy.html" class="text-gray-600 hover:text-accent transition-colors">Privacy Policy</a></li>
+                        <li><a href="https://crtc.gc.ca/eng/internet/codesimpl.htm" class="text-gray-600 hover:text-accent transition-colors">CRTC</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 mt-12 pt-6 text-center text-gray-500 text-sm">
+                &copy; 2025 SwitchMyPlan. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

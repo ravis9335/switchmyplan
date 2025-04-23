@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwitchMyPlan API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .plan-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .plan-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            width: 220px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .plan-card h3 {
+            margin-top: 0;
+        }
+        button {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0055aa;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>SwitchMyPlan API Test</h1>
+    
+    <div class="card">
+        <h2>Featured Plans</h2>
+        <button onclick="loadFeaturedPlans()">Load Featured Plans</button>
+        <div id="featured-plans" class="plan-container"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Prepaid Plans</h2>
+        <button onclick="loadPrepaidPlans()">Load Prepaid Plans</button>
+        <div id="prepaid-plans" class="plan-container"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Select Plan Test</h2>
+        <button onclick="testSelectPlan()">Test Select Plan API</button>
+        <pre id="select-plan-result"></pre>
+    </div>
+    
+    <script>
+        // Set the API base URL
+        const API_BASE_URL = 'http://localhost:5005';
+        
+        // Function to load featured plans
+        async function loadFeaturedPlans() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/plans/featured`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const plans = await response.json();
+                displayPlans('featured-plans', plans);
+            } catch (error) {
+                console.error('Error loading featured plans:', error);
+                document.getElementById('featured-plans').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Function to load prepaid plans
+        async function loadPrepaidPlans() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/plans/prepaid`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const plans = await response.json();
+                displayPlans('prepaid-plans', plans);
+            } catch (error) {
+                console.error('Error loading prepaid plans:', error);
+                document.getElementById('prepaid-plans').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Function to test the select_plan endpoint
+        async function testSelectPlan() {
+            try {
+                const testPayload = {
+                    carrier: 'Koodo',
+                    price: 45,
+                    data: 10,
+                    plan_id: 0
+                };
+                
+                const response = await fetch(`${API_BASE_URL}/select_plan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testPayload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                document.getElementById('select-plan-result').textContent = JSON.stringify(result, null, 2);
+                
+                // If successful and the frontend would redirect
+                if (result.success) {
+                    document.getElementById('select-plan-result').innerHTML += 
+                        '\n\n// Frontend would redirect to /checkout';
+                }
+            } catch (error) {
+                console.error('Error testing select plan:', error);
+                document.getElementById('select-plan-result').textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // Function to display plans in the container
+        function displayPlans(containerId, plans) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            if (plans.length === 0) {
+                container.innerHTML = '<p>No plans found</p>';
+                return;
+            }
+            
+            plans.forEach(plan => {
+                const planCard = document.createElement('div');
+                planCard.className = 'plan-card';
+                
+                planCard.innerHTML = `
+                    <h3>${plan.carrier}</h3>
+                    <p><strong>Plan:</strong> ${plan.plan_name || 'N/A'}</p>
+                    <p><strong>Data:</strong> ${plan.plan_data}GB</p>
+                    <p><strong>Price:</strong> $${plan.plan_price}</p>
+                    <button onclick="selectPlan('${plan.carrier}', ${plan.plan_price}, ${plan.plan_data}, ${plan.id})">
+                        Select Plan
+                    </button>
+                `;
+                
+                container.appendChild(planCard);
+            });
+        }
+        
+        // Function to select a plan
+        async function selectPlan(carrier, price, data, id) {
+            try {
+                const payload = {
+                    carrier: carrier,
+                    price: price,
+                    data: data,
+                    plan_id: id
+                };
+                
+                const response = await fetch(`${API_BASE_URL}/select_plan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Plan selected! Redirecting to checkout...`);
+                    // Normally we would redirect here:
+                    // window.location.href = '/checkout';
+                } else {
+                    alert(`Error: ${result.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error selecting plan:', error);
+                alert(`Error: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html> 

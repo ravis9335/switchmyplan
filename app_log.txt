@@ -1,0 +1,12 @@
+Reading CSV file from: /Users/ravisolanki/Desktop/Mark-1/Mark1Bot/byop_plans.csv
+Found 58 rows in CSV
+Successfully processed 57 plans (skipped 1 invalid plans)
+Successfully loaded 57 plans initially
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 133-693-406

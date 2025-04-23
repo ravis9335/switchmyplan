@@ -1,0 +1,134 @@
+# Placeholder for Koodo flow
+    # Initialize browser resources
+    playwright = None
+    browser = None
+    context = None
+    page = None
+    
+    try:
+        # Start playwright and launch browser with GUARANTEED visibility
+        print("Launching VISIBLE browser...")
+        playwright = await async_playwright().start()
+        
+        # CRITICAL: Force visible Chrome with specific launch args
+        browser = await playwright.chromium.launch(
+            channel="chrome",      # Use system Chrome
+            headless=False,        # NEVER use headless for RPA
+            args=[
+                "--disable-extensions",
+                "--no-sandbox",
+                "--disable-web-security",
+                "--disable-features=IsolateOrigins",
+                "--window-position=50,50",
+                "--window-size=1280,800"
+            ]
+        )
+        print(f"Browser launched successfully: {browser}")
+        
+        # Create context with desktop-like settings
+        context = await browser.new_context(
+            viewport={"width": 1280, "height": 800},
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        )
+        
+        # Important: Store resources in active_rpa_sessions IMMEDIATELY
+        # This guarantees we'll have a reference to the browser
+        browser_resources = {
+            "playwright": playwright,
+            "browser": browser,
+            "context": context
+        }
+        active_rpa_sessions[session_id] = browser_resources
+        print(f"Stored browser in active_rpa_sessions[{session_id}]")
+        
+        # Now create page and start navigation
+        page = await context.new_page()
+        browser_resources["page"] = page  # Add page to stored resources
+        print("Browser page created - SHOULD BE VISIBLE ON SCREEN")
+        
+        # Helper function to take screenshots
+        async def take_screenshot(name):
+            screenshot_path = os.path.join(screenshots_dir, f"{name}.png")
+            await page.screenshot(path=screenshot_path)
+            print(f"Screenshot saved: {screenshot_path}")
+        
+        # Take initial screenshot
+        await take_screenshot("initial_state")
+        
+        # Navigate to Virgin BYOP page
+        print("Navigating to Virgin BYOP page...")
+        start_url = "https://www.virginplus.ca/en/plans/postpaid.html#!/BYOP/research"
+        
+        # Use longer timeout for initial navigation
+        await page.goto(start_url, wait_until="networkidle", timeout=60000)
+        print("✅ Navigation to Virgin site complete")
+        await take_screenshot("virgin_page_loaded")
+        
+        # Make sure the browser window is prominent
+        await page.evaluate("""
+            // Bring window to front in various ways
+            window.focus();
+            
+            // Flash the title temporarily to get user attention
+            const originalTitle = document.title;
+            document.title = "🔴 RPA BROWSER VISIBLE - VIRGIN FLOW 🔴";
+            setTimeout(() => { document.title = originalTitle; }, 5000);
+        """)
+        
+        # KEEP THE BROWSER OPEN for observation
+        print("\n=================================")
+        print("BROWSER IS NOW VISIBLE ON SCREEN!")
+        print("Check your desktop for a Chrome window")
+        print("=================================\n")
+        
+        # Pause to ensure the browser stays open and visible
+        # Will continue with future steps from here
+        await page.wait_for_timeout(10000)
+        
+        # NOTE: The full implementation would continue with:
+        # - Selecting plans
+        # - Filling forms
+        # - Completing checkout
+        # For this test, we're just ensuring the browser is visible
+        
+        return {
+            "status": "success",
+            "message": "Virgin activation flow started with visible browser",
+            "screenshots_dir": screenshots_dir
+        }
+    
+    except Exception as e:
+        print(f"Error in Virgin flow: {str(e)}")
+        
+        # Try to take screenshot of error state
+        if page:
+            try:
+                screenshot_path = os.path.join(screenshots_dir, "error_state.png")
+                await page.screenshot(path=screenshot_path)
+                print(f"Error screenshot saved: {screenshot_path}")
+            except Exception as screenshot_error:
+                print(f"Could not take error screenshot: {str(screenshot_error)}")
+        
+        # Still keep browser resources even on error
+        if browser and not session_id in active_rpa_sessions:
+            active_rpa_sessions[session_id] = {
+                "playwright": playwright,
+                "browser": browser,
+                "context": context,
+                "page": page if page else None
+            }
+        
+        # Re-raise exception for proper error handling upstream
+        raise e
+    
+    finally:
+        # Log execution time
+        elapsed = (datetime.now() - start_time).total_seconds()
+        print(f"Virgin flow initiation took {elapsed:.2f} seconds")
+        # NOTE: We deliberately DO NOT close the browser to keep it visible
+
+#Fido Flow 
+        
+       
+
+# Placeholder for Koodo flow

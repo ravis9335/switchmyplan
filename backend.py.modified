@@ -1,0 +1,414 @@
+import nest_asyncio
+import asyncio
+import os
+import logging
+from logging.handlers import RotatingFileHandler
+from datetime import datetime
+from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_caching import Cache
+import agentql
+from playwright.async_api import async_playwright
+import uuid
+import re
+import random
+import pandas as pd
+
+
+# -------------------------------------------------------------------------
+#                          CONFIG / SETUP
+# -------------------------------------------------------------------------
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-key-please-change'
+    SESSION_TIMEOUT = 30  # minutes
+    MAX_RECOMMENDATIONS = 5
+    RPA_TIMEOUT = 300  # seconds  # for the flows
+
+
+def ensure_directories():
+    directories = ['logs']
+    for directory in directories:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+            print(f"Created directory: {directory}")
+        else:
+            print(f"Directory already exists: {directory}")
+
+
+ensure_directories()
+
+
+def setup_logging():
+    ensure_directories()
+    file_handler = RotatingFileHandler('logs/blue.log', maxBytes=1024000, backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.INFO)
+    return file_handler
+
+
+app = Flask(__name__)
+app.config.from_object(Config)
+
+CORS(app)
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+
+# Security headers
+@app.after_request
+def add_security_headers(response):
+    response.headers[
+        'Content-Security-Policy'
+    ] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;"
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    return response
+
+
+handler = setup_logging()
+app.logger.addHandler(handler)
+app.logger.setLevel(logging.INFO)
+
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+))
+console_handler.setLevel(logging.INFO)
+app.logger.addHandler(console_handler)
+
+app.logger.info('Blue startup - Logging initialized')
+
+# Single global event loop
+main_loop = asyncio.new_event_loop()
+nest_asyncio.apply(main_loop)
+
+# Initialize conversation context for session management
+conversation_context = {
+    "state": "greeting",
+    "plan_info": {},
+    "user_data": {},
+    "recommended_plans": []
+}
+
+
+@app.route('/reload_csv', methods=['POST'])
+def reload_csv():
+    global plans_data
+    plans_data = pd.read_csv("byop_plans.csv")  # or whatever your CSV file is called
+    return jsonify({"status": "reloaded", "message": "CSV data has been refreshed"})
+
+
+# Load CSV of plans
+try:
+    plans_data = pd.read_csv("byop_plans.csv")
+except FileNotFoundError as e:
+    print(f"File Load Error: {e}")
+    exit()
+
+
+@app.route('/api/plans', methods=['GET'])
+def get_plans():
+    global plans_data
+    records = plans_data.to_dict(orient='records')  # from Pandas
+    response = jsonify(records)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
+@app.route('/search', methods=['POST'])
+def search():
+    global conversation_context
+    data = request.json
+    user_query = data.get('query', '').strip().lower()
+
+    if conversation_context["state"] == "greeting":
+        conversation_context["state"] = "awaiting_confirmation"
+        return jsonify({"response":
+                            "Hello! I'm Mark-1 (BLUE) your plan advisor. "
+                            "Could you provide your current plan details or monthly cost/data usage? "
+                            "Answer 'yes' or 'no'."
+                        })
+
+    if conversation_context["state"] == "awaiting_confirmation":
+        if "yes" in user_query:
+            conversation_context["state"] = "awaiting_plan_details"
+            return jsonify({"response":
+                                "Great! Please provide your plan details. Once submitted, I'll process them."
+                            })
+        elif "no" in user_query:
+            return jsonify({"response": "No problem! Let me know when you're ready."})
+        else:
+            return jsonify({"response": "Please answer with 'yes' or 'no'."})
+
+    return jsonify({"response": "I encountered an issue. Please restart the conversation."})
+
+
+@app.route('/submit_plan_details', methods=['POST'])
+def submit_plan_details():
+    global conversation_context
+    data = request.json
+    conversation_context.update({
+        "budget": float(data.get("current_price", 0)),
+        "data_usage": float(data.get("current_data_usage", 0)),
+        "current_provider": data.get("current_provider", "").lower(),
+        "open_to_switching": data.get("open_to_switching", "").lower() in ["y", "yes", "true"],
+        "state": "processing",
+    })
+    return jsonify({"response": "Details received! Let me find the best plan for you."})
+
+
+@app.route('/recommend_plan', methods=['GET'])
+def recommend_plan():
+    global conversation_context, plans_data
+    budget = conversation_context.get("budget", 0)
+    data_usage = conversation_context.get("data_usage", 0)
+    open_to_switching = conversation_context.get("open_to_switching", True)
+    current_provider = conversation_context.get("current_provider", "")
+
+    filtered = plans_data[
+        (plans_data["plan_price"] <= budget) & (plans_data["plan_data"] >= data_usage)
+        ]
+    if not open_to_switching:
+        filtered = filtered[filtered["carrier"].str.lower() == current_provider]
+
+    if filtered.empty:
+        return jsonify({"response": "No suitable plan found. Adjust your criteria."})
+
+    filtered = filtered.sort_values(by=["plan_price", "plan_data"]).reset_index(drop=True)
+    top5 = filtered.head(5)
+    conversation_context["recommended_plans"] = top5.to_dict(orient="records")
+    conversation_context["state"] = "recommendation_made"
+
+    resp_text = "Here are the best plans for you:\n"
+    for idx, row in top5.iterrows():
+        resp_text += (
+            f"- [{idx}] Carrier: {row['carrier']}, "
+            f"Plan: {row['plan_name']}, "
+            f"Data: {row['plan_data']}GB, "
+            f"Price: ${row['plan_price']}\n"
+        )
+    return jsonify({"response": resp_text})
+
+
+@app.route('/select_plan', methods=['POST'])
+def select_plan():
+    """
+    API Endpoint - Receive selected plan details and store in session
+    """
+    try:
+        data = request.json
+        
+        session_id = request.cookies.get('session_id') or str(uuid.uuid4())
+        
+        carrier = data.get('carrier', '').lower()
+        plan_id = data.get('plan_id', '')
+        price = data.get('price', 0)
+        data_amount = data.get('data', '')
+        features = data.get('features', {})
+        
+        # Store plan and session info
+        conversation_context['plan_info'] = {
+            'carrier': carrier,
+            'plan_id': plan_id,
+            'price': price,
+            'data': data_amount,
+            'features': features
+        }
+        
+        app.logger.info(f"Plan selected: {carrier} - ${price}, {data_amount}")
+        
+        # Set session cookie in response
+        response = jsonify({
+            'status': 'success',
+            'message': 'Plan selected successfully',
+            'redirect': '/checkout'
+        })
+        
+        response.set_cookie('session_id', session_id, httponly=True, samesite='Lax', max_age=86400)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        
+        return response
+        
+    except Exception as e:
+        app.logger.error(f"Error in plan selection: {str(e)}")
+        response = jsonify({
+            'status': 'error',
+            'message': f"Error processing request: {str(e)}"
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        return response, 500
+
+
+# -------------------------------------------------------------------------
+#                 SINGLE CHECKOUT PAGE & SUBMISSION
+# -------------------------------------------------------------------------
+@app.route('/checkout', methods=['GET'])
+def checkout():
+    """
+    API Endpoint - Return checkout page with plan details from session
+    """
+    try:
+        # Get plan info from context/session
+        plan_info = conversation_context.get('plan_info', {})
+        
+        if not plan_info:
+            response = jsonify({
+                'status': 'error',
+                'message': 'No plan selected. Please select a plan first.'
+            })
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 400
+            
+        # Return checkout data
+        response = jsonify({
+            'status': 'success',
+            'plan_info': plan_info,
+            'checkout_url': '/checkout.html'  # URL to redirect to
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+        
+    except Exception as e:
+        app.logger.error(f"Error in checkout: {str(e)}")
+        response = jsonify({
+            'status': 'error',
+            'message': f"Error processing checkout: {str(e)}"
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 500
+
+
+@app.route('/checkout_submit', methods=['POST'])
+def checkout_submit():
+    """
+    We gather all user data in one shot, then call the RPA flow for
+    either Koodo or Virgin in a single pass (no separate credit check).
+    """
+    global conversation_context
+
+    carrier = request.form.get('carrier', '').lower()
+    plan_name = request.form.get('plan_name', '')
+    plan_price = request.form.get('plan_price', '0')
+
+    # Get number preference and transfer number
+    number_preference = request.form.get('number_preference', 'new')
+    transfer_number = request.form.get('transfer_number', '')
+
+    # If transfer was selected but no number provided, use the main phone number
+    if number_preference == 'transfer' and not transfer_number:
+        transfer_number = request.form.get('phone', '')
+
+    user_data = {
+        "first_name": request.form.get('first_name', ''),
+        "last_name": request.form.get('last_name', ''),
+        "dob": request.form.get('dob', ''),
+        "address": request.form.get('address', ''),
+        "city": request.form.get('city', ''),
+        "province": request.form.get('province', ''),
+        "postal_code": request.form.get('postal_code', ''),
+        "email": request.form.get('email', ''),
+        "phone": request.form.get('phone', ''),
+        "card_number": request.form.get('card_number', ''),
+        "card_expiry": request.form.get('card_expiry', ''),
+        "cvv": request.form.get('cvv', ''),
+        "number_preference": number_preference,
+        "transfer_number": transfer_number,
+    }
+
+    # Add ID info fields only if the carrier requires them (non-Virgin)
+    if carrier != 'virgin':
+        user_data.update({
+            "id_type": request.form.get('id_type', ''),
+            "id_number": request.form.get('id_number', ''),
+        })
+
+    conversation_context["user_data"] = user_data
+
+    plan_info = {
+        "plan_name": plan_name,
+        "plan_price": float(plan_price),
+    }
+
+    session_id = str(uuid.uuid4())
+    asyncio.set_event_loop(main_loop)
+
+    try:
+        if carrier == 'koodo':
+            app.logger.info(f"Running Koodo flow in one pass for session {session_id}...")
+            main_loop.run_until_complete(
+                koodo_flow_full(session_id, user_data, plan_info, timeout_seconds=Config.RPA_TIMEOUT)
+            )
+            return jsonify({"status": "success",
+                            "message": "Koodo flow completed (no pause).",
+                            "session_id": session_id})
+
+        elif carrier == 'virgin':
+            app.logger.info(f"Running Virgin flow in one pass for session {session_id}...")
+            main_loop.run_until_complete(
+                virgin_flow_full(session_id, user_data, plan_info)
+            )
+            return jsonify({"status": "success",
+                            "message": "Virgin flow completed (no pause).",
+                            "session_id": session_id})
+
+        elif carrier == 'fido':
+            app.logger.info(f"Running Fido flow in one pass for session {session_id}...")
+            main_loop.run_until_complete(
+                fido_flow_full(session_id, user_data, plan_info, timeout_seconds=Config.RPA_TIMEOUT)
+            )
+            return jsonify({
+                "status": "success",
+                "message": "Fido flow completed (no pause).",
+                "session_id": session_id
+            })
+
+        else:
+            return jsonify({"status": "error",
+                            "message": f"Unsupported carrier: {carrier}"}), 400
+
+    except Exception as e:
+        app.logger.error(f"Flow error: {str(e)}")
+        return jsonify({"status": "error",
+                        "message": f"RPA error: {str(e)}"}), 500
+
+
+# Optional function to close browser
+def cleanup_session(session_id):
+    sess = active_rpa_sessions.pop(session_id, None)
+    if sess and sess.get("browser"):
+        # If you want to close it:
+        # await sess["browser"].close()
+        pass
+
+
+# -------------------------------------------------------------------------
+#                         RUN THE APP
+# -------------------------------------------------------------------------
+@app.route('/api/plans', methods=['OPTIONS'])
+@app.route('/select_plan', methods=['OPTIONS'])
+@app.route('/checkout', methods=['OPTIONS'])
+def handle_options():
+    """
+    Handle CORS preflight requests
+    """
+    response = make_response()
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    return response
+
+if __name__ == "__main__":
+    app.run(debug=True)

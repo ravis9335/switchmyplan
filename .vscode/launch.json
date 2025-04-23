@@ -1,0 +1,27 @@
+// filepath: /Users/ravisolanki/Desktop/Mark-1/Mark1Bot/.vscode/launch.json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "request": "attach",
+            "type": "chrome",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch Chrome for testpage",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:8000/testpage.html",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch Chrome for front.html",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:8000/front.html",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}

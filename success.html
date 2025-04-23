@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Activation in Progress | SwitchMyPlan" />
+  <title>Activation in Progress | SwitchMyPlan</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Space+Grotesk:wght@300..700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
+
+  <!-- Apple Garamond Font -->
+  <style>
+    @font-face {
+      font-family: 'Apple Garamond';
+      src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot');
+      src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot?#iefix') format('embedded-opentype'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff2') format('woff2'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff') format('woff'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.ttf') format('truetype'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.svg#Apple Garamond') format('svg');
+    }
+
+    :root {
+      --color-accent: #4470FF;
+      --color-tertiary: #7C4DFF;
+      --accent-rgb: 68, 112, 255;
+      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+      color: #2a3158;
+      cursor: default;
+      overflow-x: hidden;
+    }
+
+    .font-display {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .noise-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.04;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Navigation styles */
+    #navbar {
+      background: linear-gradient(135deg, #f0f4ff, #d2e0f9);
+      transition: all 0.3s var(--ease-out);
+    }
+    #navbar.scrolled {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+    }
+    .nav-link {
+      position: relative;
+      padding: 0.5rem 1rem;
+      transition: color 0.3s var(--ease);
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-accent), var(--color-tertiary));
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s var(--ease-out);
+    }
+    .nav-link:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    .nav-link:hover {
+      color: var(--color-accent);
+    }
+    /* Mobile menu button */
+    .mobile-menu-button {
+      display: none;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.3s var(--ease);
+    }
+    @media (max-width: 768px) {
+      .mobile-menu-button {
+        display: block;
+      }
+      .desktop-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      .desktop-menu.active {
+        display: block;
+      }
+      .nav-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+      }
+      .nav-link:hover {
+        background: rgba(var(--accent-rgb), 0.1);
+      }
+    }
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(90deg, #4470ff 0%, #7C4DFF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Animation for the checkmark */
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+      40% {transform: translateY(-20px);}
+      60% {transform: translateY(-10px);}
+    }
+
+    .animate-bounce {
+      animation: bounce 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]">
+ <!-- Background noise -->
+ <div class="noise-bg"></div>
+
+ <!-- Navigation -->
+ <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-5 transition-all">
+     <div class="container mx-auto px-6 flex justify-center">
+         <div class="flex items-center justify-between w-full">
+             <!-- Logo -->
+             <a href="/" class="text-4xl font-['Apple_Garamond'] font-semibold" style="font-size: 3.5rem;">
+                 <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+             </a>
+
+             <!-- Mobile menu button -->
+             <button class="mobile-menu-button md:hidden" aria-label="Toggle menu">
+                 <i class="ri-menu-line text-2xl"></i>
+             </button>
+
+             <!-- Desktop menu -->
+             <div class="desktop-menu hidden md:flex items-center gap-8 justify-center">
+                 <a href="all-plans.html" class="nav-link">Plans</a>
+                 <a href="faq.html" class="nav-link">FAQ</a>
+                 <a href="about.html" class="nav-link">About</a>
+             </div>
+
+             <!-- CTA buttons -->
+             <div class="hidden md:flex items-center gap-4">
+                <a href="all-plans.html" class="magnetic-btn bg-#7C4DFF text-accent font-medium px-8 py-4 rounded-full hover:shadow-lg hover:shadow-black/600 transition-all" style="font-family: Helvetica, Arial, sans-serif;">
+                    <span>Compare Plans</span>
+                </a>
+             </div>
+         </div>
+     </div>
+ </nav>
+
+ <!-- Mobile menu overlay -->
+ <div class="mobile-menu-overlay fixed inset-0 bg-white/95 backdrop-blur-sm z-40 hidden">
+     <div class="container mx-auto px-6 py-8">
+         <div class="flex justify-end mb-8">
+             <button class="mobile-menu-close text-gray-700 hover:text-black transition-colors">
+                 <i class="ri-close-line text-2xl"></i>
+             </button>
+         </div>
+         <div class="flex flex-col gap-6 text-center">
+             <a href="all-plans.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Plans</a>
+             <a href="faq.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">FAQ</a>
+             <a href="about.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">About</a>
+             <a href="all-plans.html" class="magnetic-btn mt-4 mx-auto inline-block" style="font-family: Helvetica, Arial, sans-serif;">Compare Plans</a>
+         </div>
+     </div>
+ </div>
+
+  <!-- Main Content -->
+  <main class="pt-32 pb-8">
+    <div class="min-h-[80vh] flex items-center justify-center p-6">
+      <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center relative overflow-hidden">
+        <!-- Success animation -->
+        <div class="flex justify-center mb-6 transform transition-transform duration-500 hover:scale-110">
+          <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center animate-bounce">
+            <i class="ri-check-line text-4xl text-green-500"></i>
+          </div>
+        </div>
+        
+        <!-- Success message -->
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+          Activation in Progress
+        </h2>
+        
+        <div class="space-y-4 text-gray-600">
+          <p class="leading-relaxed">
+            Your activation is being processed. Upon successful activation, 
+            you will receive an email with a copy of your contract.
+          </p>
+          <p class="leading-relaxed">
+            If something were to go wrong during this process, we will contact you 
+            and provide further instructions.
+          </p>
+        </div>
+
+        <!-- Email reminder -->
+        <div class="mt-8 p-4 bg-green-50 rounded-lg border border-green-100 transform transition-all duration-300 hover:shadow-md">
+          <div class="flex items-center gap-3 text-green-700">
+            <i class="ri-mail-line text-xl"></i>
+            <span>Check your email for updates</span>
+          </div>
+        </div>
+
+        <!-- Return to plans button -->
+        <div class="mt-8">
+          <a href="all-plans.html" class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg transition-all hover:bg-blue-700">
+            <i class="ri-arrow-left-line mr-2"></i>
+            Return to Plans
+          </a>
+        </div>
+
+        <!-- Decorative elements -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-blue-500"></div>
+        <div class="absolute bottom-0 right-0 w-32 h-32 -mr-16 -mb-16 bg-green-50 rounded-full opacity-20"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white py-12 border-t border-gray-200">
+    <div class="container mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-lg font-semibold mb-4">SwitchMyPlan</h3>
+          <p class="text-gray-600 mb-4">We help Canadians find the perfect mobile phone plan with no hassle.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-blue-500 transition-colors">
+              <i class="ri-facebook-fill text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-blue-500 transition-colors">
+              <i class="ri-twitter-fill text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-blue-500 transition-colors">
+              <i class="ri-instagram-fill text-xl"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+          <ul class="space-y-2">
+            <li><a href="/" class="text-gray-600 hover:text-blue-500 transition-colors">Home</a></li>
+            <li><a href="all-plans.html" class="text-gray-600 hover:text-blue-500 transition-colors">All Plans</a></li>
+            <li><a href="about.html" class="text-gray-600 hover:text-blue-500 transition-colors">About Us</a></li>
+            <li><a href="contact.html" class="text-gray-600 hover:text-blue-500 transition-colors">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Support</h3>
+          <ul class="space-y-2">
+            <li><a href="faq.html" class="text-gray-600 hover:text-blue-500 transition-colors">FAQ</a></li>
+            <li><a href="#" class="text-gray-600 hover:text-blue-500 transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="text-gray-600 hover:text-blue-500 transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+          <ul class="space-y-2 text-gray-600">
+            <li class="flex items-start">
+              <i class="ri-mail-line text-blue-500 mr-2 mt-1"></i>
+              <span>info@switchmyplan.ca</span>
+            </li>
+            <li class="flex items-start">
+              <i class="ri-phone-line text-blue-500 mr-2 mt-1"></i>
+              <span>+1 (800) 555-0123</span>
+            </li>
+            <li class="flex items-start">
+              <i class="ri-map-pin-line text-blue-500 mr-2 mt-1"></i>
+              <span>Toronto, Ontario, Canada</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="mt-12 pt-8 border-t border-gray-200 text-center">
+        <p class="text-gray-500">&copy; 2024 SwitchMyPlan. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuButton = document.querySelector('.mobile-menu-button');
+      const mobileMenuClose = document.querySelector('.mobile-menu-close');
+      const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+      
+      mobileMenuButton.addEventListener('click', function() {
+        mobileMenuOverlay.classList.remove('hidden');
+      });
+      
+      mobileMenuClose.addEventListener('click', function() {
+        mobileMenuOverlay.classList.add('hidden');
+      });
+
+      // Navbar scroll effect
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 10) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
+    });
+  </script>
+</body>
+</html> 

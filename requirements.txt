@@ -1,0 +1,22 @@
+flask==2.0.1
+flask-cors==3.0.10
+flask-limiter==3.10.1
+# flask-talisman==1.1.0  # Commented out - causing errors
+# flask-wtf==1.2.2  # Commented out - causing errors
+flask-caching==2.3.1
+marshmallow==3.26.1
+nest-asyncio==1.6.0
+playwright==1.50.0
+pandas==1.3.3
+agentql==1.9.2
+python-dotenv==0.19.0
+requests==2.32.3
+typing-extensions==4.12.2
+pydantic==2.10.6
+# pyppeteer==0.2.6  # Removed, using Playwright instead
+asyncio==3.4.3
+uuid==1.30
+regex==2023.10.3
+beautifulsoup4==4.12.3
+lxml==5.1.0
+playwright-stealth 

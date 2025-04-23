@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact SwitchMyPlan - Get in touch with our team for support, partnerships, or general inquiries.">
+  <title>Contact Us | SwitchMyPlan</title>
+
+  <!-- Stylesheets -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+
+  <!-- Apple Garamond Font -->
+  <style>
+    @font-face {
+      font-family: 'Apple Garamond';
+      src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot');
+      src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot?#iefix') format('embedded-opentype'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff2') format('woff2'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff') format('woff'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.ttf') format('truetype'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.svg#Apple Garamond') format('svg');
+    }
+
+    :root {
+      --color-accent: #4470FF;
+      --color-tertiary: #7C4DFF;
+      --accent-rgb: 68, 112, 255;
+      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+      color: #2a3158;
+      cursor: default;
+      overflow-x: hidden;
+    }
+
+    .font-display {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .noise-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.04;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Navigation styles */
+    #navbar {
+      background: linear-gradient(135deg, #f0f4ff, #d2e0f9);
+      transition: all 0.3s var(--ease-out);
+    }
+
+    #navbar.scrolled {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+    }
+
+    .nav-link {
+      position: relative;
+      padding: 0.5rem 1rem;
+      transition: color 0.3s var(--ease);
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-accent), var(--color-tertiary));
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s var(--ease-out);
+    }
+
+    .nav-link:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .nav-link:hover {
+      color: var(--color-accent);
+    }
+
+    /* Mobile menu */
+    .mobile-menu-button {
+      display: none;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.3s var(--ease);
+    }
+
+    @media (max-width: 768px) {
+      .mobile-menu-button {
+        display: block;
+      }
+
+      .desktop-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .desktop-menu.active {
+        display: block;
+      }
+
+      .nav-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+      }
+
+      .nav-link:hover {
+        background: rgba(var(--accent-rgb), 0.1);
+      }
+    }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(90deg, #4470ff 0%, #7C4DFF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Section divider */
+    .section-divider {
+      height: 2px;
+      width: 100px;
+      margin: 3rem auto;
+      background: linear-gradient(90deg, var(--color-accent), var(--color-tertiary));
+      border-radius: 1px;
+    }
+
+    /* Contact section styles */
+    .contact-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-email {
+      color: var(--color-accent);
+      font-weight: 500;
+    }
+
+    /* Form styles */
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(var(--accent-rgb), 0.2);
+      border-radius: 0.5rem;
+      transition: all 0.3s var(--ease);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+    }
+
+    /* Magnetic button effect */
+    .magnetic-btn {
+      position: relative;
+      background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
+      color: white !important;
+      font-weight: 500;
+      padding: 0.8rem 1.5rem;
+      border-radius: 9999px;
+      transition: all 0.3s var(--ease-bounce);
+      transform: translateZ(0);
+      overflow: hidden;
+    }
+
+    .magnetic-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+      opacity: 0;
+      transition: opacity 0.3s var(--ease);
+    }
+
+    .magnetic-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(var(--accent-rgb), 0.25);
+    }
+
+    .magnetic-btn:hover::before {
+      opacity: 1;
+    }
+
+    .magnetic-btn:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff] font-['Helvetica',_sans-serif]">
+  <!-- Background noise -->
+  <div class="noise-bg"></div>
+
+  <!-- Navigation -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-5 transition-all">
+    <div class="container mx-auto px-6 flex justify-center">
+      <div class="flex items-center justify-between w-full">
+        <!-- Logo -->
+        <a href="/" class="text-4xl font-['Apple_Garamond'] font-semibold" style="font-size: 3.5rem;">
+          <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+        </a>
+
+        <!-- Mobile menu button -->
+        <button class="mobile-menu-button md:hidden" aria-label="Toggle menu">
+          <i class="ri-menu-line text-2xl"></i>
+        </button>
+
+        <!-- Desktop menu -->
+        <div class="desktop-menu hidden md:flex items-center gap-8 justify-center">
+          <a href="all-plans.html" class="nav-link">Plans</a>
+          <a href="faq.html" class="nav-link">FAQ</a>
+          <a href="about.html" class="nav-link">About</a>
+        </div>
+
+        <!-- CTA buttons -->
+        <div class="hidden md:flex items-center gap-4">
+          <a href="all-plans.html" class="magnetic-btn">
+            Compare Plans
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile menu overlay -->
+  <div class="mobile-menu-overlay fixed inset-0 bg-white/95 backdrop-blur-sm z-40 hidden">
+    <div class="container mx-auto px-6 py-8">
+      <div class="flex justify-end mb-8">
+        <button class="mobile-menu-close text-gray-700 hover:text-black transition-colors">
+          <i class="ri-close-line text-2xl"></i>
+        </button>
+      </div>
+      <div class="flex flex-col gap-6 text-center">
+        <a href="all-plans.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Plans</a>
+        <a href="faq.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">FAQ</a>
+        <a href="about.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">About</a>
+        <a href="all-plans.html" class="magnetic-btn mt-4 mx-auto inline-block" style="font-family: Helvetica, Arial, sans-serif;">Compare Plans</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero section -->
+  <section class="pt-32 md:pt-30 pb-16 md:pb-24 relative">
+    <!-- Background gradient effects -->
+    <div class="absolute inset-0 z-0">
+      <div class="absolute top-[-20%] right-[-10%] w-[60%] h-[70%] rounded-full blur-[120px] bg-blue-300/30 animate-pulse-slow"></div>
+      <div class="absolute bottom-[-10%] left-[-5%] w-[50%] h-[60%] rounded-full blur-[120px] bg-indigo-300/30 animate-pulse-slow" style="animation-delay: -2s"></div>
+    </div>
+    
+    <div class="container mx-auto px-6 relative z-5">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">
+          Contact Us
+        </h1>
+        <p class="text-xl text-gray-700 max-w-2xl mx-auto" style="font-family: Helvetica, Arial, sans-serif;">
+          We're here to help.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="py-16 md:py-24 relative">
+    <div class="container mx-auto px-6">
+      <div class="max-w-4xl mx-auto">
+        <p class="text-xl text-gray-700 leading-relaxed mb-12" style="font-family: Helvetica, Arial, sans-serif;">
+          At Switch My Plan, we're committed to making it easier for Canadians to compare and switch mobile plans without the confusion or pressure. If you have a question, concern, or need support, we're just an email away.
+        </p>
+
+        <!-- General Inquiries -->
+        <div class="contact-section">
+          <h2 class="text-2xl font-bold mb-4 text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">General Inquiries</h2>
+          <p class="text-lg text-gray-700 mb-4" style="font-family: Helvetica, Arial, sans-serif;">
+            For questions about how our platform works, mobile plan comparisons, or anything else:
+          </p>
+          <a href="mailto:support@switchmyplan.ca" class="contact-email text-lg">support@switchmyplan.ca</a>
+        </div>
+
+        <!-- Activation Support -->
+        <div class="contact-section">
+          <h2 class="text-2xl font-bold mb-4 text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">Activation Support</h2>
+          <p class="text-lg text-gray-700 mb-4" style="font-family: Helvetica, Arial, sans-serif;">
+            If you're experiencing any issues during or after an activation with Bell or Virgin through our platform:
+          </p>
+          <a href="mailto:activations@switchmyplan.ca" class="contact-email text-lg block mb-4">activations@switchmyplan.ca</a>
+          <p class="text-gray-600" style="font-family: Helvetica, Arial, sans-serif;">
+            Please include your name, phone number, and a brief description of the issue so we can assist you quickly.
+          </p>
+        </div>
+
+        <!-- Business & Carrier Partnerships -->
+        <div class="contact-section">
+          <h2 class="text-2xl font-bold mb-4 text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">Business & Carrier Partnerships</h2>
+          <p class="text-lg text-gray-700 mb-4" style="font-family: Helvetica, Arial, sans-serif;">
+            If you represent a telecom provider or would like to discuss a business opportunity with us:
+          </p>
+          <a href="mailto:partners@switchmyplan.ca" class="contact-email text-lg">partners@switchmyplan.ca</a>
+        </div>
+
+        <!-- Press & Media -->
+        <div class="contact-section">
+          <h2 class="text-2xl font-bold mb-4 text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">Press & Media</h2>
+          <p class="text-lg text-gray-700 mb-4" style="font-family: Helvetica, Arial, sans-serif;">
+            For media requests, interviews, or press kits:
+          </p>
+          <a href="mailto:media@switchmyplan.ca" class="contact-email text-lg">media@switchmyplan.ca</a>
+        </div>
+
+        <!-- Our Office -->
+        <div class="contact-section">
+          <h2 class="text-2xl font-bold mb-4 text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">Our Office</h2>
+          <p class="text-lg text-gray-700" style="font-family: Helvetica, Arial, sans-serif;">
+            Switch My Plan is a 100% digital service based in Ontario, Canada.
+            We operate entirely online to serve you better—no physical locations, no in-store visits.
+          </p>
+        </div>
+
+<!-- Feedback Form Section within your HTML file -->
+<div class="contact-section">
+    <h2 class="text-2xl font-bold mb-4 text-gray-900">We Value Your Feedback</h2>
+    <p class="text-lg text-gray-700 mb-8">
+      We're always looking to improve. If you have suggestions, comments, or just want to share your experience using Switch My Plan, we'd love to hear from you.
+    </p>
+  
+    <form id="feedbackForm" class="space-y-6">
+      <div>
+        <label for="name" class="block text-gray-700 mb-2">Your Name</label>
+        <input type="text" id="name" name="name" class="form-input" required>
+      </div>
+      <div>
+        <label for="email" class="block text-gray-700 mb-2">Your Email (optional)</label>
+        <input type="email" id="email" name="email" class="form-input">
+      </div>
+      <div>
+        <label for="feedback" class="block text-gray-700 mb-2">Your Feedback</label>
+        <textarea id="feedback" name="feedback" rows="4" class="form-input" required></textarea>
+      </div>
+      <button type="submit" class="magnetic-btn w-full md:w-auto">Submit Feedback</button>
+    </form>
+    <div id="successMessage" class="hidden mt-4 p-4 bg-green-100 text-green-700 rounded-lg">
+      Thank you for your feedback! We appreciate your input and will review it shortly.
+    </div>
+    <div id="errorMessage" class="hidden mt-4 p-4 bg-red-100 text-red-700 rounded-lg">
+      There was an error submitting your feedback. Please try again later.
+    </div>
+  </div>
+  
+
+  <!-- Footer -->
+  <footer class="backdrop-blur-sm border-t border-accent/10 py-16 relative">
+    <!-- Background pattern -->
+    <div class="absolute inset-0 z-0 opacity-5">
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent"></div>
+      <div class="grid grid-cols-10 h-full">
+        <div class="border-r border-accent/10"></div>
+        <div class="border-r border-accent/10"></div>
+        <div class="border-r border-accent/10"></div>
+        <div class="border-r border-accent/10"></div>
+        <div class="border-r border-accent/10"></div>
+        <div class="border-r border-accent/10"></div>
+        <div class="border-r border-accent/10"></div>
+        <div class="border-r border-accent/10"></div>
+        <div class="border-r border-accent/10"></div>
+        <div></div>
+      </div>
+    </div>
+    
+    <div class="container mx-auto px-6 relative z-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <!-- Logo & about -->
+        <div class="col-span-1 md:col-span-2">
+          <a href="/" class="text-3xl font-['Apple_Garamond'] font-semibold inline-block mb-4">
+            <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+          </a>
+          <p class="text-gray-600 mb-6 max-w-sm" style="font-family: Helvetica, Arial, sans-serif;">
+            Helping Canadians find the perfect mobile plan without the sales pressure or confusion.
+          </p>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-accent hover:text-white transition-colors">
+              <i class="ri-twitter-x-line"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-accent hover:text-white transition-colors">
+              <i class="ri-linkedin-line"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-accent hover:text-white transition-colors">
+              <i class="ri-instagram-line"></i>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Quick links -->
+        <div>
+          <h3 class="text-gray-900 font-medium mb-4" style="font-family: Helvetica, Arial, sans-serif;">Quick Links</h3>
+          <ul class="space-y-3">
+            <li><a href="all-plans.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">All Plans</a></li>
+            <li><a href="faq.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">FAQ</a></li>
+            <li><a href="about.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">About Us</a></li>
+            <li><a href="contact.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Contact</a></li>
+          </ul>
+        </div>
+        
+        <!-- Legal links -->
+        <div>
+          <h3 class="text-gray-900 font-medium mb-4" style="font-family: Helvetica, Arial, sans-serif;">Legal</h3>
+          <ul class="space-y-3">
+            <li><a href="privacy-policy.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Privacy Policy</a></li>
+            <li><a href="https://crtc.gc.ca/eng/internet/codesimpl.htm" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">CRTC</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-200 mt-12 pt-6 text-center text-gray-500 text-sm" style="font-family: Helvetica, Arial, sans-serif;">
+        &copy; 2025 SwitchMyPlan. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Combined JavaScript (Place near the end of the document before </body>) -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Feedback form submission
+    const feedbackForm = document.getElementById('feedbackForm');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+  
+    if (feedbackForm) {
+      feedbackForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(feedbackForm);
+        try {
+          // Send POST request to /contact-feedback (exactly as defined in the backend)
+          const response = await fetch('/contact-feedback', {
+            method: 'POST',
+            body: formData  // FormData sends data as multipart/form-data
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+          }
+          
+          const result = await response.json();
+          if (result.message) {
+            successMessage.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+            feedbackForm.reset();
+            setTimeout(() => {
+              successMessage.classList.add('hidden');
+            }, 5000);
+          } else if (result.error) {
+            throw new Error(result.error);
+          }
+        } catch (error) {
+          console.error('Error submitting feedback:', error);
+          errorMessage.textContent = error.message || 'There was an error submitting your feedback. Please try again later.';
+          errorMessage.classList.remove('hidden');
+          successMessage.classList.add('hidden');
+        }
+      });
+    }
+  });
+  </script>
+</body>
+</html>
