@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Complete Your Activation | SwitchMyPlan" />
+  <title>Complete Your Activation | SwitchMyPlan</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Space+Grotesk:wght@300..700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
+
+  <!-- Apple Garamond Font -->
+  <style>
+    @font-face {
+      font-family: 'Apple Garamond';
+      src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot');
+      src: url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.eot?#iefix') format('embedded-opentype'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff2') format('woff2'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.woff') format('woff'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.ttf') format('truetype'),
+           url('https://db.onlinewebfonts.com/t/5c00984bd31d7510b4e89bc1aafcf755.svg#Apple Garamond') format('svg');
+    }
+
+    :root {
+      --color-accent: #4470FF;
+      --color-tertiary: #7C4DFF;
+      --accent-rgb: 68, 112, 255;
+      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+      color: #2a3158;
+      cursor: default;
+      overflow-x: hidden;
+    }
+
+    .font-display {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .noise-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.04;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Navigation styles */
+    #navbar {
+      background: linear-gradient(135deg, #f0f4ff , #d2e0f9 );
+      transition: all 0.3s var(--ease-out);
+    }
+    #navbar.scrolled {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+    }
+    .nav-link {
+      position: relative;
+      padding: 0.5rem 1rem;
+      transition: color 0.3s var(--ease);
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-accent), var(--color-tertiary));
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s var(--ease-out);
+    }
+    .nav-link:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    .nav-link:hover {
+      color: var(--color-accent);
+    }
+    /* Mobile menu button */
+    .mobile-menu-button {
+      display: none;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.3s var(--ease);
+    }
+    @media (max-width: 768px) {
+      .mobile-menu-button {
+        display: block;
+      }
+      .desktop-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      .desktop-menu.active {
+        display: block;
+      }
+      .nav-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+      }
+      .nav-link:hover {
+        background: rgba(var(--accent-rgb), 0.1);
+      }
+    }
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(90deg, #4470ff 0%, #7C4DFF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    /* Section divider */
+    .section-divider {
+            height: 2px;
+            width: 100px;
+            margin: 3rem auto;
+            background: linear-gradient(90deg, var(--color-accent), var(--color-tertiary));
+            border-radius: 1px;
+        }
+
+        /* Compare Plans button enhancement */
+        .magnetic-btn {
+            position: relative;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
+            color: white !important;
+            font-weight: 500;
+            padding: 0.8rem 1.5rem;
+            border-radius: 9999px;
+            transition: all 0.3s var(--ease-bounce);
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        .magnetic-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+            opacity: 0;
+            transition: opacity 0.3s var(--ease);
+        }
+
+        .magnetic-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(var(--accent-rgb), 0.25);
+        }
+
+        .magnetic-btn:hover::before {
+            opacity: 1;
+        }
+
+        .magnetic-btn:active {
+            transform: translateY(0);
+        }
+
+    /* Feature item styling from all-plans.html */
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: all 0.2s var(--ease);
+    }
+
+    .feature-item:hover {
+      background: rgba(68, 112, 255, 0.05);
+    }
+
+    .feature-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(68, 112, 255, 0.1);
+      color: var(--color-accent);
+    }
+
+    .feature-text {
+      font-size: 0.875rem;
+      color: #334155;
+      line-height: 1.5;
+    }
+
+    /* Carrier logo styles from all-plans.html */
+    .carrier-logo {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s var(--ease-bounce);
+    }
+
+    .carrier-logo img {
+      height: 100%;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+      transition: all 0.3s var(--ease);
+    }
+
+    .carrier-logo:hover {
+      transform: scale(1.05);
+    }
+
+    .carrier-logo:hover img {
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]">
+ <!-- Background noise -->
+ <div class="noise-bg"></div>
+
+ <!-- Navigation -->
+ <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-5 transition-all">
+     <div class="container mx-auto px-6 flex justify-center">
+         <div class="flex items-center justify-between w-full">
+             <!-- Logo -->
+             <a href="/" class="text-4xl font-['Apple_Garamond'] font-semibold" style="font-size: 3.5rem;">
+                 <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+             </a>
+
+             <!-- Mobile menu button -->
+             <button class="mobile-menu-button md:hidden" aria-label="Toggle menu">
+                 <i class="ri-menu-line text-2xl"></i>
+             </button>
+
+             <!-- Desktop menu -->
+             <div class="desktop-menu hidden md:flex items-center gap-8 justify-center">
+                 <a href="all-plans.html" class="nav-link">Plans</a>
+                 <a href="faq.html" class="nav-link">FAQ</a>
+                 <a href="about.html" class="nav-link">About</a>
+             </div>
+
+             <!-- CTA buttons -->
+             <div class="hidden md:flex items-center gap-4">
+                <a href="all-plans.html" class="magnetic-btn bg-#7C4DFF text-accent font-medium px-8 py-4 rounded-full hover:shadow-lg hover:shadow-black/600 transition-all" style="font-family: Helvetica, Arial, sans-serif;">
+                    <span>Compare Plans</span>
+                    
+                  </a>
+             </div>
+         </div>
+     </div>
+ </nav>
+
+ <!-- Mobile menu overlay -->
+ <div class="mobile-menu-overlay fixed inset-0 bg-white/95 backdrop-blur-sm z-40 hidden">
+     <div class="container mx-auto px-6 py-8">
+         <div class="flex justify-end mb-8">
+             <button class="mobile-menu-close text-gray-700 hover:text-black transition-colors">
+                 <i class="ri-close-line text-2xl"></i>
+             </button>
+         </div>
+         <div class="flex flex-col gap-6 text-center">
+             <a href="all-plans.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Plans</a>
+             <a href="faq.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">FAQ</a>
+             <a href="about.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">About</a>
+             <a href="all-plans.html" class="magnetic-btn mt-4 mx-auto inline-block" style="font-family: Helvetica, Arial, sans-serif;">Compare Plans</a>
+         </div>
+     </div>
+ </div>
+
+  </header>
+
+  <main class="pt-32 pb-8">
+    <div class="container mx-auto px-4">
+      <h1 class="text-2xl font-semibold text-gray-800 mb-8">Complete Your Activation</h1>
+      
+      <!-- Two-Column Layout: Left Column Form; Right Column Order Summary -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Form Column -->
+        <div class="md:col-span-2 bg-white rounded-lg shadow p-8">
+          <form method="POST" action="/checkout_submit">
+            <!-- Hidden Fields -->
+            <input type="hidden" name="carrier" value="Bell">
+            <input type="hidden" name="plan_name" value="{{ plan_name }}">
+            <input type="hidden" name="plan_price" value="{{ plan_price }}">
+
+            <!-- Personal Information Section -->
+            <div class="mb-8 pb-5 border-b border-gray-200">
+              <h2 class="text-xl font-semibold text-gray-700 mb-5">Personal Information</h2>
+              <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                <div class="flex-1">
+                  <label for="first_name" class="block text-base font-medium text-gray-600 mb-2">First Name</label>
+                  <input type="text" id="first_name" name="first_name" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex-1">
+                  <label for="last_name" class="block text-base font-medium text-gray-600 mb-2">Last Name</label>
+                  <input type="text" id="last_name" name="last_name" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+              </div>
+              <div class="mb-4">
+                <label for="email" class="block text-base font-medium text-gray-600 mb-2">Email Address</label>
+                <input type="email" id="email" name="email" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div>
+                <label for="phone" class="block text-base font-medium text-gray-600 mb-2">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+            </div>
+
+            <!-- Address Section -->
+            <div class="mb-8 pb-5 border-b border-gray-200">
+              <h2 class="text-xl font-semibold text-gray-700 mb-5">Address</h2>
+              <div class="mb-4">
+                <label for="address" class="block text-base font-medium text-gray-600 mb-2">Street Address</label>
+                <input type="text" id="address" name="address" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                <div class="flex-1">
+                  <label for="city" class="block text-base font-medium text-gray-600 mb-2">City</label>
+                  <input type="text" id="city" name="city" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex-1">
+                  <label for="province" class="block text-base font-medium text-gray-600 mb-2">Province</label>
+                  <select id="province" name="province" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Select Province</option>
+                    <option value="AB">Alberta</option>
+                    <option value="BC">British Columbia</option>
+                    <option value="MB">Manitoba</option>
+                    <option value="NB">New Brunswick</option>
+                    <option value="NL">Newfoundland and Labrador</option>
+                    <option value="NS">Nova Scotia</option>
+                    <option value="NT">Northwest Territories</option>
+                    <option value="NU">Nunavut</option>
+                    <option value="ON">Ontario</option>
+                    <option value="PE">Prince Edward Island</option>
+                    <option value="QC">Quebec</option>
+                    <option value="SK">Saskatchewan</option>
+                    <option value="YT">Yukon</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="postal_code" class="block text-base font-medium text-gray-600 mb-2">Postal Code</label>
+                <input type="text" id="postal_code" name="postal_code" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+            </div>
+
+            <!-- Phone Number Preference -->
+            <div class="mb-8 pb-5 border-b border-gray-200">
+              <h2 class="text-xl font-semibold text-gray-700 mb-5">Phone Number Preference</h2>
+              <div class="mb-4">
+                <label for="number_preference" class="block text-base font-medium text-gray-600 mb-2">Number Preference</label>
+                <select id="number_preference" name="number_preference" required onchange="toggleTransferNumberField()" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="">Select Preference</option>
+                  <option value="new">Get a New Number</option>
+                  <option value="transfer">Transfer My Existing Number</option>
+                </select>
+              </div>
+              <div id="transfer_number_field" class="mb-4 hidden">
+                <label for="transfer_number" class="block text-base font-medium text-gray-600 mb-2">Number to Transfer</label>
+                <input type="tel" id="transfer_number" name="transfer_number" placeholder="Enter the number you want to transfer" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+            </div>
+
+            <!-- Activation Options -->
+            <div class="mb-8 pb-5 border-b border-gray-200">
+              <h2 class="text-xl font-semibold text-gray-700 mb-5">SIM selection</h2>
+              <p class="text-base text-gray-600 mb-4">Select the SIM option that suits your needs.<br>All options are free of charge.</p>
+              <div class="space-y-4">
+                <!-- eSIM Option -->
+                <div class="flex flex-col p-5 border border-blue-300 rounded-lg overflow-hidden">
+                  <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 mt-1">
+                      <div class="w-6 h-6 relative">
+                        <input type="radio" id="esim" name="activation_type" value="esim" class="w-6 h-6 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
+                      </div>
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex items-center mb-2">
+                        <span class="inline-block py-1 px-3 bg-blue-600 text-white text-xs font-medium rounded mr-2">FASTEST & EASIEST</span>
+                      </div>
+                      <label for="esim" class="block text-lg font-bold text-gray-900 mb-1">eSIM</label>
+                      <p class="text-base text-gray-700">Activate your phone's eSIM online and start using it within minutes.</p>
+                    </div>
+                  </div>
+                  
+                  <!-- IMEI Input Field -->
+                  <div id="imei_field" class="mt-5 ml-10 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <div>
+                      <label for="imei" class="block text-base font-medium text-gray-700 mb-2">IMEI number</label>
+                      <p class="text-sm text-gray-500 mb-2">Consists of 15 digits</p>
+                      <input type="text" id="imei" name="imei" maxlength="15" pattern="[0-9]{15}" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="updateIMEICount(this.value); validateIMEI(this);">
+                      <div class="flex justify-between items-center mt-2">
+                        <a href="#" class="text-blue-600 hover:text-blue-700 text-sm" onclick="showIMEIHelp(event)">Where to find this?</a>
+                        <span id="imei-count" class="text-sm text-gray-600">0/15</span>
+                      </div>
+                      <div id="imei-error" class="hidden mt-2 text-sm text-red-600"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SIM Card Option -->
+                <div class="flex items-start gap-4 p-5 border border-gray-200 rounded-lg">
+                  <div class="flex-shrink-0 mt-1">
+                    <div class="w-6 h-6 relative">
+                      <input type="radio" id="physical_sim" name="activation_type" value="physical" class="w-6 h-6 text-blue-600 border-gray-300 focus:ring-blue-500">
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <label for="physical_sim" class="block text-lg font-bold text-gray-900 mb-1">SIM card</label>
+                    <p class="text-base text-gray-700">Order a physical SIM card and activate your phone later.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Credit Check Information -->
+            <div class="mb-8 pb-5 border-b border-gray-200">
+              <h2 class="text-xl font-semibold text-gray-700 mb-5">Credit Check Information</h2>
+              <div>
+                <label for="dob" class="block text-base font-medium text-gray-600 mb-2">Date of Birth (MM/DD/YYYY)</label>
+                <input type="text" 
+                       id="dob" 
+                       name="dob" 
+                       placeholder="MM/DD/YYYY" 
+                       pattern="(0[1-9]|1[0-2])/(0[1-9]|[12]\d|3[01])/\d{4}"
+                       maxlength="10"
+                       required 
+                       class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       oninput="formatDOB(this)"
+                       onblur="validateDOB(this)">
+                <div id="dob-error" class="hidden mt-2 text-sm text-red-600"></div>
+              </div>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="mb-8 pb-5 border-b border-gray-200">
+              <h2 class="text-xl font-semibold text-gray-700 mb-5">Credit Card Information</h2>
+              <div class="mb-4">
+                <label for="card_number" class="block text-base font-medium text-gray-600 mb-2">Card Number</label>
+                <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                  <label for="card_expiry" class="block text-base font-medium text-gray-600 mb-2">Expiry Date (MM/YY)</label>
+                  <input type="text" id="card_expiry" name="card_expiry" placeholder="MM/YY" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex-1">
+                  <label for="cvv" class="block text-base font-medium text-gray-600 mb-2">Security Code (CVV)</label>
+                  <input type="text" id="cvv" name="cvv" placeholder="123" required class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+              </div>
+            </div>
+
+            <!-- Consent Checkboxes -->
+            <div class="mb-8">
+              <div class="flex items-start mb-4">
+                <div class="flex-shrink-0 mt-1">
+                  <input type="checkbox" id="consent_credit_check" name="consent_credit_check" required class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                </div>
+                <label for="consent_credit_check" class="ml-3 text-sm text-gray-600">
+                  I have read and agree to the terms. In addition, if I am a postpaid customer, I consent to Bell Mobility's collection of my credit and payment information from other Bell companies, credit grantors and reporting agencies over time. I also consent to the use and disclosure of this information to these parties to assist with assessing my creditworthiness, and Bell Mobility's disclosure of this information to collection agencies to assist with the collection of monies owed, all from time to time.
+                </label>
+              </div>
+              
+              <div class="flex items-start">
+                <div class="flex-shrink-0 mt-1">
+                  <input type="checkbox" id="consent_external_check" name="consent_external_check" required class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                </div>
+                <label for="consent_external_check" class="ml-3 text-sm text-gray-600">
+                  I authorize Bell to perform an external credit check. Over time, Bell may also collect, use and disclose my credit information from and to another Bell company, credit bureaus or credit grantors to establish my creditworthiness.
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="w-full py-4 px-6 bg-blue-600 text-white rounded-lg text-xl font-medium transition duration-200 hover:bg-blue-700">
+              Complete Activation
+            </button>
+          </form>
+        </div>
+
+        <!-- Order Summary Column -->
+        <div class="w-full md:w-80 bg-white rounded-lg shadow p-8">
+          <h2 class="text-2xl font-semibold text-gray-700 mb-6">Order Summary</h2>
+          <div class="mb-4 pb-4 border-b border-gray-200">
+            <div class="mb-4">
+              <div class="carrier-logo w-auto h-12 justify-start">
+                <img src="/carrierlogos/images.png"
+                     alt="Bell logo"
+                     class="h-full object-contain">
+              </div>
+            </div>
+            <div class="text-xl font-semibold mb-3">{{ plan_name }}</div>
+            
+            <!-- Bell-specific badge -->
+            <div class="inline-block px-3 py-1 mb-3 bg-blue-600 text-white text-xs font-semibold rounded-full">Bell 5G Network</div>
+            
+            <!-- Data usage visualization -->
+            <div class="bg-blue-50 p-4 rounded-lg mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-gray-700 font-medium">Monthly Data</span>
+                <span class="text-blue-700 font-bold">{{ plan_data }}</span>
+              </div>
+              <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div class="h-full bg-blue-600 rounded-full" style="width: 100%"></div>
+              </div>
+              <div class="mt-2 text-xs text-gray-500 flex justify-between">
+                <span>0 GB</span>
+                <span>{{ plan_data }} GB</span>
+              </div>
+            </div>
+            
+        
+            
+            <div class="mt-4 pt-4 border-t border-gray-200">
+              <div class="mb-3 text-base font-medium text-blue-600">Plan Includes:</div>
+              {% if plan_features and plan_features.strip() %}
+                {% for feature in plan_features.split(',') %}
+                  <div class="feature-item">
+                    <div class="feature-icon">
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <span class="feature-text">{{ feature.strip() }}</span>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <i class="ri-signal-wifi-line text-blue-500"></i>
+                  </div>
+                  <span class="feature-text">{{ plan_data }} high-speed data</span>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <i class="ri-phone-line text-blue-500"></i>
+                  </div>
+                  <span class="feature-text">Unlimited Canada-wide calling</span>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <i class="ri-message-2-line text-blue-500"></i>
+                  </div>
+                  <span class="feature-text">Unlimited international SMS/MMS</span>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <i class="ri-speed-up-line text-blue-500"></i>
+                  </div>
+                  <span class="feature-text">5G network access</span>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <i class="ri-global-line text-blue-500"></i>
+                  </div>
+                  <span class="feature-text">Canada/US/Mexico roaming</span>
+                </div>
+              {% endif %}
+            </div>
+            <div class="mt-4 text-base text-gray-500 italic">New activations only. No Contract. No Connection fee.</div>
+          </div>
+          <div class="flex justify-between text-xl mb-4">
+            <span>Monthly fee</span>
+            <span>${{ plan_price | float | round(2) }}</span>
+          </div>
+          <div class="flex justify-between text-xl mb-4">
+            <span>Activation fee</span>
+            <span>$0.00</span>
+          </div>
+          <div class="flex justify-between text-xl mb-4">
+            <span>HST (13%)</span>
+            <span>${{ tax_amount | float | round(2) }}</span>
+          </div>
+          <div class="flex justify-between text-2xl font-semibold pt-4 border-t border-gray-200">
+            <span>Total</span>
+            <span>${{ total_monthly | float | round(2) }}/mo</span>
+          </div>
+          <div class="flex items-center gap-3 mt-6 p-4 bg-gray-100 rounded-lg text-base text-gray-600">
+            <span class="text-2xl">🔒</span>
+            <span>Your card information is securely encrypted and only used for the credit check, which is handled by the carrier.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function toggleTransferNumberField() {
+      const preference = document.getElementById('number_preference').value;
+      const transferField = document.getElementById('transfer_number_field');
+      if (preference === 'transfer') {
+        transferField.classList.remove('hidden');
+        document.getElementById('transfer_number').required = true;
+      } else {
+        transferField.classList.add('hidden');
+        document.getElementById('transfer_number').required = false;
+      }
+    }
+
+    // Add these new functions for IMEI and SIM handling
+    function updateIMEICount(value) {
+      const count = value.replace(/\D/g, '').length;
+      document.getElementById('imei-count').textContent = `${count}/15`;
+    }
+
+    function validateIMEI(input) {
+      const imeiError = document.getElementById('imei-error');
+      const value = input.value.replace(/\D/g, '');
+      
+      if (value.length > 0 && value.length !== 15) {
+        imeiError.textContent = 'IMEI must be exactly 15 digits';
+        imeiError.classList.remove('hidden');
+        input.setCustomValidity('IMEI must be exactly 15 digits');
+      } else {
+        imeiError.classList.add('hidden');
+        input.setCustomValidity('');
+      }
+    }
+
+    function validateSIMNumber(input) {
+      const simError = document.getElementById('sim-error');
+      const value = input.value.replace(/\D/g, '');
+      const count = value.length;
+      document.getElementById('sim-count').textContent = `${count}/20`;
+      
+      if (value.length > 0 && (value.length < 19 || value.length > 20)) {
+        simError.textContent = 'SIM card number must be 19-20 digits';
+        simError.classList.remove('hidden');
+        input.setCustomValidity('SIM card number must be 19-20 digits');
+      } else {
+        simError.classList.add('hidden');
+        input.setCustomValidity('');
+      }
+    }
+
+    function showIMEIHelp(event) {
+      event.preventDefault();
+      alert('Your IMEI number can be found by:\n\n1. Dialing *#06# on your phone\n2. Looking in Settings > About Phone > IMEI\n3. Checking the original box or receipt');
+    }
+
+    function showSIMHelp(event) {
+      event.preventDefault();
+      alert('Your SIM card number can be found:\n1. Printed on your SIM card\n2. On the SIM card packaging\n3. On your SIM card holder');
+    }
+
+    function formatDOB(input) {
+      // Remove any non-digit characters
+      let value = input.value.replace(/\D/g, '');
+      
+      // Add slashes automatically
+      if (value.length > 0) {
+        if (value.length <= 2) {
+          input.value = value;
+        } else if (value.length <= 4) {
+          input.value = value.slice(0, 2) + '/' + value.slice(2);
+        } else {
+          input.value = value.slice(0, 2) + '/' + value.slice(2, 4) + '/' + value.slice(4, 8);
+        }
+      }
+    }
+
+    function validateDOB(input) {
+      const dobError = document.getElementById('dob-error');
+      const value = input.value;
+      
+      // Check if empty
+      if (!value) {
+        showDOBError('Date of Birth is required');
+        return false;
+      }
+      
+      // Check format
+      const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
+      if (!regex.test(value)) {
+        showDOBError('Please enter date in MM/DD/YYYY format');
+        return false;
+      }
+      
+      // Parse the date
+      const [month, day, year] = value.split('/').map(num => parseInt(num, 10));
+      const dob = new Date(year, month - 1, day);
+      const today = new Date();
+      
+      // Check if it's a valid date (e.g., not 02/31/2000)
+      if (dob.getMonth() !== month - 1 || dob.getDate() !== day) {
+        showDOBError('Please enter a valid date');
+        return false;
+      }
+      
+      // Check if date is in the past
+      if (dob > today) {
+        showDOBError('Date of Birth must be in the past');
+        return false;
+      }
+      
+      // Check if age is at least 18 years
+      const age = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age--;
+      }
+      
+      if (age < 18) {
+        showDOBError('You must be at least 18 years old');
+        return false;
+      }
+      
+      // If all validations pass
+      dobError.classList.add('hidden');
+      input.setCustomValidity('');
+      return true;
+    }
+
+    function showDOBError(message) {
+      const dobError = document.getElementById('dob-error');
+      dobError.textContent = message;
+      dobError.classList.remove('hidden');
+      document.getElementById('dob').setCustomValidity(message);
+    }
+
+    // Add form validation for DOB
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      const dobInput = document.getElementById('dob');
+      
+      form.addEventListener('submit', function(event) {
+        if (!validateDOB(dobInput)) {
+          event.preventDefault();
+          dobInput.focus();
+        }
+      });
+    });
+
+    // Show activation message immediately on form submit
+    document.querySelector('form[action="/checkout_submit"]').addEventListener('submit', function(event) {
+        // Prevent the default form submission
+        event.preventDefault();
+        
+        // Get the main content area
+        const mainContent = document.querySelector('main');
+        
+        // Replace content with success message immediately
+        mainContent.innerHTML = `
+            <div class="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]">
+                <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center relative overflow-hidden">
+                    <!-- Success animation -->
+                    <div class="flex justify-center mb-6 transform transition-transform duration-500 hover:scale-110">
+                        <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center animate-[bounce_1s_ease-in-out]">
+                            <i class="ri-check-line text-4xl text-green-500"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Success message -->
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                        Activation in Progress
+                    </h2>
+                    
+                    <div class="space-y-4 text-gray-600">
+                        <p class="leading-relaxed">
+                            Your activation is being processed by Bell. Upon successful activation, 
+                            you will receive an email with a copy of your contract.
+                        </p>
+                        <p class="leading-relaxed">
+                            If something were to go wrong during this process, we will contact you 
+                            and provide further instructions.
+                        </p>
+                    </div>
+
+                    <!-- Email reminder -->
+                    <div class="mt-8 p-4 bg-green-50 rounded-lg border border-green-100 transform transition-all duration-300 hover:shadow-md">
+                        <div class="flex items-center gap-3 text-green-700">
+                            <i class="ri-mail-line text-xl"></i>
+                            <span>Check your email for updates</span>
+                        </div>
+                    </div>
+
+                    <!-- Decorative elements -->
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-blue-500"></div>
+                    <div class="absolute bottom-0 right-0 w-32 h-32 -mr-16 -mb-16 bg-green-50 rounded-full opacity-20"></div>
+                </div>
+            </div>
+        `;
+        
+        // Now submit the form asynchronously with fetch
+        const formData = new FormData(this);
+        
+        fetch('/checkout_submit', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Activation process started:', data);
+            // The success message is already showing, no need to do anything else
+        })
+        .catch(error => {
+            console.error('Error during activation:', error);
+            // You could update the success message to show an error if needed
+        });
+    });
+
+    // Add event listener for activation type change
+    document.addEventListener('DOMContentLoaded', function() {
+      const activationTypeInputs = document.querySelectorAll('input[name="activation_type"]');
+      const imeiField = document.getElementById('imei');
+      
+      // Ensure the IMEI field is visible by default if eSIM is selected
+      if (document.querySelector('input[name="activation_type"][value="esim"]:checked')) {
+        document.getElementById('imei_field').style.display = 'block';
+        imeiField.required = true;
+      } else {
+        document.getElementById('imei_field').style.display = 'none';
+        imeiField.required = false;
+      }
+      
+      activationTypeInputs.forEach(input => {
+        input.addEventListener('change', function() {
+          // Handle IMEI field requirement
+          if (this.value === 'esim') {
+            document.getElementById('imei_field').style.display = 'block';
+            imeiField.required = true;
+          } else {
+            document.getElementById('imei_field').style.display = 'none';
+            imeiField.required = false;
+            imeiField.value = ''; // Clear IMEI when switching
+          }
+        });
+      });
+
+      // Form validation before submission
+      const form = document.querySelector('form');
+      form.addEventListener('submit', function(event) {
+        const selectedActivationType = document.querySelector('input[name="activation_type"]:checked').value;
+        
+        if (selectedActivationType === 'esim') {
+          const imei = imeiField.value.replace(/\D/g, '');
+          if (imei.length !== 15) {
+            event.preventDefault();
+            alert('Please enter a valid 15-digit IMEI number');
+            imeiField.focus();
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

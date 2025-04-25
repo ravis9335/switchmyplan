@@ -1,0 +1,406 @@
+/* ==========================================================================
+   SwitchMyPlan.ca Responsive Styles
+   ========================================================================== */
+
+/* Base responsive variables */
+:root {
+  --container-padding-mobile: 1rem;
+  --container-padding-tablet: 2rem;
+  --container-padding-desktop: 4rem;
+  --transition-speed: 0.3s;
+}
+
+/* General responsive rules */
+@media (max-width: 768px) {
+  .container {
+    padding-left: var(--container-padding-mobile);
+    padding-right: var(--container-padding-mobile);
+  }
+  
+  /* Fix overflow issues on mobile */
+  body {
+    overflow-x: hidden;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    padding-left: var(--container-padding-tablet);
+    padding-right: var(--container-padding-tablet);
+  }
+}
+
+@media (min-width: 1025px) {
+  .container {
+    padding-left: var(--container-padding-desktop);
+    padding-right: var(--container-padding-desktop);
+  }
+}
+
+/* Typography scaling */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  h3 {
+    font-size: 1.25rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  p, li {
+    font-size: 0.95rem !important;
+  }
+}
+
+/* Navigation styles */
+@media (max-width: 768px) {
+  /* Hide desktop menu by default */
+  .desktop-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(-100%);
+    transition: transform var(--transition-speed) ease-in-out;
+    padding: 2rem;
+  }
+  
+  /* Show mobile menu when active */
+  .desktop-menu.active {
+    transform: translateY(0);
+  }
+  
+  /* Mobile menu button styling */
+  .mobile-menu-button {
+    display: flex !important;
+    z-index: 50;
+  }
+  
+  /* Nav links in mobile menu */
+  .desktop-menu a {
+    font-size: 1.25rem !important;
+    margin: 0.75rem 0 !important;
+    padding: 0.5rem !important;
+  }
+  
+  /* Navbar scroll effect */
+  #navbar.scrolled {
+    transform: translateY(-100%);
+  }
+  
+  #navbar {
+    transition: transform 0.3s ease-in-out;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Layout styles */
+@media (max-width: 1024px) {
+  /* Make main layout full width on mobile/tablet */
+  .main-layout {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Adjust sidebar to be horizontal on mobile */
+  #filtersSidebar {
+    position: relative !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin-bottom: 2rem;
+    border-right: none !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Make filter sections collapsible on mobile */
+  .filter-section {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .filter-section h3 {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .filter-section h3::after {
+    content: "▼";
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .filter-section.collapsed h3::after {
+    transform: rotate(-90deg);
+  }
+  
+  .filter-section.collapsed .filter-options {
+    display: none;
+  }
+}
+
+/* Plan cards styles */
+@media (max-width: 768px) {
+  /* Adjust grid to single column on mobile */
+  #plansGrid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Make plan cards more compact on mobile */
+  .plan-card {
+    padding: 1rem !important;
+  }
+  
+  .plan-card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  .carrier-logo {
+    margin-bottom: 0.5rem !important;
+    max-width: 100px !important;
+  }
+  
+  .plan-data {
+    font-size: 1.25rem !important;
+  }
+  
+  .plan-price {
+    font-size: 1.5rem !important;
+  }
+  
+  .plan-button {
+    width: 100% !important;
+    margin-top: 1rem !important;
+  }
+}
+
+/* Hero section adjustments */
+@media (max-width: 768px) {
+  .hero {
+    padding: 2rem 1rem !important;
+    text-align: center;
+  }
+  
+  .hero-content {
+    max-width: 100% !important;
+  }
+  
+  .hero-title {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem !important;
+  }
+  
+  .hero-buttons {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .hero-buttons .button {
+    width: 100% !important;
+    margin: 0.5rem 0 !important;
+  }
+}
+
+/* Filter sidebar styles for mobile */
+@media (max-width: 768px) {
+  .filter-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  
+  .filter-controls > div {
+    margin-bottom: 1rem !important;
+    width: 100% !important;
+  }
+  
+  .filter-controls select,
+  .filter-controls button {
+    width: 100% !important;
+  }
+  
+  /* Mobile filters dropdown */
+  .mobile-filters-toggle {
+    display: flex !important;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #f5f5f5;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  .mobile-filters-toggle i {
+    margin-right: 0.5rem;
+  }
+  
+  /* Hide filters by default on mobile */
+  #filtersSidebar {
+    display: none;
+  }
+  
+  /* Show when active */
+  #filtersSidebar.active {
+    display: block;
+  }
+}
+
+/* Footer styles */
+@media (max-width: 768px) {
+  footer {
+    padding: 2rem 1rem !important;
+    text-align: center;
+  }
+  
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  
+  .footer-links {
+    justify-content: center !important;
+  }
+  
+  .footer-links a {
+    margin: 0 0.5rem !important;
+  }
+  
+  .footer-contact {
+    margin-top: 1rem !important;
+  }
+}
+
+/* Chat component styles */
+@media (max-width: 768px) {
+  .chat-widget {
+    bottom: 1rem !important;
+    right: 1rem !important;
+    width: calc(100% - 2rem) !important;
+    max-width: none !important;
+  }
+  
+  .chat-header {
+    padding: 0.75rem !important;
+  }
+  
+  .chat-body {
+    max-height: 300px !important;
+  }
+  
+  .chat-input {
+    padding: 0.75rem !important;
+  }
+}
+
+/* Modal styles */
+@media (max-width: 768px) {
+  .modal {
+    width: 95% !important;
+    max-width: 95% !important;
+    padding: 1rem !important;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .modal-body {
+    padding: 1rem 0 !important;
+  }
+  
+  .modal-footer {
+    flex-direction: column !important;
+  }
+  
+  .modal-footer button {
+    width: 100% !important;
+    margin: 0.5rem 0 !important;
+  }
+}
+
+/* Utility classes */
+.hide-on-mobile {
+  display: none !important;
+}
+
+.show-on-mobile {
+  display: block !important;
+}
+
+@media (min-width: 769px) {
+  .hide-on-mobile {
+    display: block !important;
+  }
+  
+  .show-on-mobile {
+    display: none !important;
+  }
+}
+
+/* Mobile filter toggle button + script */
+@media (max-width: 768px) {
+  .mobile-filter-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    background-color: #f5f5f5;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .mobile-filter-toggle:hover {
+    background-color: #e5e5e5;
+  }
+  
+  .mobile-filter-toggle i {
+    transition: transform 0.3s ease;
+  }
+  
+  .mobile-filter-toggle.active i {
+    transform: rotate(180deg);
+  }
+}
+
+/* Add spacing utility classes for responsive layouts */
+@media (max-width: 768px) {
+  .mt-mobile-4 { margin-top: 1rem !important; }
+  .mt-mobile-8 { margin-top: 2rem !important; }
+  .mb-mobile-4 { margin-bottom: 1rem !important; }
+  .mb-mobile-8 { margin-bottom: 2rem !important; }
+  .mx-mobile-0 { margin-left: 0 !important; margin-right: 0 !important; }
+  .py-mobile-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+  .px-mobile-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .text-mobile-center { text-align: center !important; }
+} 

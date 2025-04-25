@@ -50,7 +50,7 @@
 
 <style>
 :root {
-  --color-bg: #f0f4ff;
+  --color-bg: #bfcffa;
   --color-text: #2a3158;
   --color-text-light: #5a6184;
   --color-accent: #4470FF;
@@ -70,10 +70,25 @@ html {
 body {
   font-family: 'Outfit', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+  background: linear-gradient(135deg, #bfcffa 0%, #e8f0ff 100%);
   color: #2a3158;
   cursor: default;
   overflow-x: hidden;
+}
+
+/* Full-width section styles */
+.page-section {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-section.bg-white {
+  background-color: rgba(218, 228, 255, 0.9);
+}
+
+.page-section.bg-gradient {
+  background: linear-gradient(135deg, #bfcffa 0%, #e8f0ff 100%);
 }
 
 .font-display {
@@ -410,67 +425,144 @@ body {
 /* Plan cards */
 .plan-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border-radius: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  overflow: hidden;
-  transition: all 0.3s ease;
-  height: 540px;
+  flex-shrink: 0;
   width: 100%;
-  min-width: 305px;
-  display: flex !important;
-  flex-direction: column;
-  transform: translateZ(0);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  min-height: 520px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(to bottom, rgba(210, 210, 210, 0.9), rgba(230, 240, 255, 0.9));
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s var(--ease);
+  border: none;
+  max-width: 468px; /* Increased from 390px by 20% */
+  margin: 0 auto;
 }
 
 .plan-card:hover {
-  border-color: rgba(var(--accent-rgb), 0.8);
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transform: translateY(-8px);
+  box-shadow: 0 25px 30px -12px rgba(68, 112, 255, 0.25);
+}
+
+/* Gradient border animation on hover - ENHANCED */
+.plan-card::after {
+  content: '';
+  position: absolute;
+  inset: -2px; /* Slightly bigger to create outer glow effect */
+  border-radius: 1.5rem;
+  padding: 4px; /* Thicker border */
+  background: linear-gradient(
+    90deg,
+    #4470FF,
+    #7C4DFF,
+    #FF4D94,
+    #4470FF
+  );
+  background-size: 300% 300%;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 0 15px rgba(68, 112, 255, 0.6);
+  filter: blur(2px);
+  z-index: 4;
+}
+
+.plan-card:hover::after {
+  opacity: 1;
+  animation: gradient-border 3s linear infinite;
+}
+
+/* Add glow effect on hover */
+.plan-card:hover {
+  filter: drop-shadow(0 0 15px rgba(68, 112, 255, 0.6));
+}
+
+/* Additional outer glow border for plan cards */
+.plan-card::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 1.8rem;
+  background: linear-gradient(
+    45deg,
+    #4470FF,
+    #7C4DFF,
+    #FF4D94,
+    #4470FF
+  );
+  background-size: 400% 400%;
+  opacity: 0;
+  z-index: 3;
+  transition: opacity 0.4s ease;
+  filter: blur(8px);
+}
+
+.plan-card:hover::before {
+  opacity: 0.8;
+  animation: gradient-border 4s linear infinite;
+}
+
+@keyframes gradient-border {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Enhance card content on hover */
+.plan-card > div {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.plan-card:hover > div {
+  transform: translateZ(10px);
+  opacity: 1;
 }
 
 /* Card header section */
 .plan-card-header {
-  height: 100px;
-  padding: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(to bottom, rgba(232, 233, 250, 0.9), rgba(255, 255, 255, 0.5));
-  margin-bottom: 0;
+  padding: 1.5rem 1.5rem 0.75rem;
 }
 
 /* Plan name section */
 .plan-card-name {
-  height: 100px;
-  padding: 1.25rem;
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px);
-  margin-bottom: 0.5rem;
+  min-height: 75px;
+  padding: 0 1.5rem 0.5rem;
 }
 
 .plan-card-name .text-2xl {
-  font-size: 1.5rem;
+  font-size: 1.8rem; /* Increased from 1.5rem by 20% */
   line-height: 1.3;
 }
 
 .plan-card-name .text-gray-500 {
-  font-size: 0.75rem;
+  font-size: 0.9rem; /* Increased from 0.75rem by 20% */
 }
 
 /* Features section */
 .plan-card-features {
   flex: 1;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   overflow-y: auto;
-  background: rgba(255, 255, 255, 0.3);
+  max-height: 290px; /* Increased from 270px */
+  background: rgba(211, 228, 250, 0.15);
   scrollbar-width: thin;
   scrollbar-color: rgba(68, 112, 255, 0.3) transparent;
-  margin-bottom: 1rem;
+  border: none;
 }
 
+/* Restore scrollbar styling */
 .plan-card-features::-webkit-scrollbar {
   width: 6px;
 }
@@ -486,19 +578,16 @@ body {
 
 /* Footer section */
 .plan-card-footer {
-  height: 100px;
-  padding: 1.25rem;
-  background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.5));
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 0;
+  padding: 0.75rem 1.5rem 1.5rem;
+  background: transparent;
+  border-top: none;
 }
 
 .plan-card-footer .text-xs {
-  font-size: 0.75rem;
-  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
 }
 
 /* Select plan button */
@@ -506,18 +595,40 @@ body {
   background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
   color: white !important;
   font-weight: 500;
-  padding: 0.8rem 1.5rem;
+  padding: 0.9rem 1.5rem;
   border-radius: 9999px;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  box-shadow: 0 4px 12px rgba(68, 112, 255, 0.25);
-  font-size: 0.8rem;
+  box-shadow: 0 8px 20px rgba(68, 112, 255, 0.3);
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.select-plan-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(68, 112, 255, 0.35);
+}
+
+.select-plan-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.select-plan-button:hover::before {
+  opacity: 1;
 }
 
 .plan-card .carrier-logo {
@@ -525,10 +636,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 60px;
+  height: 65px;
   width: auto;
   max-width: 115px;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-bottom: 0;
 }
 
 .plan-card .carrier-logo img {
@@ -541,18 +653,27 @@ body {
   animation: none !important;
 }
 
+/* Additional space specifically for Virgin and Koodo carrier logos */
+.plan-card[data-carrier="Virgin"] .carrier-logo,
+.plan-card[data-carrier="Koodo"] .carrier-logo {
+  height: 90px; /* Increased from 80px for the even larger logos */
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 /* Price styling */
 .price-text {
-  font-size: 2.25rem;
+  font-size: 2.8rem;
   font-weight: 700;
   background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-family: 'Space Grotesk', sans-serif;
+  line-height: 1;
 }
 
 .price-suffix {
-  font-size: 1rem;
+  font-size: 1.2rem; /* Increased from 1rem by 20% */
   color: #64748b;
   margin-left: 0.25rem;
   -webkit-text-fill-color: #64748b;
@@ -563,13 +684,13 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 0.25rem;
   transition: all 0.2s ease;
 }
 
 .feature-item:hover {
-  background: rgba(68, 112, 255, 0.05);
+  background: rgba(68, 112, 255, 0.08);
 }
 
 .feature-icon {
@@ -584,20 +705,20 @@ body {
 }
 
 .feature-text {
-  font-size: 0.875rem;
+  font-size: 1.05rem; /* Increased from 0.875rem by 20% */
   color: #334155;
   line-height: 1.5;
 }
 
 /* Specific adjustments for Virgin and Koodo logos */
 .plan-card[data-carrier="Virgin"] .carrier-logo img {
-  transform: scale(1.3); /* Scale up by 30% */
-  max-width: none; /* Remove max-width to allow scaling */
+  transform: scale(2.24) !important;
+  max-width: none !important;
 }
 
 .plan-card[data-carrier="Koodo"] .carrier-logo img {
-  transform: scale(1.9); /* Scale up by 90% */
-  max-width: none; /* Remove max-width to allow scaling */
+  transform: scale(3.71) !important;
+  max-width: none !important;
 }
 
 @media (max-width: 768px) {
@@ -606,7 +727,7 @@ body {
   }
   
   .plan-card {
-    min-height: 520px;
+    min-height: 580px; /* Increased from 520px to match the desktop height adjustment */
   }
 }
 
@@ -636,28 +757,40 @@ body {
 /* Carrier logo styles for free-floating logos */
 .carrier-logo {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.carrier-logo::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80%;
+  height: 80%;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  background: radial-gradient(rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
 }
 
 .carrier-logo:hover {
-  transform: scale(1.1) !important;
-  z-index: 20 !important;
+  transform: scale(1.1) translateY(-5px);
+}
+
+.carrier-logo:hover::after {
+  opacity: 0.8;
 }
 
 .carrier-logo img {
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
   transition: all 0.3s ease;
-  transform-origin: center center;
-  background-color: transparent;
-  padding: 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.carrier-logo:hover img {
-  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4));
-  background-color: transparent;
-  box-shadow: none;
+  max-width: 100%;
+  height: auto;
 }
 
 /* Keep logos upright while orbiting */
@@ -672,18 +805,42 @@ body {
 }
 
 .carrier-orbit {
-  animation: spin 60s linear infinite;
+  animation: none;
+}
+
+.carrier-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.carrier-logo:hover {
+  transform: scale(1.05);
 }
 
   .carrier-logo img {
-  animation: keep-upright 60s linear infinite;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
-  transition: all 0.3s ease;
-  transform-origin: center center;
+  max-height: 3.5rem;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+  animation: none;
   background-color: transparent;
   padding: 0;
   border-radius: 0;
   box-shadow: none;
+  transform: scale(1.2); /* Make all logos 20% bigger */
+}
+
+/* Specific adjustments for Virgin and Koodo logos */
+.carrier-logo img[alt="Virgin"] {
+  transform: scale(1.5) !important;
+  max-width: none !important;
+}
+
+.carrier-logo img[alt="Koodo"] {
+  transform: scale(2.25) !important; /* Increase Koodo logo size by 50% more */
+  max-width: none !important;
 }
 
 /* Button and card styles for light theme */
@@ -696,9 +853,9 @@ body {
 }
 
 .card-hover, .plan-card {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(88, 46, 255, 0.8);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
 }
 
@@ -725,27 +882,35 @@ body {
 .plan-carousel-container {
   position: relative;
   width: 100%;
-  overflow: visible;
-  padding: 0 2rem;
+  overflow-x: hidden;
+  padding: 0 1.5rem; /* Reduced from 2rem */
 }
 
 #planCarousel, #prepaidCarousel {
   display: flex;
-  gap: 1rem;
-  transition: transform 0.3s ease-in-out;
+  gap: 0.5rem; /* Reduced from 1rem */
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 10px;
 }
 
 #planCarousel > div, #prepaidCarousel > div {
   min-width: calc(33.333% - 0.667rem);
 }
 
+/* Media queries for responsive carousel display */
+@media (max-width: 1024px) and (min-width: 769px) {
+  #planCarousel > div, #prepaidCarousel > div {
+    min-width: calc(50% - 0.5rem); /* Show 2 cards on medium screens */
+  }
+}
+
 @media (max-width: 768px) {
   #planCarousel > div, #prepaidCarousel > div {
-    min-width: 100%;
+    min-width: 100%; /* Show 1 card on small screens */
   }
   
   .plan-card {
-    min-height: 520px;
+    min-height: 580px; /* Increased from 520px to match the desktop height adjustment */
   }
 }
 
@@ -813,16 +978,17 @@ body {
 
 /* End of carousel styles */
 
-/* Always white, even when scrolled */
+/* Add these styles to match the all-plans.html header */
+/* Navigation styles */
 #navbar {
-  background: linear-gradient(135deg, #f0f4ff , #d2e0f9 );
+            background: linear-gradient(135deg, #f0f4ff, #d2e0f9);
   transition: all 0.3s var(--ease-out);
 }
 
 #navbar.scrolled {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
-  background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+            background: linear-gradient(135deg, #f0f4ff 0%, #d2e0f9 100%);
 }
 
 .nav-link {
@@ -853,7 +1019,6 @@ body {
   color: var(--color-accent);
 }
 
-
 /* Mobile menu styles */
 .mobile-menu-button {
   display: none;
@@ -871,12 +1036,29 @@ body {
     transition: opacity 0.3s var(--ease), visibility 0.3s var(--ease);
     visibility: hidden;
     opacity: 0;
+    display: flex !important;
   }
 
   #mobile-menu.active {
     visibility: visible;
     opacity: 1;
   }
+
+  #mobile-menu a {
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.4s var(--ease), opacity 0.4s var(--ease);
+  }
+
+  #mobile-menu.active a {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  #mobile-menu.active a:nth-child(1) { transition-delay: 0.1s; }
+  #mobile-menu.active a:nth-child(2) { transition-delay: 0.15s; }
+  #mobile-menu.active a:nth-child(3) { transition-delay: 0.2s; }
+  #mobile-menu.active a:nth-child(4) { transition-delay: 0.25s; }
 
   .nav-link {
     display: block;
@@ -894,19 +1076,19 @@ body {
     background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
     color: white !important;
     font-weight: 500;
-    padding: 0.8rem 1.5rem;
+    padding: 0.9rem 1.5rem;
     border-radius: 9999px;
     text-align: center;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    box-shadow: 0 4px 12px rgba(68, 112, 255, 0.25);
-    font-size: 0.8rem;
-    margin-top: auto;
+    box-shadow: 0 8px 20px rgba(68, 112, 255, 0.3);
+    font-size: 1rem;
+    margin-top: 0.5rem;
 }
 
 .select-plan-button:hover {
@@ -974,25 +1156,104 @@ body {
 .plan-carousel-container {
   position: relative;
   width: 100%;
-  overflow: visible;
-  padding: 0 2rem;
+  overflow: hidden;
+  padding: 0 1.5rem; /* Reduced from 2rem */
 }
 
 #planCarousel, #prepaidCarousel {
   display: flex;
-  gap: 1rem;
-  transition: transform 0.3s ease-in-out;
+  gap: 0.5rem; /* Reduced from 1rem */
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 10px;
 }
 
 #planCarousel > div, #prepaidCarousel > div {
   min-width: calc(33.333% - 0.667rem);
 }
 
+/* Media queries for responsive carousel display */
+@media (max-width: 1024px) and (min-width: 769px) {
+  #planCarousel > div, #prepaidCarousel > div {
+    min-width: calc(50% - 0.5rem); /* Show 2 cards on medium screens */
+  }
+}
+
 @media (max-width: 768px) {
   #planCarousel > div, #prepaidCarousel > div {
-    min-width: 100%;
+    min-width: 100%; /* Show 1 card on small screens */
   }
   
+  .plan-card {
+    min-height: 580px; /* Increased from 520px to match the desktop height adjustment */
+  }
+}
+
+/* Carrier logo styles */
+.carrier-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.carrier-logo:hover {
+  transform: scale(1.05);
+}
+
+.carrier-logo img {
+  max-height: 3.5rem;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+  animation: none;
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: scale(1.2); /* Make all logos 20% bigger */
+}
+
+/* Specific adjustments for Virgin and Koodo logos in the hero section */
+a.carrier-logo img[alt="Virgin"] {
+  transform: scale(1.5) !important;
+  max-width: none !important;
+}
+
+a.carrier-logo img[alt="Koodo"] {
+  transform: scale(2.25) !important; /* Increase Koodo logo size by 50% more */
+  max-width: none !important;
+}
+
+/* Plan card specific styles */
+.plan-card[data-carrier="Virgin"] .carrier-logo img {
+  transform: scale(2.24) !important; /* Increased from 1.95 by 15% more */
+  max-width: none !important;
+}
+
+.plan-card[data-carrier="Koodo"] .carrier-logo img {
+  transform: scale(3.71) !important; /* Increased from 2.85 by 30% more */
+  max-width: none !important;
+}
+
+/* Remove keep-upright animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Chat animation */
+@keyframes dotsAnimation {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+.dots::after {
+  content: '';
+  animation: dotsAnimation 1.5s infinite linear;
+}
+
+@media (max-width: 640px) {
   .plan-card {
     min-height: 520px;
   }
@@ -1010,12 +1271,215 @@ body {
     right: -0.5rem;
   }
 }
+
+/* Shine effect for plan cards on hover */
+.plan-card .shine {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.96),
+    transparent
+  );
+  transform: rotate(30deg);
+  transition: left 0.5s ease;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.plan-card:hover .shine {
+  left: 150%;
+  transition: left 0.7s ease-in-out;
+}
+
+.carousel-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel-container {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.plan-card {
+  flex: 0 0 calc(100% / 3 - 20px);
+  margin: 0 10px;
+  background-color: rgb(215, 233, 254);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Responsive card sizes */
+@media (max-width: 1023px) {
+  .plan-card {
+    flex: 0 0 calc(50% - 20px);
+  }
+}
+
+@media (max-width: 767px) {
+  .plan-card {
+    flex: 0 0 calc(100% - 20px);
+  }
+}
+
+.plan-card:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.carousel-nav {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.carousel-nav button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.carousel-nav button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.carousel-nav button:not(:disabled):hover {
+  background-color: var(--accent-dark);
+  transform: scale(1.1);
+}
+
+.no-plans-message {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 18px;
+}
+
+/* Ensure plan cards take the full height */
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 580px;
+  height: 580px; /* Fixed height for consistency */
+  overflow: hidden; /* Ensure content doesn't overflow */
+}
+
+/* Makes sure carrier logo section is well-sized */
+.plan-card .carrier-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 75px;
+  width: auto;
+  max-width: 120px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-bottom: 5px;
+}
+
+/* Proper layout for card header */
+.plan-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Fix features section to grow properly and restore scrolling */
+.plan-card-features {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+  max-height: 290px; /* Increased from 270px */
+  background: rgba(211, 228, 250, 0.15);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(68, 112, 255, 0.3) transparent;
+  border: none;
+}
+
+/* Restore scrollbar styling */
+.plan-card-features::-webkit-scrollbar {
+  width: 6px;
+}
+
+.plan-card-features::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.plan-card-features::-webkit-scrollbar-thumb {
+  background-color: rgba(68, 112, 255, 0.3);
+  border-radius: 3px;
+}
+
+/* Footer section */
+.plan-card-footer {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1.5rem 1.5rem;
+  background: transparent;
+  border-top: none;
+}
+
+.plan-card-footer .text-xs {
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Make carousel container properly sized */
+.plan-carousel-container {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  padding: 0 1.5rem; /* Reduced from 2rem */
+  margin: 1rem 0;
+}
+
+.ribbon-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.ribbon {
+  position: absolute;
+  top: 25px;
+  right: -30px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #ff6b6b, #ff4757);
+  color: white;
+  padding: 7px 40px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  text-align: center;
+  letter-spacing: 1px;
+}
 </style>
 
 <!-- Update carousel HTML structure -->
 
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]">
+<body class="min-h-screen overflow-x-hidden">
   <!-- Background noise -->
   <div class="noise-bg"></div>
 
@@ -1025,7 +1489,7 @@ body {
       <div class="flex items-center justify-between w-full">
         <!-- Logo -->
         <a href="/" class="text-4xl font-['Apple_Garamond'] font-semibold" style="font-size: 3.5rem;">
-          <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+          <span class="text-black">Swicth</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
         </a>
 
         <!-- Mobile menu button -->
@@ -1051,9 +1515,8 @@ body {
     </div>
   </nav>
 
-  <main>
   <!-- Hero Section -->
-    <section class="min-h-screen relative flex items-center" id="hero">
+    <section class="min-h-screen relative flex items-center w-full page-section bg-gradient" id="hero">
       <!-- Background gradient effects -->
       <div class="absolute inset-0" style="z-index: 1;">
         <div class="absolute top-[-20%] right-[-10%] w-[60%] h-[70%] rounded-full blur-[120px] bg-blue-300/30 animate-pulse-slow"></div>
@@ -1068,7 +1531,7 @@ body {
           <div class="max-w-xl">
             <!-- Animated welcome text -->
             <div class="overflow-hidden mb-5">
-              <span class="inline-block text-accent/90 font-medium uppercase tracking-wider text-sm animate-slide-up" style="animation-delay: 0.1s">
+              <span class="inline-block text-accent/90 font-medium uppercase tracking-wider text-xl animate-slide-up" style="animation-delay: 0.1s">
                 Mobile plans reimagined
               </span>
             </div>
@@ -1107,7 +1570,7 @@ body {
             <!-- Description -->
             <div class="overflow-hidden mb-10">
               <p class="text-black text-lg animate-slide-up" style="animation-delay: 0.4s">
-                Compare all major Canadian carriers in seconds. Find the best plan tailored to your needs with our AI-powered recommendation engine.
+                Compare all major Canadian carriers in seconds. Find the best plan tailored to your needs with our Best In Class recommendation engine.
               </p>
             </div>
 
@@ -1129,86 +1592,55 @@ body {
                 <div class="text-2xl font-display font-bold gradient-text">100+</div>
                 <div class="text-black text-sm">Plans Compared</div>
             </div>
-              <div>
-                <div class="text-2xl font-display font-bold gradient-text">24/7</div>
-                <div class="text-black text-sm">AI Assistance</div>
-            </div>
+              
           </div>
         </div>
         
-          <!-- 3D Carrier orbit visualization -->
-          <div class="lg:h-[90vh] flex items-center justify-center relative">
-            <div class="relative w-[500px] h-[500px] md:w-[600px] md:h-[600px] hero-card">
-              <!-- Circular gradient backgrounds - removed -->
+        <!-- Carrier logos grid -->
+        <div class="mt-16 animate-slide-up" style="animation-delay: 0.7s; z-index: 3;">
+          <div class="bg-[rgba(218,228,255,0.9)] rounded-3xl p-6 md:p-10 max-w-5xl mx-0 lg:mr-auto shadow-lg">
+            <h3 class="text-xl md:text-2xl gradient-text font-display font-family:helvetica  mb-6 md:mb-10 text-center text-[#2a3158]"> Your Favourite Carriers All In One Place</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-16">
+              <!-- Row 1 -->
+          <!-- Bell -->
+              <a href="/all-plans?carrier=Bell" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/images.png" alt="Bell" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
               
-              <!-- Center glow - removed -->
+          <!-- Rogers -->
+              <a href="/all-plans?carrier=Rogers" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Rogers_logo.svg.png" alt="Rogers" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
+          <!-- Telus -->
+              <a href="/all-plans?carrier=Telus" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Telus-Logo-1996.png" alt="Telus" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
+              <!-- Freedom -->
+              <a href="/all-plans?carrier=Freedom" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Freedom_Mobile_logo.svg.png" alt="Freedom" class="max-h-16 md:max-h-24 object-contain" />
+              </a>
+              <!-- Row 2 -->
+          <!-- Virgin -->
+              <a href="/all-plans?carrier=Virgin" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Virgin_Plus_Web.png" alt="Virgin" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
               
-              <!-- Center element - removed -->
+          <!-- Fido -->
+              <a href="/all-plans?carrier=Fido" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Fido_Solutions_logo.svg.png" alt="Fido" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
+          <!-- Koodo -->
+              <a href="/all-plans?carrier=Koodo" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Koodo_Mobile_-_Color.png" alt="Koodo" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
               
-              <!-- Orbit rings - removed -->
-              
-              <!-- Carrier logos placed in orbital positions - keeping just the logos -->
-            <div class="carrier-orbit absolute inset-0">
-                <!-- Bell -->
-                <div class="carrier-logo absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[100px]">
-                    <a href="/all-plans?carrier=Bell" class="block transition-transform hover:scale-125">
-                  <img src="/carrierlogos/images.png" alt="Bell" class="w-28 h-28 object-contain">
-                    </a>
-      </div>
-                
-                <!-- Rogers -->
-                <div class="carrier-logo absolute top-[13.4%] right-[13.4%] translate-x-[70px] -translate-y-[70px]">
-                    <a href="/all-plans?carrier=Rogers" class="block transition-transform hover:scale-125">
-                  <img src="/carrierlogos/Rogers_logo.svg.png" alt="Rogers" class="w-28 h-28 object-contain">
-                    </a>
-    </div>
-                
-                <!-- Telus -->
-                <div class="carrier-logo absolute top-1/2 right-0 translate-x-[100px] -translate-y-1/2">
-                    <a href="/all-plans?carrier=Telus" class="block transition-transform hover:scale-125">
-                  <img src="/carrierlogos/Telus-Logo-1996.png" alt="Telus" class="w-28 h-28 object-contain">
-                    </a>
-    </div>
-        
-                <!-- Virgin -->
-                <div class="carrier-logo absolute bottom-[13.4%] right-[13.4%] translate-x-[70px] translate-y-[70px]">
-                    <a href="/all-plans?carrier=Virgin" class="block transition-transform hover:scale-125">
-                  <img src="/carrierlogos/Virgin_Plus_Web.png" alt="Virgin" class="w-28 h-28 object-contain">
-                    </a>
-            </div>
-                
-                <!-- Fido -->
-                <div class="carrier-logo absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[100px]">
-                    <a href="/all-plans?carrier=Fido" class="block transition-transform hover:scale-125">
-                  <img src="/carrierlogos/Fido_Solutions_logo.svg.png" alt="Fido" class="w-28 h-28 object-contain">
-                    </a>
-          </div>
-                
-                <!-- Koodo -->
-                <div class="carrier-logo absolute bottom-[13.4%] left-[13.4%] -translate-x-[70px] translate-y-[70px]">
-                    <a href="/all-plans?carrier=Koodo" class="block transition-transform hover:scale-125">
-                  <img src="/carrierlogos/Koodo_Mobile_-_Color.png" alt="Koodo" class="w-40 h-40 object-contain">
-                    </a>
-        </div>
-        
-                <!-- Freedom -->
-                <div class="carrier-logo absolute top-1/2 left-0 -translate-x-[100px] -translate-y-1/2">
-                    <a href="/all-plans?carrier=Freedom" class="block transition-transform hover:scale-125">
-                  <img src="/carrierlogos/Freedom_Mobile_logo.svg.png" alt="Freedom" class="w-28 h-28 object-contain">
-                    </a>
-            </div>
-                
-                <!-- Chatr -->
-                <div class="carrier-logo absolute top-[13.4%] left-[13.4%] -translate-x-[70px] -translate-y-[70px]">
-                    <a href="/all-plans?carrier=Chatr" class="block transition-transform hover:scale-125">
-                  <img src="/carrierlogos/png-clipart-chatr-mobile-phones-rogers-wireless-mobile-service-provider-company-lucky-mobile-chatr-purple-violet.png" alt="Chatr" class="w-28 h-28 object-contain">
-                    </a>
-          </div>
-        </div>
-            </div>
-          </div>
+          <!-- Chatr -->
+              <a href="/all-plans?carrier=Chatr" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/png-clipart-chatr-mobile-phones-rogers-wireless-mobile-service-provider-company-lucky-mobile-chatr-purple-violet.png" alt="Chatr" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
         </div>
       </div>
+        </div>
       
       <!-- Scroll indicator -->
       <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-pulse-slow cursor-pointer hover:opacity-100 transition-all duration-300" id="scroll-to-explore">
@@ -1217,13 +1649,8 @@ body {
       </div>
     </section>
 
-    <!-- Carrier Orbit Section -->
-    <section id="carrier-orbit" class="py-20 relative">
-      <!-- Your existing carrier orbit content -->
-    </section>
-
     <!-- Featured Plans Section -->
-    <section id="featured-plans" class="py-20 relative">
+    <section id="featured-plans" class="py-20 w-full page-section bg-gradient">
       <div class="container mx-auto px-6">
         <div class="flex justify-between items-center mb-12">
           <h2 class="text-4xl font-display font-bold">Featured Plans</h2>
@@ -1248,7 +1675,7 @@ body {
   </section>
 
     <!-- Prepaid Plans Section -->
-    <section id="prepaid-plans" class="py-20 relative">
+    <section id="prepaid-plans" class="py-20 w-full page-section bg-white">
       <div class="container mx-auto px-6">
         <h2 class="text-4xl font-display font-bold text-center mb-12">Prepaid Plans</h2>
         <!-- Prepaid Plans Carousel -->
@@ -1267,7 +1694,7 @@ body {
   </section>
 
     <!-- AI Recommendation Section with Chat -->
-    <section class="py-24 relative bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]" id="compare">
+    <section class="py-24 w-full page-section bg-gradient" id="compare">
       <div class="container mx-auto px-6">
         <div class="text-center max-w-3xl mx-auto mb-16">
           <h3 class="text-sm uppercase tracking-wider text-accent mb-2 font-medium">Intelligent Recommendations</h3>
@@ -1308,13 +1735,13 @@ body {
                 </div>
               </div>
               <button onclick="showPlanDetailsModal()" class="block w-full py-4 px-8 rounded-full bg-accent text-white font-medium text-center shadow-lg shadow-accent/25 transition-all hover:bg-accent/90">
-                <span class="flex items-center justify-center gap-2">
-                  <i class="ri-message-3-line text-lg"></i>
+                  <span class="flex items-center justify-center gap-2">
+                    <i class="ri-message-3-line text-lg"></i>
                   <span>Find My Perfect Plan</span>
-                </span>
+                  </span>
               </button>
+              </div>
             </div>
-          </div>
           <!-- Chat Column -->
           <div class="bg-white rounded-2xl shadow-xl border border-accent/10 overflow-hidden">
             <div class="p-4 border-b border-accent/10 flex items-center justify-between">
@@ -1344,7 +1771,7 @@ body {
                   </button>
                 </div>
               </div>
-            </div>
+                </div>
             <div class="p-4 border-t border-accent/10 bg-white">
               <form id="chat-form" class="relative">
                 <input type="text" 
@@ -1356,9 +1783,9 @@ body {
                   <i class="ri-send-plane-fill"></i>
                 </button>
               </form>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -1374,7 +1801,7 @@ body {
         <form id="planDetailsForm" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Current Plan Price ($)</label>
-            <div class="relative">
+              <div class="relative">
               <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
               <input type="number" 
                      name="planPrice" 
@@ -1397,8 +1824,8 @@ body {
                      class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent/20 focus:border-accent outline-none transition-all"
                      required>
               <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">GB</span>
-            </div>
-          </div>
+        </div>
+      </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Current Provider</label>
@@ -1417,9 +1844,7 @@ body {
               <option value="Public">Public Mobile</option>
               <option value="Lucky">Lucky Mobile</option>
             </select>
-          </div>
-
-
+    </div>
 
           <div class="flex gap-3 mt-6">
             <button type="button" 
@@ -1437,11 +1862,11 @@ body {
     </div>
 
   <!-- Why Choose Us Section -->
-    <section class="py-24 relative bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]" id="about">
+    <section class="py-24 w-full page-section bg-white" id="about">
       <div class="container mx-auto px-6">
         <!-- Section header -->
         <div class="text-center max-w-3xl mx-auto mb-16">
-          <h3           class="text-sm uppercase tracking-wider text-accent mb-2 font-medium">Why SwitchMyPlan</h3>
+          <h3 class="text-sm uppercase tracking-wider text-accent mb-2 font-medium">Why SwitchMyPlan</h3>
           <h2 class="text-4xl md:text-5xl font-display font-bold mb-6 text-black">The Smart Way to Choose</h2>
           <p class="text-gray-700">We've built the most advanced mobile plan comparison platform in Canada.</p>
         </div>
@@ -1465,7 +1890,8 @@ body {
         </div>
           
           <!-- Feature 2 -->
-          <div class="bg-white rounded-2xl p-8 shadow-xl border border-accent/10">
+          <div class="bg-white rounded-2xl p-8 shadow-xl border border-accent/10 ribbon-container">
+            <div class="ribbon">Coming Soon</div>
             <div class="w-14 h-14 rounded-full bg-accent flex items-center justify-center text-white mb-6">
               <i class="ri-robot-line text-2xl"></i>
             </div>
@@ -1500,16 +1926,17 @@ body {
     </section>
 
     <!-- Our Mission Section -->
-    <section class="py-24 relative bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]">
-      <div class="container mx-auto px-6">
-        <div class="max-w-5xl">
-          <h3 class="text-4xl md:text-6xl font-display font-bold mb-6 text-black">Our Mission</h3>
-          <p class="text-2xl md:text-4xl leading-relaxed text-gray-700">
-            At SwitchMyPlan, our mission is to empower customers with clear and unbiased plan comparisons. We understand that carriers often favor new subscribers, leaving long-time customers with outdated, costly plans. Our technology-driven service, guided by our virtual advisor Blue, simplifies switching so you get the fair value and respect you deserve.
-          </p>
+    <section id="our-mission" class="py-24 w-full page-section bg-gradient">
+      <!-- inner content stays centered -->
+      <div class="max-w-5xl mx-auto px-6">
+        <h3 class="text-4xl md:text-6xl font-display font-bold mb-6 text-black">
+          Our Mission
+        </h3>
+        <p class="text-2xl md:text-4xl leading-relaxed text-gray-700">
+          At SwitchMyPlan, our mission is to empower customers with clear and unbiased plan comparisons. We understand that carriers often favor new subscribers, leaving long-time customers with outdated, costly plans. Our technology-driven service, guided by our virtual advisor Blue, simplifies switching so you get the fair value and respect you deserve.
+        </p>
       </div>
-    </div>
-  </section>
+    </section>
   
   <!-- Footer -->
     <footer class="backdrop-blur-sm border-t border-accent/10 py-16 relative">
@@ -1637,249 +2064,6 @@ body {
 
   <!-- Initialize components -->
 <script>
-    // Initialize ScrollReveal, Splitting, and VanillaTilt
-    ScrollReveal().reveal('.reveal-fade', { distance: '0px', duration: 1000, easing: 'cubic-bezier(0.5, 0, 0, 1)', interval: 100 });
-    ScrollReveal().reveal('.reveal-slide-up', { distance: '20px', origin: 'bottom', duration: 1000, easing: 'cubic-bezier(0.5, 0, 0, 1)', interval: 100 });
-    Splitting();
-    VanillaTilt.init(document.querySelectorAll(".hero-card"), { max: 5, speed: 400, glare: true, "max-glare": 0.2 });
-
-    // Modal functions with smooth animations
-    function showPlanDetailsModal() {
-      const modal = document.getElementById('planDetailsModal');
-      const modalContent = modal.querySelector('div');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      // Trigger reflow to ensure transition works
-      modalContent.offsetHeight;
-      modalContent.style.transform = 'translate(0, 0)';
-      modalContent.style.opacity = '1';
-    }
-
-    function closePlanDetailsModal() {
-      const modal = document.getElementById('planDetailsModal');
-      const modalContent = modal.querySelector('div');
-      modalContent.style.transform = 'translate(0, -20px)';
-      modalContent.style.opacity = '0';
-      setTimeout(() => {
-        modal.classList.remove('flex');
-        modal.classList.add('hidden');
-      }, 300);
-    }
-
-    // Add chat functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const chatForm = document.getElementById('chat-form');
-      const chatInput = document.getElementById('chat-input');
-      const chatMessages = document.getElementById('chat-messages');
-      const planDetailsForm = document.getElementById('planDetailsForm');
-      
-      if (chatForm && chatInput && chatMessages) {
-        chatForm.addEventListener('submit', async function(e) {
-          e.preventDefault();
-          
-          const userMessage = chatInput.value.trim();
-          if (!userMessage) return;
-          
-          // Add user message to chat
-          addMessageToChat(userMessage, 'user');
-          
-          // Clear input
-          chatInput.value = '';
-          
-          try {
-            // Show loading indicator
-            const loadingMessage = addMessageToChat('Finding the perfect plan for you...', 'ai', true);
-            
-            // Make API call to get recommendations
-            const response = await fetch('/chat', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ userMessage })
-            });
-            
-            if (!response.ok) {
-              throw new Error('Failed to get recommendations');
-            }
-            
-            const data = await response.json();
-            
-            // Remove loading message
-            loadingMessage.remove();
-            
-            // Add AI response with recommendations
-            if (data.error) {
-              addMessageToChat("I'm sorry, I encountered an error. Please try again.", 'ai');
-              return;
-            }
-
-            handleChatResponse(data);
-            
-          } catch (error) {
-            console.error('Error:', error);
-            addMessageToChat("I'm sorry, I encountered an error while processing your request. Please try again.", 'ai');
-          }
-        });
-      }
-      
-      // Handle plan details form submission
-      if (planDetailsForm) {
-        planDetailsForm.addEventListener('submit', async function(e) {
-          e.preventDefault();
-          
-          const formData = new FormData(planDetailsForm);
-          const planDetails = {
-            plan_price: parseFloat(formData.get('planPrice')),
-            plan_data: parseFloat(formData.get('dataUsage')),
-            carrier: formData.get('provider'),
-            open_to_switch: formData.get('openToSwitch')
-          };
-          
-          try {
-            // Show loading indicator
-            const loadingMessage = addMessageToChat('Analyzing your plan details...', 'ai', true);
-            
-            // Close modal
-            closePlanDetailsModal();
-            
-            // Make API call with plan details
-            const response = await fetch('/chat', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                userMessage: `Current plan: $${planDetails.plan_price}/month, ${planDetails.plan_data}GB with ${planDetails.carrier}`,
-                planDetails: planDetails
-              })
-            });
-            
-            if (!response.ok) {
-              throw new Error('Failed to process plan details');
-            }
-            
-            const data = await response.json();
-            
-            // Remove loading message
-            loadingMessage.remove();
-            
-            handleChatResponse(data);
-            
-          } catch (error) {
-            console.error('Error:', error);
-            addMessageToChat("I'm sorry, I encountered an error while processing your plan details. Please try again.", 'ai');
-          }
-          
-          // Reset form
-          planDetailsForm.reset();
-        });
-      }
-      
-      // Helper function to add messages to chat
-      function addMessageToChat(message, sender, isLoading = false) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `flex items-start gap-3 max-w-[80%] ${sender === 'user' ? 'ml-auto flex-row-reverse' : ''}`;
-        
-        const avatarDiv = document.createElement('div');
-        avatarDiv.className = 'w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0';
-        avatarDiv.innerHTML = `<i class="ri-${sender === 'user' ? 'user' : 'robot'}-line text-sm"></i>`;
-        
-        const contentDiv = document.createElement('div');
-        contentDiv.className = `rounded-2xl p-4 ${sender === 'user' ? 'bg-accent/10 rounded-tr-none' : 'bg-white rounded-tl-none shadow-md'}`;
-        
-        const messageText = document.createElement('p');
-        messageText.className = 'text-black';
-        messageText.textContent = message;
-        
-        if (isLoading) {
-          const loadingDots = document.createElement('span');
-          loadingDots.className = 'animate-pulse';
-          loadingDots.textContent = '...';
-          messageText.appendChild(loadingDots);
-        }
-        
-        contentDiv.appendChild(messageText);
-        messageDiv.appendChild(avatarDiv);
-        messageDiv.appendChild(contentDiv);
-        
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-        return messageDiv;
-      }
-      
-      // Helper function to handle chat responses
-      function handleChatResponse(data) {
-        if (data.error) {
-          addMessageToChat("I'm sorry, I encountered an error. Please try again.", 'ai');
-          return;
-        }
-        
-        // Create message container for AI response
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'flex items-start gap-3 max-w-[80%]';
-        
-        const avatarDiv = document.createElement('div');
-        avatarDiv.className = 'w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0';
-        avatarDiv.innerHTML = '<i class="ri-robot-line text-sm"></i>';
-        
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'bg-white rounded-2xl rounded-tl-none p-4 shadow-md';
-        
-        // Add AI message text
-        const messageText = document.createElement('p');
-        messageText.className = 'text-black mb-4';
-        messageText.textContent = data.message;
-        contentDiv.appendChild(messageText);
-        
-        // Add hint if present
-        if (data.hint) {
-          const hintDiv = document.createElement('div');
-          hintDiv.className = 'mt-4 p-3 bg-accent/5 rounded-lg text-sm text-gray-600';
-          hintDiv.textContent = data.hint;
-          contentDiv.appendChild(hintDiv);
-        }
-        
-        // Add recommended plans if present
-        if (data.recommendedPlans && data.recommendedPlans.length > 0) {
-          const plansContainer = document.createElement('div');
-          plansContainer.className = 'space-y-4 mt-4';
-          
-          data.recommendedPlans.forEach(plan => {
-            const planCard = document.createElement('div');
-            planCard.className = 'bg-gray-50 rounded-xl p-4 border border-accent/10 hover:shadow-lg transition-shadow duration-300';
-            
-            const planContent = `
-              <div class="flex justify-between items-center mb-2">
-                <h4 class="font-display font-bold text-black">${plan.carrier} - ${plan.plan_name}</h4>
-                <span class="text-accent font-bold">$${plan.price}/mo</span>
-              </div>
-              <div class="text-sm text-gray-600">
-                <p>Data: ${plan.data} GB</p>
-                <p>${plan.plan_features || 'Unlimited talk & text'}</p>
-              </div>
-              <button onclick="selectPlan('${plan.carrier}', ${plan.price}, '${plan.data}', '${plan.id}', '${plan.plan_name}')"
-                      class="mt-3 w-full py-2 px-4 bg-accent text-white rounded-full hover:bg-accent/90 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
-                Select Plan
-              </button>
-            `;
-            
-            planCard.innerHTML = planContent;
-            plansContainer.appendChild(planCard);
-          });
-          
-          contentDiv.appendChild(plansContainer);
-        }
-        
-        messageDiv.appendChild(avatarDiv);
-        messageDiv.appendChild(contentDiv);
-        
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
-    });
-
     // Initialize ScrollReveal
     ScrollReveal().reveal('.reveal-fade', { 
       distance: '0px',
@@ -1941,24 +2125,29 @@ body {
     const closeButton = document.querySelector('#close-menu');
     const mobileMenu = document.querySelector('#mobile-menu');
     
-    if (menuButton && closeButton && mobileMenu) {
+    if (menuButton && mobileMenu) {
       menuButton.addEventListener('click', () => {
         mobileMenu.classList.add('active');
       document.body.style.overflow = 'hidden';
     });
     
+      if (closeButton) {
       closeButton.addEventListener('click', () => {
         mobileMenu.classList.remove('active');
       document.body.style.overflow = '';
     });
+      }
 
       // Close menu when clicking a link
-      mobileMenu.querySelectorAll('a').forEach(link => {
+      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+      if (mobileMenuLinks.length > 0) {
+        mobileMenuLinks.forEach(link => {
         link.addEventListener('click', () => {
           mobileMenu.classList.remove('active');
           document.body.style.overflow = '';
         });
       });
+      }
     }
 
     // Navbar scroll effect
@@ -2043,15 +2232,135 @@ body {
       loadPlans(); // Add this line to load the plans when the page loads
     });
 
-    // Variables for carousel navigation
+    // Global variables for carousel management
     let currentSlide = 0;
-    let slideCount = 0;
-    const slidesPerView = window.innerWidth < 768 ? 1 : 3;
-    // Add at the start of the script section
-    let allPlans = [];
-    let filteredPlans = [];
-    let carriers = new Set();
-    
+    let slidesPerView = 3;
+    let totalPlans = 0;
+
+    // Function to determine number of slides per view based on screen width
+    function getSlidesPerView() {
+      if (window.innerWidth <= 767) {
+        return 1;
+      } else if (window.innerWidth <= 1023) {
+        return 2;
+      } else {
+        return 3;
+      }
+    }
+
+    // Initialize responsive behavior
+    window.addEventListener('load', function() {
+      slidesPerView = getSlidesPerView();
+    });
+
+    // Update carousel on window resize
+    window.addEventListener('resize', function() {
+      const newSlidesPerView = getSlidesPerView();
+      if (newSlidesPerView !== slidesPerView) {
+        slidesPerView = newSlidesPerView;
+        updateCarousel();
+      }
+    });
+
+    function updateCarousel() {
+      const carouselContainer = document.querySelector('.carousel-container');
+      if (!carouselContainer) return;
+      
+      const maxSlide = Math.max(0, totalPlans - slidesPerView);
+      currentSlide = Math.min(currentSlide, maxSlide);
+      
+      const cardWidth = getCardWidth();
+      carouselContainer.style.transform = `translateX(-${currentSlide * cardWidth}px)`;
+      
+      updateNavButtons();
+    }
+
+    function getCardWidth() {
+      const card = document.querySelector('.plan-card');
+      if (!card) return 0;
+      return card.offsetWidth + 20; // Width + margin
+    }
+
+    function updateNavButtons() {
+      const prevButton = document.querySelector('.carousel-nav button:first-child');
+      const nextButton = document.querySelector('.carousel-nav button:last-child');
+      
+      if (!prevButton || !nextButton) return;
+      
+      prevButton.disabled = currentSlide <= 0;
+      nextButton.disabled = currentSlide >= totalPlans - slidesPerView;
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateCarousel();
+      }
+    }
+
+    function nextSlide() {
+      const maxSlide = totalPlans - slidesPerView;
+      if (currentSlide < maxSlide) {
+        currentSlide++;
+        updateCarousel();
+      }
+    }
+
+    // Modified displayPlans function to work with the new carousel
+    function displayPlans(plans) {
+      const chatContainer = document.querySelector('.chat-container');
+      const filteredPlans = plans.filter(plan => plan.name && plan.price);
+      totalPlans = filteredPlans.length;
+      currentSlide = 0;
+      slidesPerView = getSlidesPerView();
+      
+      let carouselHtml = '';
+      
+      if (filteredPlans.length === 0) {
+        carouselHtml = `
+          <div class="no-plans-message">
+            <p>No plans found that match your criteria. Try adjusting your requirements.</p>
+          </div>
+        `;
+      } else {
+        // Create carousel wrapper and container
+        carouselHtml = `
+          <div class="carousel-wrapper">
+            <div class="carousel-container">
+              ${filteredPlans.map(plan => `
+                <div class="plan-card">
+                  <h3>${plan.name}</h3>
+                  <p class="price">$${plan.price}/month</p>
+                  <p class="data">${plan.data} GB</p>
+                  <p>${plan.description || 'No description available'}</p>
+                  <a href="${plan.link || '#'}" class="view-plan-btn" target="_blank">View Plan</a>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="carousel-nav">
+            <button onclick="prevSlide()" disabled><i class="fas fa-chevron-left"></i></button>
+            <button onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        `;
+      }
+      
+      // Add the carousel HTML to the chat
+      const plansMessage = document.createElement('div');
+      plansMessage.className = 'message bot';
+      plansMessage.innerHTML = `
+        <div class="message-content">
+          <p>Here are some plans that match your requirements:</p>
+          ${carouselHtml}
+        </div>
+      `;
+      
+      chatContainer.appendChild(plansMessage);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      
+      // Initialize carousel navigation
+      updateNavButtons();
+    }
 
     // Function to create a plan card
     function createPlanCard(plan) {
@@ -2139,6 +2448,7 @@ case 'Telus':
         <div class="w-full">
           <div class="plan-card relative shadow-xl hover:shadow-2xl transition-all" data-carrier="${plan.carrier}">
             ${bestValueBadge}
+            <div class="shine"></div>
             
             <!-- Card Header -->
             <div class="plan-card-header">
@@ -2693,226 +3003,369 @@ case 'Telus':
             }
         });
     });
-</script>
 
-<script>
-// Add these functions after your existing JavaScript
+    // Function to show plan details modal
+    function showPlanDetailsModal() {
+      const modal = document.getElementById('planDetailsModal');
+      const modalContent = modal.querySelector('div');
+      
+      // First make the container visible with flex
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      
+      // Then animate the modal content after a small delay
+      setTimeout(() => {
+        modalContent.style.opacity = '1';
+        modalContent.style.transform = 'translate(0, 0)';
+      }, 10);
+    }
 
-function showPlanDetailsModal() {
-  const modal = document.getElementById('planDetailsModal');
-  const modalContent = modal.querySelector('div');
-  
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-  
-  // Animate in
-  setTimeout(() => {
-    modalContent.style.transform = 'translate(0, 0)';
-    modalContent.style.opacity = '1';
-  }, 10);
-}
-
-function closePlanDetailsModal() {
-  const modal = document.getElementById('planDetailsModal');
-  const modalContent = modal.querySelector('div');
-  
-  // Animate out
-  modalContent.style.transform = 'translate(0, -20px)';
-  modalContent.style.opacity = '0';
-  
-  setTimeout(() => {
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
-  }, 300);
-}
-
-// Update the chat functionality
-document.addEventListener('DOMContentLoaded', function() {
-  const chatForm = document.getElementById('chat-form');
-  const chatInput = document.getElementById('chat-input');
-  const chatMessages = document.getElementById('chat-messages');
-  const planDetailsForm = document.getElementById('planDetailsForm');
-  
-  if (chatForm && chatInput && chatMessages) {
-    chatForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
+    // Function to close plan details modal
+    function closePlanDetailsModal() {
+      const modal = document.getElementById('planDetailsModal');
+      const modalContent = modal.querySelector('div');
       
-      const userMessage = chatInput.value.trim();
-      if (!userMessage) return;
+      // First animate out
+      modalContent.style.opacity = '0';
+      modalContent.style.transform = 'translate(0, -20px)';
       
-      // Add user message to chat
-      addMessageToChat(userMessage, 'user');
-      
-      // Clear input
-      chatInput.value = '';
-      
-      try {
-        // Show loading indicator
-        const loadingMessage = addMessageToChat('Finding the perfect plan for you...', 'ai', true);
-        
-        // Check if it's a greeting
-        if (isGreeting(userMessage)) {
-          loadingMessage.remove();
-          addMessageToChat("Hello! 👋 I'm Blue, your personal plan advisor. To help you better, I'll need some information about your current plan.", 'ai');
-          showPlanDetailsModal();
-          return;
-        }
-        
-        // Make API call to get recommendations
-        const response = await fetch('/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ userMessage })
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to get recommendations');
-        }
-        
-        const data = await response.json();
-        
-        // Remove loading message
-        loadingMessage.remove();
-        
-        handleChatResponse(data);
-        
-      } catch (error) {
-        console.error('Error:', error);
-        addMessageToChat("I'm sorry, I encountered an error while processing your request. Please try again.", 'ai');
-      }
-    });
-  }
-  
-  // Handle plan details form submission
-  if (planDetailsForm) {
-    planDetailsForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const formData = new FormData(planDetailsForm);
-      const planDetails = {
-        plan_price: parseFloat(formData.get('planPrice')),
-        plan_data: parseFloat(formData.get('dataUsage')),
-        carrier: formData.get('provider')
-      };
-      
-      try {
-        // Show loading indicator
-        const loadingMessage = addMessageToChat('Analyzing your plan details...', 'ai', true);
-        
-        // Close modal
-        closePlanDetailsModal();
-        
-        // Make API call with plan details
-        const response = await fetch('/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            userMessage: `Current plan: $${planDetails.plan_price}/month, ${planDetails.plan_data}GB with ${planDetails.carrier}`,
-            planDetails: planDetails
-          })
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to process plan details');
-        }
-        
-        const data = await response.json();
-        
-        // Remove loading message
-        loadingMessage.remove();
-        
-        handleChatResponse(data);
-        
-      } catch (error) {
-        console.error('Error:', error);
-        addMessageToChat("I'm sorry, I encountered an error while processing your plan details. Please try again.", 'ai');
-      }
-      
-      // Reset form
-      planDetailsForm.reset();
-    });
-  }
-  
-  // Helper function to check if message is a greeting
-  function isGreeting(message) {
-    const greetings = ["hi", "hello", "hey", "good morning", "good afternoon", "good evening"];
-    return greetings.some(greeting => message.toLowerCase().includes(greeting));
-  }
-  
-  // Helper function to handle chat responses
-  function handleChatResponse(data) {
-    if (data.error) {
-      addMessageToChat("I'm sorry, I encountered an error. Please try again.", 'ai');
-      return;
+      // Then hide the container after animation completes
+      setTimeout(() => {
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+      }, 300);
     }
     
-    // Create message container
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'flex items-start gap-3 max-w-[80%]';
-    
-    const avatarDiv = document.createElement('div');
-    avatarDiv.className = 'w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0';
-    avatarDiv.innerHTML = '<i class="ri-robot-line text-sm"></i>';
-    
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'bg-white rounded-2xl rounded-tl-none p-4 shadow-md';
-    
-    // Add AI message
-    const messageText = document.createElement('p');
-    messageText.className = 'text-black mb-4';
-    messageText.textContent = data.message;
-    contentDiv.appendChild(messageText);
-    
-    // Add hint if present
-    if (data.hint) {
-      const hintDiv = document.createElement('div');
-      hintDiv.className = 'mt-4 p-3 bg-accent/5 rounded-lg text-sm text-gray-600';
-      hintDiv.textContent = data.hint;
-      contentDiv.appendChild(hintDiv);
-    }
-    
-    // Add recommended plans if present
-    if (data.recommendedPlans && data.recommendedPlans.length > 0) {
-      const plansContainer = document.createElement('div');
-      plansContainer.className = 'space-y-4 mt-4';
+    // Handle the plan details form submission
+    document.addEventListener('DOMContentLoaded', function() {
+      const planDetailsForm = document.getElementById('planDetailsForm');
+      if (planDetailsForm) {
+        planDetailsForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          // Get form data
+          const formData = new FormData(planDetailsForm);
+          const planPrice = formData.get('planPrice');
+          const dataUsage = formData.get('dataUsage');
+          const provider = formData.get('provider');
+          
+          // Close the modal
+          closePlanDetailsModal();
+          
+          // Add a user message to the chat
+          const chatMessages = document.getElementById('chat-messages');
+          const userMessage = `
+            <div class="flex items-start gap-3 max-w-[80%] ml-auto flex-row-reverse">
+              <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
+                <i class="ri-user-line text-sm"></i>
+              </div>
+              <div class="bg-accent/10 rounded-2xl rounded-tr-none p-4">
+                <p class="text-black">I'm currently paying $${planPrice} for ${dataUsage}GB with ${provider}.</p>
+              </div>
+            </div>
+          `;
+          chatMessages.innerHTML += userMessage;
+          
+          // Add loading message
+          const loadingMessage = `
+            <div class="flex items-start gap-3 max-w-[80%] loading-message" id="loading-message">
+              <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
+                <i class="ri-robot-line text-sm"></i>
+              </div>
+              <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-md">
+                <p class="text-black">Analyzing your plan details<span class="dots">...</span></p>
+              </div>
+            </div>
+          `;
+          chatMessages.innerHTML += loadingMessage;
+          
+          // Scroll to the bottom of the chat
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          
+          try {
+            // Make API call to get recommended plans
+            const planDetails = {
+              plan_price: parseFloat(planPrice),
+              plan_data: parseFloat(dataUsage),
+              carrier: provider,
+              open_to_switch: true
+            };
+            
+            // Fetch real plan recommendations from the backend
+            const response = await fetch('/chat', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                userMessage: `I'm currently paying $${planPrice} for ${dataUsage}GB with ${provider}.`,
+                planDetails: planDetails
+              })
+            });
+            
+            let recommendedPlans = [];
+            
+            if (response.ok) {
+              const data = await response.json();
+              
+              // Remove loading message
+              document.getElementById('loading-message').remove();
+              
+              // Check if we have an error message from the API
+              if (data.error) {
+                displayErrorMessage(chatMessages, data.error || 'Sorry, I encountered an issue while fetching plan recommendations. Please try again later.');
+                return;
+              }
+              
+              // Get the recommendations
+              recommendedPlans = data.recommendedPlans || [];
+              
+              // Check if we have a message from the API
+              const apiMessage = data.message || '';
+              
+              // Display recommendations with the message
+              displayRecommendedPlans(recommendedPlans, chatMessages, apiMessage);
+            } else {
+              console.error('Failed to fetch recommendations:', await response.text());
+              
+              // Remove loading message
+              document.getElementById('loading-message').remove();
+              
+              // Show error message instead of fabricating plans
+              displayErrorMessage(chatMessages, 'Sorry, I encountered an issue while fetching plan recommendations. Please try again later.');
+            }
+            
+          } catch (error) {
+            console.error('Error fetching recommendations:', error);
+            
+            // Remove loading message if it exists
+            const loadingMessage = document.getElementById('loading-message');
+            if (loadingMessage) {
+              loadingMessage.remove();
+            }
+            
+            // Show error message instead of fabricating plans
+            displayErrorMessage(chatMessages, 'Sorry, something went wrong while trying to find plans for you. Please try again later.');
+          }
+        });
+      }
       
-      data.recommendedPlans.forEach(plan => {
-        const planCard = document.createElement('div');
-        planCard.className = 'bg-gray-50 rounded-xl p-4 border border-accent/10';
-        
-        const planContent = `
-          <div class="flex justify-between items-center mb-2">
-            <h4 class="font-display font-bold text-black">${plan.carrier} - ${plan.plan_name}</h4>
-            <span class="text-accent font-bold">$${plan.plan_price}/mo</span>
+      // Handle the chat form submission
+      const chatForm = document.getElementById('chat-form');
+      const chatInput = document.getElementById('chat-input');
+      if (chatForm && chatInput) {
+        chatForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const userMessage = chatInput.value.trim();
+          if (!userMessage) return;
+          
+          // Add user message to chat
+          const chatMessages = document.getElementById('chat-messages');
+          chatMessages.innerHTML += `
+            <div class="flex items-start gap-3 max-w-[80%] ml-auto flex-row-reverse">
+              <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
+                <i class="ri-user-line text-sm"></i>
+              </div>
+              <div class="bg-accent/10 rounded-2xl rounded-tr-none p-4">
+                <p class="text-black">${userMessage}</p>
+              </div>
+            </div>
+          `;
+          
+          // Clear input
+          chatInput.value = '';
+          
+          // Simulate AI typing with a delay
+          setTimeout(() => {
+            chatMessages.innerHTML += `
+              <div class="flex items-start gap-3 max-w-[80%]">
+                <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
+                  <i class="ri-robot-line text-sm"></i>
+                </div>
+                <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-md">
+                  <p class="text-black">To help you better, I need some information about your current plan. Could you please share your plan details?</p>
+                  <button onclick="showPlanDetailsModal()" class="mt-4 w-full py-2 px-4 bg-accent/10 text-accent rounded-lg hover:bg-accent/20 transition-colors text-sm">
+                    Share Plan Details
+                  </button>
+                </div>
+              </div>
+            `;
+            
+            // Scroll to the bottom of the chat
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          }, 1000);
+          
+          // Scroll to the bottom of the chat now
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+      }
+    });
+    
+    // Function to display recommended plans in the chat
+    function displayRecommendedPlans(plans, chatContainer, apiMessage) {
+      // Create AI response with plan recommendations
+      const aiResponse = document.createElement('div');
+      aiResponse.className = 'flex items-start gap-3 max-w-[90%]';
+      
+      let messageText = apiMessage || "Based on your current plan details, here are my recommendations:";
+      
+      aiResponse.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
+          <i class="ri-robot-line text-sm"></i>
+        </div>
+        <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-md">
+          <p class="text-black mb-4">${messageText}</p>
+          <div class="space-y-4 mt-4" id="plan-recommendations">
           </div>
-          <div class="text-sm text-gray-600">
-            <p>${plan.plan_data} of data</p>
-            <p>${plan.plan_features || 'Unlimited talk & text'}</p>
+        </div>
+      `;
+      
+      chatContainer.appendChild(aiResponse);
+      
+      const recommendationsContainer = aiResponse.querySelector('#plan-recommendations');
+      
+      // Add each plan card
+      if (plans && plans.length > 0) {
+        plans.forEach(plan => {
+          const planCard = document.createElement('div');
+          planCard.className = 'bg-gray-50 rounded-xl p-4 border border-accent/10 hover:shadow-lg transition-shadow duration-300';
+          
+          // Format features if it's a string or an array
+          let featuresHtml = '';
+          if (Array.isArray(plan.features)) {
+            featuresHtml = plan.features.map(feature => `<p>• ${feature}</p>`).join('');
+          } else if (typeof plan.features === 'string') {
+            featuresHtml = `<p>${plan.features}</p>`;
+          } else if (plan.plan_features) {
+            // Try to use plan_features if features is not available
+            featuresHtml = `<p>${plan.plan_features}</p>`;
+          }
+          
+          // Create the plan card content
+          planCard.innerHTML = `
+            <div class="flex justify-between items-center mb-2">
+              <h4 class="font-display font-bold text-black">${plan.carrier} - ${plan.plan_name || 'Plan'}</h4>
+              <span class="text-accent font-bold">$${plan.price}/mo</span>
+            </div>
+            <div class="text-sm text-gray-600">
+              <p>Data: ${plan.data || '0'} GB</p>
+              ${featuresHtml}
+            </div>
+            <button onclick="selectPlan('${plan.carrier}', ${plan.price}, '${plan.data || '0'}', '${plan.id || ''}', '${plan.plan_name || 'Plan'}')"
+                    class="mt-3 w-full py-2 px-4 bg-accent text-white rounded-full hover:bg-accent/90 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
+              Select Plan
+            </button>
+          `;
+          
+          recommendationsContainer.appendChild(planCard);
+        });
+      } else {
+        // No plans found
+        recommendationsContainer.innerHTML = `
+          <div class="bg-gray-50 rounded-xl p-4 border border-accent/10">
+            <p class="text-gray-600">I couldn't find any plans that match your criteria at this time. This could be because we don't have data for plans that would be better than your current one. You may want to try adjusting your requirements.</p>
+            <button onclick="showPlanDetailsModal()" class="mt-3 w-full py-2 px-4 bg-accent text-white rounded-full hover:bg-accent/90 transition-all">
+              Try Different Details
+            </button>
           </div>
-          <button onclick="selectPlan('${plan.carrier}', ${plan.plan_price}, '${plan.plan_data}', '${plan.id}', '${plan.plan_name}')"
-                  class="mt-3 w-full py-2 px-4 bg-accent text-white rounded-full hover:bg-accent/90 transition-colors text-sm">
-            Select Plan
-          </button>
         `;
-        
-        planCard.innerHTML = planContent;
-        plansContainer.appendChild(planCard);
+      }
+      
+      // Scroll to the bottom of the chat
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    
+    // Function to display error messages in the chat
+    function displayErrorMessage(chatContainer, message) {
+      const errorMessage = document.createElement('div');
+      errorMessage.className = 'flex items-start gap-3 max-w-[90%]';
+      errorMessage.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
+          <i class="ri-robot-line text-sm"></i>
+        </div>
+        <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-md">
+          <p class="text-black">${message}</p>
+          <button onclick="showPlanDetailsModal()" class="mt-3 w-full py-2 px-4 bg-accent text-white rounded-full hover:bg-accent/90 transition-all">
+            Try Again
+          </button>
+        </div>
+      `;
+      
+      chatContainer.appendChild(errorMessage);
+      
+      // Scroll to the bottom of the chat
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function displayPlans(plans) {
+      const container = document.getElementById('plans-container');
+      container.innerHTML = '';
+      
+      // Update filtered plans
+      filteredPlans = plans;
+      
+      if (plans.length === 0) {
+        container.innerHTML = '<div class="no-plans-message">No plans found matching your requirements. Try adjusting your criteria.</div>';
+        return;
+      }
+
+      // Create carousel wrapper and container
+      const carouselWrapper = document.createElement('div');
+      carouselWrapper.className = 'carousel-wrapper';
+      
+      const carouselContainer = document.createElement('div');
+      carouselContainer.className = 'carousel-container';
+      
+      // Calculate slidesPerView based on screen width
+      slidesPerView = getSlidesPerView();
+      
+      // Reset slide position
+      currentSlide = 0;
+      slideCount = Math.max(0, plans.length - slidesPerView);
+      
+      // Create plan cards
+      plans.forEach(plan => {
+        const card = createPlanCard(plan);
+        carouselContainer.appendChild(card);
       });
       
-      contentDiv.appendChild(plansContainer);
+      carouselWrapper.appendChild(carouselContainer);
+      container.appendChild(carouselWrapper);
+      
+      // Add navigation buttons
+      const navButtons = document.createElement('div');
+      navButtons.className = 'carousel-nav';
+      
+      const prevButton = document.createElement('button');
+      prevButton.id = 'carousel-prev';
+      prevButton.innerHTML = '&lt;';
+      prevButton.disabled = true;
+      prevButton.addEventListener('click', () => {
+        if (currentSlide > 0) {
+          currentSlide--;
+          updateCarousel();
+        }
+      });
+      
+      const nextButton = document.createElement('button');
+      nextButton.id = 'carousel-next';
+      nextButton.innerHTML = '&gt;';
+      nextButton.disabled = plans.length <= slidesPerView;
+      nextButton.addEventListener('click', () => {
+        if (currentSlide < slideCount) {
+          currentSlide++;
+          updateCarousel();
+        }
+      });
+      
+      navButtons.appendChild(prevButton);
+      navButtons.appendChild(nextButton);
+      container.appendChild(navButtons);
+      
+      // Update buttons state
+      updateNavButtons();
     }
-    
-    messageDiv.appendChild(avatarDiv);
-    messageDiv.appendChild(contentDiv);
-    
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-});
 </script>
 </body>
 </html>
