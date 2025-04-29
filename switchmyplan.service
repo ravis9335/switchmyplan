@@ -1,0 +1,16 @@
+[Unit]
+Description=SwitchMyPlan Flask Application
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/var/www/switchmyplan
+Environment="PATH=/var/www/switchmyplan/venv/bin"
+Environment="PYTHONPATH=/var/www/switchmyplan"
+ExecStart=/var/www/switchmyplan/venv/bin/python new_backend.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target 

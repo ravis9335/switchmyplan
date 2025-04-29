@@ -258,8 +258,8 @@
 
                 <!-- CTA buttons -->
                 <div class="hidden md:flex items-center gap-4">
-                    <a href="all-plans.html" class="magnetic-btn">
-                        Compare Plans
+                    <a href="planB.html#compare" class="magnetic-btn">
+                        Find My Plan
                     </a>
                 </div>
             </div>
@@ -278,7 +278,7 @@
                 <a href="all-plans.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Plans</a>
                 <a href="faq.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">FAQ</a>
                 <a href="about.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">About</a>
-                <a href="all-plans.html" class="magnetic-btn mt-4 mx-auto inline-block" style="font-family: Helvetica, Arial, sans-serif;">Compare Plans</a>
+                <a href="planB.html#compare" class="magnetic-btn mt-4 mx-auto inline-block" style="font-family: Helvetica, Arial, sans-serif;">Find My Plan</a>
             </div>
         </div>
     </div>
@@ -335,7 +335,7 @@
                         </div>
                         <div class="faq-answer">
                             <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
-                                We aggregate mobile plans from various carriers, presenting them in an easy-to-compare format. For certain providers like Bell and Virgin, we offer direct activation through our platform. For others, we redirect you to the carrier's offer page to complete the process. Our goal is to simplify your mobile plan shopping experience.
+                                We aggregate mobile plans from various carriers, presenting them in an easy-to-compare format. We redirect you to the carrier's offer page to complete the process. Our goal is to simplify your mobile plan shopping experience. We are currently waiting for approval from carriers to offer direct activation through our platform.
                             </p>
                         </div>
                     </div>
@@ -350,7 +350,7 @@
                         </div>
                         <div class="faq-answer">
                             <p class="text-xl text-gray-700 leading-relaxed pb-6" style="font-family: Helvetica, Arial, sans-serif;">
-                                Currently, we have direct activation capabilities with Bell and Virgin. For other carriers, we provide comprehensive plan details and redirect you to their respective websites for activation.
+                                We have direct activation capabilities with some carriers, but we are waiting for approval from carriers to offer direct activation through our platform. Which is why currently we provide comprehensive plan details and redirect you to their respective websites for activation.
                             </p>
                         </div>
                     </div>
@@ -578,61 +578,72 @@
         </div>
     </footer>
 
+    <!-- Scripts -->
+    <script src="responsive.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile menu toggle
             const mobileMenuBtn = document.querySelector('.mobile-menu-button');
             const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
             const mobileMenuClose = document.querySelector('.mobile-menu-close');
-            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-overlay a');
             
             if (mobileMenuBtn && mobileMenuOverlay && mobileMenuClose) {
+                // Open mobile menu
                 mobileMenuBtn.addEventListener('click', () => {
-                    mobileMenuOverlay.classList.toggle('hidden');
-                    document.body.style.overflow = 'hidden';
+                    mobileMenuOverlay.style.display = 'block';
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
                 });
                 
+                // Close mobile menu
                 mobileMenuClose.addEventListener('click', () => {
-                    mobileMenuOverlay.classList.add('hidden');
-                    document.body.style.overflow = '';
+                    mobileMenuOverlay.style.display = 'none';
+                    document.body.style.overflow = ''; // Restore scrolling
                 });
                 
+                // Close menu when clicking on links
+                const mobileMenuLinks = mobileMenuOverlay.querySelectorAll('a');
                 mobileMenuLinks.forEach(link => {
                     link.addEventListener('click', () => {
-                        mobileMenuOverlay.classList.add('hidden');
-                        document.body.style.overflow = '';
+                        mobileMenuOverlay.style.display = 'none';
+                        document.body.style.overflow = ''; // Restore scrolling
                     });
                 });
             }
-
+            
             // Navbar scroll effect
-            let lastScroll = 0;
-            const navbar = document.getElementById('navbar');
-            
-            if (navbar) {
-                window.addEventListener('scroll', () => {
-                    const currentScroll = window.pageYOffset;
-                    
-                    if (currentScroll <= 0) {
-                        navbar.classList.remove('scrolled');
-                        return;
-                    }
-                    
-                    if (currentScroll > lastScroll && !navbar.classList.contains('scrolled')) {
-                        // Scrolling down
+            window.addEventListener('scroll', () => {
+                const navbar = document.getElementById('navbar');
+                if (navbar) {
+                    if (window.scrollY > 20) {
                         navbar.classList.add('scrolled');
-                    } else if (currentScroll < lastScroll && navbar.classList.contains('scrolled')) {
-                        // Scrolling up
+                    } else {
                         navbar.classList.remove('scrolled');
                     }
-                    
-                    lastScroll = currentScroll;
-                });
-            }
-
-            // Magnetic button effect
-            const magneticBtns = document.querySelectorAll('.magnetic-btn');
+                }
+            });
             
+            // FAQ accordion functionality
+            const questions = document.querySelectorAll('.faq-question');
+            
+            questions.forEach(question => {
+                question.addEventListener('click', () => {
+                    const answer = question.nextElementSibling;
+                    const isActive = answer.classList.contains('active');
+                    
+                    // Close all answers first
+                    document.querySelectorAll('.faq-answer').forEach(a => {
+                        a.classList.remove('active');
+                    });
+                    
+                    // Toggle current answer
+                    if (!isActive) {
+                        answer.classList.add('active');
+                    }
+                });
+            });
+
+            // Magnetic button effect 
+            const magneticBtns = document.querySelectorAll('.magnetic-btn');
             magneticBtns.forEach(btn => {
                 btn.addEventListener('mousemove', (e) => {
                     const rect = btn.getBoundingClientRect();
@@ -642,39 +653,14 @@
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
                     
-                    const deltaX = (x - centerX) / centerX;
-                    const deltaY = (y - centerY) / centerY;
+                    const moveX = (x - centerX) / 10;
+                    const moveY = (y - centerY) / 10;
                     
-                    btn.style.transform = `translate(${deltaX * 5}px, ${deltaY * 5}px)`;
+                    btn.style.transform = `translateY(-2px) translate(${moveX}px, ${moveY}px)`;
                 });
                 
                 btn.addEventListener('mouseleave', () => {
                     btn.style.transform = '';
-                });
-            });
-
-            // FAQ Accordion
-            const faqItems = document.querySelectorAll('.faq-item');
-            
-            faqItems.forEach(item => {
-                const question = item.querySelector('.faq-question');
-                const answer = item.querySelector('.faq-answer');
-                const arrow = item.querySelector('.ri-arrow-down-s-line');
-                
-                question.addEventListener('click', () => {
-                    const isActive = answer.classList.contains('active');
-                    
-                    // Close all other items
-                    faqItems.forEach(otherItem => {
-                        if (otherItem !== item) {
-                            otherItem.querySelector('.faq-answer').classList.remove('active');
-                            otherItem.querySelector('.ri-arrow-down-s-line').style.transform = 'rotate(0deg)';
-                        }
-                    });
-                    
-                    // Toggle current item
-                    answer.classList.toggle('active');
-                    arrow.style.transform = isActive ? 'rotate(0deg)' : 'rotate(180deg)';
                 });
             });
         });

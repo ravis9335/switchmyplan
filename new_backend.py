@@ -10,7 +10,6 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_caching import Cache
 from flask import Flask, jsonify, send_file, send_from_directory, request
-
 import agentql
 from playwright.async_api import async_playwright
 import uuid
@@ -32,8 +31,22 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib
 import ssl
+from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.middleware.profiler import ProfilerMiddleware
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+from functools import wraps
+import bleach
+from flask_compress import Compress
+import psutil
 
-
+# Initialize Sentry for error tracking
+sentry_sdk.init(
+    dsn=os.environ.get('SENTRY_DSN'),
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=1.0,
+    environment=os.environ.get('FLASK_ENV', 'production')
+)
 
 # Plans cache setup
 plans_cache = {
@@ -99,15 +112,26 @@ else:
 # -------------------------------------------------------------------------
 #                          CONFIG / SETUP
 # -------------------------------------------------------------------------
-class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-key-please-change'
-    SESSION_TIMEOUT = 60  # minutes
-    MAX_RECOMMENDATIONS = 10
-    RPA_TIMEOUT = 300  # seconds  # for the flows
-
+class ProductionConfig:
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-here')  # Change this in production
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    PREFERRED_URL_SCHEME = 'https'
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max upload size
+    JSON_SORT_KEYS = False
+    JSONIFY_PRETTYPRINT_REGULAR = False
+    JSON_AS_ASCII = False
+    PERMANENT_SESSION_LIFETIME = 3600  # 1 hour
+    SESSION_REFRESH_EACH_REQUEST = True
+    CACHE_TYPE = 'simple'
+    CACHE_DEFAULT_TIMEOUT = 300
+    COMPRESS_MIMETYPES = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
+    COMPRESS_LEVEL = 6
+    COMPRESS_MIN_SIZE = 500
 
 def ensure_directories():
-    directories = ['logs']
+    directories = ['logs', 'public', 'public/images', 'assets','carrierlogos']
     for directory in directories:
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -120,29 +144,57 @@ ensure_directories()
 
 
 def setup_logging():
-    ensure_directories()
-    file_handler = RotatingFileHandler('logs/blue.log', maxBytes=1024000, backupCount=10)
-    file_handler.setFormatter(logging.Formatter(
+    log_dir = 'logs'
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    
+    # File handler for errors
+    error_handler = RotatingFileHandler(
+        'logs/error.log',
+        maxBytes=10*1024*1024,  # 10MB
+        backupCount=5
+    )
+    error_handler.setLevel(logging.ERROR)
+    error_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
     ))
-    file_handler.setLevel(logging.INFO)
-    return file_handler
+
+    # File handler for general logs
+    info_handler = RotatingFileHandler(
+        'logs/app.log',
+        maxBytes=10*1024*1024,  # 10MB
+        backupCount=5
+    )
+    info_handler.setLevel(logging.INFO)
+    info_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s'
+    ))
+
+    return error_handler, info_handler
 
 
 # Getting the current directory for static file serving
 current_dir = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, 
            static_url_path='', 
-           static_folder=current_dir,
-           template_folder=current_dir)
-app.config.from_object(Config)
+           static_folder='public',
+           template_folder='templates')
+app.config.from_object(ProductionConfig)
 
-# Configure CORS
+# Add ProxyFix middleware for proper IP handling behind proxy
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+# Enable compression
+Compress(app)
+
+# Configure CORS with production settings
 CORS(app, resources={
     r"/api/*": {
-        "origins": "*",
+        "origins": ["https://switchmyplan.ca", "https://www.switchmyplan.ca"],
         "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"]
+        "allow_headers": ["Content-Type"],
+        "supports_credentials": True,
+        "max_age": 600
     }
 })
 
@@ -150,29 +202,38 @@ CORS(app, resources={
 app.config['JSONIFY_MIMETYPE'] = 'application/json'
 app.config['JSON_SORT_KEYS'] = False
 
+# Production rate limiting with proper storage
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    default_limits=["1000 per day", "500 per hour"]
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
 )
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
+# Production cache configuration with proper timeout
+cache = Cache(app, config={
+    'CACHE_TYPE': 'simple',
+    'CACHE_DEFAULT_TIMEOUT': 300,
+    'CACHE_THRESHOLD': 1000
+})
 
-# Security headers
+# Security headers for production
 @app.after_request
 def add_security_headers(response):
-    # For development, allow everything
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-    
-    # Log the response headers for debugging
-    app.logger.info(f"Response headers: {dict(response.headers)}")
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Content-Security-Policy"] = "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     return response
 
 
 handler = setup_logging()
-app.logger.addHandler(handler)
+app.logger.addHandler(handler[0])
+app.logger.addHandler(handler[1])
 app.logger.setLevel(logging.INFO)
 
 console_handler = logging.StreamHandler()
@@ -853,6 +914,15 @@ def select_plan():
             "url": "https://publicmobile.ca/en/plans?ds_rl=1268486&gad_source=1&ds_rl=1268486&gclid=Cj0KCQjw782_BhDjARIsABTv_JA80rlKPKIjsyotNlffUCDzmtf8-x4uVFUezcg4FYTM8MV6xAmidw4aAmGZEALw_wcB&gclsrc=aw.ds"
         })
     
+    # Check if the selected plan is from Bell
+    if carrier.lower() == 'bell':
+        # Redirect to Bell's BYOP page
+        return jsonify({
+            "success": True,
+            "redirect": True,
+            "url": "https://www.bell.ca/Mobility/Bring-Your-Own-Phone"
+        })
+    
     # For all other carriers, proceed with normal flow
     # Store the selected plan in the context for use in checkout
     conversation_context["plan_info"] = {
@@ -1087,76 +1157,42 @@ def checkout_submit():
         carrier_lower = data["carrier"].lower()
         rpa_started = False
         
-        if carrier_lower == 'bell':
-            # For Bell carrier, use the existing bell_flow_full function
-            app.logger.info(f"Starting Bell RPA flow with session ID: {session_id}")
+        # For all carriers including Bell, just send email notifications
+        carrier_name = data['carrier'].title()  # Capitalize first letter of each word
+        app.logger.info(f"Sending email notification for {carrier_name} activation")
+        
+        # Send the initial processing email
+        email_sent = send_email_notification(
+            email=data["email"],
+            name=data["name"],
+            carrier=carrier_name,
+            status="processing"
+        )
+        
+        if email_sent:
+            app.logger.info(f"Processing email sent for {carrier_name} activation")
             
-            # Create a thread to run the async bell_flow_full function
-            def run_bell_flow():
-                # Set up event loop
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                
-                # Run the async function
-                try:
-                    coro = bell_flow_full(session_id, user_data, plan_info)
-                    loop.run_until_complete(coro)
-                except Exception as e:
-                    app.logger.error(f"Error in Bell RPA flow: {str(e)}")
-                finally:
-                    loop.close()
+            # For demo purposes, we'll also send a "complete" email after a delay
+            def send_completion_email():
+                # Wait 30 seconds before sending the completion email
+                time.sleep(30)
+                app.logger.info(f"Sending completion email for {carrier_name} activation")
+                send_email_notification(
+                    email=data["email"],
+                    name=data["name"],
+                    carrier=carrier_name,
+                    status="complete"
+                )
             
-            # Start the Bell RPA flow in a thread
-            bell_thread = threading.Thread(target=run_bell_flow)
-            bell_thread.daemon = True
-            bell_thread.start()
+            # Start a thread to send the completion email after a delay
+            email_thread = threading.Thread(target=send_completion_email)
+            email_thread.daemon = True
+            email_thread.start()
             
             rpa_started = True
-            app.logger.info(f"Bell RPA thread started for session: {session_id}")
-            
-            # Store session info for later reference/cleanup
-            active_rpa_sessions[session_id] = {
-                "carrier": "Bell",
-                "start_time": datetime.now(),
-                "email": data["email"]
-            }
         else:
-            # For other carriers, just send email notifications for now
-            carrier_name = data['carrier'].title()  # Capitalize first letter of each word
-            app.logger.info(f"Sending email notification for {carrier_name} activation")
-            
-            # Send the initial processing email
-            email_sent = send_email_notification(
-                email=data["email"],
-                name=data["name"],
-                carrier=carrier_name,
-                status="processing"
-            )
-            
-            if email_sent:
-                app.logger.info(f"Processing email sent for {carrier_name} activation")
-                
-                # For demo purposes, we'll also send a "complete" email after a delay
-                def send_completion_email():
-                    # Wait 30 seconds before sending the completion email
-                    time.sleep(30)
-                    app.logger.info(f"Sending completion email for {carrier_name} activation")
-                    send_email_notification(
-                        email=data["email"],
-                        name=data["name"],
-                        carrier=carrier_name,
-                        status="complete"
-                    )
-                
-                # Start a thread to send the completion email after a delay
-                email_thread = threading.Thread(target=send_completion_email)
-                email_thread.daemon = True
-                email_thread.start()
-                
-                rpa_started = True
-            else:
-                app.logger.error(f"Failed to send processing email for {carrier_name} activation")
-            
+            app.logger.error(f"Failed to send processing email for {carrier_name} activation")
+        
         if not rpa_started:
             app.logger.warning(f"No RPA flow implementation found for carrier: {data['carrier']}")
             
@@ -1337,7 +1373,9 @@ def load_plans_data():
                     'terms': 'No term contract required. Prices may vary by region.',
                     'plan_type': str(row.get('plan_type', 'postpaid')).lower(),
                     'plan_name': plan_name,
-                    'id': str(row.get('id', ''))
+                    'id': str(row.get('id', '')),
+                    'usa_roaming': str(row.get('USA Roaming', 'N')),
+                    'mexico_roaming': str(row.get('Mexico Roaming', 'N'))
                 }
                 
                 print(f"Row {index}: Successfully processed plan: {carrier} - {plan_name}")
@@ -1463,20 +1501,85 @@ def get_all_plans():
     
 
 # -------------------- CONTACT & FEEDBACK --------------------
-import os, csv
-from datetime import datetime
+import os, ssl, smtplib, time
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from flask import send_file, request, jsonify
 
-FEEDBACK_DIR = 'feedback'
-FEEDBACK_CSV = os.path.join(FEEDBACK_DIR, 'feedback.csv')
+def send_feedback_email(name: str, email: str, feedback: str) -> bool:
+    """
+    Send feedback as an email to the site admins via Gmail SMTP.
+    Requires these environment variables:
+        SMTP_EMAIL      = feedback.switchmyplan@gmail.com
+        SMTP_SERVER     = smtp.gmail.com
+        SMTP_PORT       = 587
+        SMTP_USERNAME   = feedback.switchmyplan@gmail.com
+        SMTP_PASSWORD   = <vwfugdlonfbserim>
+        ADMIN_EMAIL     = admin@switchmyplan.ca
+    """
+    try:
+        # Get credentials from environment variables
+        sender_email = os.environ.get("SMTP_EMAIL")
+        receiver_email = os.environ.get("ADMIN_EMAIL")
+        smtp_server = os.environ.get("SMTP_SERVER")
+        smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+        smtp_username = os.environ.get("SMTP_USERNAME")
+        smtp_password = os.environ.get("SMTP_PASSWORD")
 
-def ensure_feedback_directory():
-    if not os.path.exists(FEEDBACK_DIR):
-        os.makedirs(FEEDBACK_DIR)
-    if not os.path.exists(FEEDBACK_CSV):
-        with open(FEEDBACK_CSV, 'w', newline='', encoding='utf-8') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(['Name', 'Email', 'Feedback', 'Timestamp'])
+        # Validate required environment variables
+        if not all([sender_email, receiver_email, smtp_server, smtp_username, smtp_password]):
+            app.logger.error("Missing required email configuration environment variables")
+            return False
+
+        # Build the message
+        msg = MIMEMultipart()
+        msg["Subject"] = f"SwitchMyPlan Feedback from {name}"
+        msg["From"] = sender_email
+        msg["To"] = receiver_email
+
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        body = f"""\
+New Feedback Received:
+
+Name:    {name}
+Email:   {email or 'Not provided'}
+Time:    {timestamp}
+
+Feedback
+-------------------------------------------------
+{feedback}
+-------------------------------------------------
+
+This message was automatically generated from the SwitchMyPlan feedback form.
+"""
+        msg.attach(MIMEText(body, "plain"))
+
+        # Send via SMTP with proper error handling
+        try:
+            context = ssl.create_default_context()
+            app.logger.info(f"Connecting to {smtp_server}:{smtp_port}")
+            
+            with smtplib.SMTP(smtp_server, smtp_port, timeout=30) as server:
+                server.starttls(context=context)
+                server.login(smtp_username, smtp_password)
+                server.sendmail(sender_email, receiver_email, msg.as_string())
+
+            app.logger.info(f"✅ Feedback email sent successfully to {receiver_email}")
+            return True
+
+        except smtplib.SMTPAuthenticationError:
+            app.logger.error("SMTP Authentication Error: Invalid credentials")
+            return False
+        except smtplib.SMTPException as e:
+            app.logger.error(f"SMTP Error: {str(e)}")
+            return False
+        except Exception as e:
+            app.logger.error(f"Unexpected error sending email: {str(e)}")
+            return False
+            
+    except Exception as e:
+        app.logger.error(f"Error in send_feedback_email: {str(e)}")
+        return False
 
 # Serve the contact page
 @app.route('/contact.html', methods=['GET'])
@@ -1491,80 +1594,22 @@ def serve_contact():
 @app.route('/contact-feedback', methods=['POST'], strict_slashes=False)
 @app.route('/feedback-submit',  methods=['POST'], strict_slashes=False)
 def contact_feedback():
-    name     = request.form.get('name')
-    email    = request.form.get('email', '')
+    name = request.form.get('name')
+    email = request.form.get('email', '')
     feedback = request.form.get('feedback')
 
     if not name or not feedback:
         return jsonify({'error': 'Name and feedback are required'}), 400
 
-    ensure_feedback_directory()
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    with open(FEEDBACK_CSV, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow([name, email, feedback, timestamp])
-
-    return jsonify({'message': 'Feedback submitted successfully'}), 200
-
-# -------------------------------------------------------------------------
-
-def ensure_dataframe(plans_data):
-    """Ensure that the plans data is a pandas DataFrame."""
-    if isinstance(plans_data, list):
-        return pd.DataFrame(plans_data)
-    return plans_data
-
-def extract_plan_details(message: str) -> dict:
-    """
-    Extract plan details from the user message using regex and matching against known carriers.
-    Uses get_cached_plans() to retrieve carrier names.
-    """
-    plans_data = ensure_dataframe(get_cached_plans())
-    details = {}
+    # Send feedback via email using Gmail
+    success = send_feedback_email(name, email, feedback)
     
-    # Extract price and data using regex.
-    price_match = re.search(r'(?:price|cost)\s*[:\-]?\s*\$?(\d+(\.\d+)?)', message, re.IGNORECASE)
-    data_match = re.search(r'(?:data)\s*[:\-]?\s*(\d+(\.\d+)?)(?:\s*GB)?', message, re.IGNORECASE)
-    
-    # Get list of carriers.
-    try:
-        carriers = plans_data["carrier"].dropna().unique().tolist()
-    except Exception as e:
-        logging.error("Error accessing carrier data: %s", e)
-        carriers = []
-    
-    carrier_match = None
-    for carrier in carriers:
-        if re.search(carrier, message, re.IGNORECASE):
-            carrier_match = carrier
-            break
-
-    if price_match:
-        details['plan_price'] = float(price_match.group(1))
-    if data_match:
-        details['plan_data'] = float(data_match.group(1))
-    if carrier_match:
-        details['carrier'] = carrier_match.strip()
-    
-    logging.debug("Extracted plan details: %s", details)
-    return details
-
-def convert_to_gb(data_str):
-    """
-    Converts the processed data string from the plans to a numeric value in gigabytes.
-    If the string ends with 'MB', converts it to GB.
-    Otherwise, assumes the value is in GB.
-    """
-    if isinstance(data_str, str) and data_str.strip().upper().endswith("MB"):
-        try:
-            # Remove 'MB' and convert to float, then divide by 1024.
-            return float(data_str.upper().replace("MB", "").strip()) / 1024
-        except:
-            return 0.0
-    try:
-        return float(data_str)
-    except:
-        return 0.0
+    if success:
+        app.logger.info(f"Feedback submitted successfully via email from {name}")
+        return jsonify({'message': 'Feedback submitted successfully'}), 200
+    else:
+        app.logger.error(f"Failed to send feedback email from {name}")
+        return jsonify({'error': 'Failed to send feedback. Please try again later.'}), 500
 
 def recommend_plan(user_message: str, current_details: dict = None) -> pd.DataFrame:
     """
@@ -1727,100 +1772,30 @@ def chat():
 # -------------------------------------------------------------------------
 # This section contains all carrier RPA flow implementations
 
-def send_email_notification(email, name, carrier, status="processing"):
-    """
-    Send an email notification to the user about their activation status
-    
-    Args:
-        email (str): User's email address
-        name (str): User's name
-        carrier (str): Carrier name
-        status (str): Status of the activation (processing or complete)
-        
-    Returns:
-        bool: True if email was sent (or would be sent in production), False otherwise
-    """
-    try:
-        # Email credentials and setup would go here in production
-        # This is a placeholder for demonstration purposes
-        sender_email = "notifications@switchmyplan.ca"
-        receiver_email = email
-        
-        # Create message
-        msg = MIMEMultipart()
-        msg['Subject'] = f"Your {carrier} activation status"
-        msg['From'] = sender_email
-        msg['To'] = receiver_email
-        
-        # Email body
-        if status == "processing":
-            body = f"""
-            Hi {name},
-            
-            Thank you for choosing SwitchMyPlan.ca!
-            
-            Your {carrier} activation request is currently being processed. This process typically takes 24-48 hours to complete.
-            
-            We'll send you another email once your activation is complete with further instructions.
-            
-            If you have any questions, please reply to this email or contact our support team.
-            
-            Best regards,
-            The SwitchMyPlan.ca Team
-            """
-        elif status == "complete":
-            body = f"""
-            Hi {name},
-            
-            Great news! Your {carrier} activation has been successfully completed.
-            
-            Your new service is now active. Please restart your device to ensure proper connectivity.
-            
-            If you have any questions or need further assistance, please reply to this email or contact our support team.
-            
-            Thank you for choosing SwitchMyPlan.ca!
-            
-            Best regards,
-            The SwitchMyPlan.ca Team
-            """
-        
-        # Attach the text to the email
-        msg.attach(MIMEText(body, 'plain'))
-        
-        # In production, you would connect to an SMTP server and send the email
-        # For demonstration, we'll just log the email content
-        app.logger.info(f"Email would be sent to {receiver_email} with subject: {msg['Subject']}")
-        app.logger.info(f"Email body: {body}")
-        
-        # In production, you would use code like this:
-        """
-        smtp_server = "smtp.example.com"
-        port = 587  # For starttls
-        smtp_username = "username"
-        smtp_password = "password"
-        
-        # Create a secure SSL context
-        context = ssl.create_default_context()
-        
-        with smtplib.SMTP(smtp_server, port) as server:
-            server.ehlo()  # Can be omitted
-            server.starttls(context=context)
-            server.ehlo()  # Can be omitted
-            server.login(smtp_username, smtp_password)
-            server.sendmail(sender_email, receiver_email, msg.as_string())
-        """
-        
-        # For now, just simulate a delay
-        time.sleep(1)
-        return True
-        
-    except Exception as e:
-        app.logger.error(f"Failed to send email notification: {str(e)}")
-        return False
-
-
-
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get('FLASK_RUN_PORT', 5000))
-    app.run(debug=True, port=port, host='0.0.0.0')
+    # Setup logging
+    error_handler, info_handler = setup_logging()
+    app.logger.addHandler(error_handler)
+    app.logger.addHandler(info_handler)
+    app.logger.setLevel(logging.INFO)
+    
+    # Production configuration
+    port = int(os.environ.get('PORT', 5000))
+    host = os.environ.get('HOST', '0.0.0.0')
+    
+    # Use waitress for production with proper configuration
+    from waitress import serve
+    serve(
+        app,
+        host=host,
+        port=port,
+        threads=4,
+        url_scheme='https',
+        channel_timeout=120,
+        cleanup_interval=30,
+        max_request_header_size=262144,
+        max_request_body_size=1073741824
+    )
+    
+    # Development configuration (commented out)
+    # app.run(debug=False, port=port, host=host)

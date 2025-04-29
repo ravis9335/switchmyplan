@@ -1,92 +1,92 @@
-carrier,plan_type,plan_name,plan_price,plan_data,plan_features
+carrier,plan_type,plan_name,plan_price,plan_data,plan_features,USA Roaming,Mexico Roaming
 virgin,postpaid,"60GB data, talk & text",39.0,60.0,"• Unlimited Canada-wide calling & texting
-• Unlimited calling to US
-• Bangladesh
-• China
-• Hong Kong
-• India
-• Mexico
-• and United Kingdom
+• Unlimited calling to US, Bangladesh, China, Hong Kong, India, Mexico, and United Kingdom
 • Unlimited international texting from Canada
 • Call Display
 • Voicemail
 • Call Waiting and Conference Calling
-• Hotspot capabilities"
+• Hotspot capabilities",N,N
 virgin,postpaid,"80GB data, talk & text",54.0,80.0,"• Unlimited Canada-wide calling & texting
-• Unlimited calling to US
-• Bangladesh
-• China
-• Hong Kong
-• India
-• Mexico
-• and United Kingdom
+• Unlimited calling to US, Bangladesh, China, Hong Kong, India, Mexico, and United Kingdom
 • Unlimited international texting from Canada
 • Call Display
 • Voicemail
 • Call Waiting and Conference Calling
-• Hotspot capabilities"
-virgin,postpaid,Talk and text.,25.0,0.0,"• Unlimited Canada-wide calling & texting
-• Pay per use data available at 4G LTE speeds - View Rates"
+• Hotspot capabilities",N,N
 virgin,postpaid,"250MB data, talk & text",19.0,0.244140625,"• 100 outgoing calls minutes+ Unlimited incoming
-• Unlimited Canada-wide texting"
-virgin,postpaid,"3GB data, talk & text",39.0,3.0,• Unlimited Canada-wide calling & texting
-koodo,postpaid,Bring Your Own Phone,25.0,0.0,"Perks:One included at no extra charge on select plans, Just for Koodo customers!Get $5 off per month on Netflix, Amazon Prime, and Disney+ for 12 months. Plans starting at just $18/month. Don’t miss out—act fast!, Call Display+, Voicemail, Call Waiting and Conference Calling, US and International Easy Roam"
-koodo,postpaid,Tab Plus,39.0,60.0,"Perks:One included at no extra charge on select plans, Just for Koodo customers!Get $5 off per month on Netflix, Amazon Prime, and Disney+ for 12 months. Plans starting at just $18/month. Don’t miss out—act fast!, Call Display+, Voicemail, Call Waiting and Conference Calling, US and International Easy Roam"
-koodo,postpaid,Starter Plans,15.0,0.244140625,100Canada-wide minutes with unlimited incoming minutes
-koodo,postpaid,,35.0,3.0,UnlimitedCanada-wide minutes
-koodo,postpaid,,37.5,2.0,UnlimitedCanada-wide minutes
-fido,postpaid,"2GB, Talk & Text - BYOP",37.5,2.0,• Unlimited Canada-wide talk and textData 2 GB
-fido,postpaid,"60GB, Talk & Text - BYOP",44.0,60.0,• Unlimited Canada-wide talk and text500 international textsHotspot available as an add-onGet 3% cash back value with a Rogers Red credit card
-fido,postpaid,"80GB, Talk & Text - BYOP",54.0,80.0,• Unlimited Canada-wide talk and text1000 international textsHotspot available as an add-onGet 3% cash back value with a Rogers Red credit card
-fido,postpaid,Talk & Text Plan - BYOP,25.0,0.0,• Unlimited Canada-wide talk and text
-fido,postpaid,Talk & Text Plan (No Data),25.0,0.0,• Unlimited Canada-wide talk and text
+• Unlimited Canada-wide texting",N,N
+virgin,postpaid,"3GB data, talk & text",39.0,3.0,• Unlimited Canada-wide calling & texting,N,N
+koodo,postpaid,Pay- per-use data,25.0,0.0,"Pay-per-use data, Unlimited Canada-wide minutes, Unlimited Canada-wide messaging (text & picture)",N,N
+koodo,postpaid,60GB,39.0,60.0,"• 60 GB of Shock-Free® Data at 4G Speed, Unlimited Canada-wide minutes, Unlimited Canada-wide messaging (text & picture).
+• Pick 1 FREE Perk from options like Data Rollover, International Texting, Premium VM, and more. 
+• Price includes savings of $10 with auto-pay by bank account discount                                                                                                             ",N,N
+koodo,postpaid,80GB,54.0,80.0,"• 80 GB of Shock-Free® Data at 4G Speed, Unlimited Canada-wide minutes, Unlimited Canada-wide messaging (text & picture).
+• Pick 1 FREE Perk from options like Data Rollover, International Texting, Premium VM, and more. 
+• Price includes savings of $10 with auto-pay by bank account discount ",N,N
+koodo,postpaid,250MB,15.0,0.244140625,"250MB of Shock-Free® Data at 3G Speed, 100 Canada-wide minutes with unlimited incoming minutes, Unlimited Canada-wide messaging (text only)",N,N
+koodo,postpaid,3GB,25.0,3.0,"3GB of Shock-Free® Data at 3G Speed, Unlimited Canada-wide minutes, Unlimited Canada-wide messaging (text & picture)  
+• Price includes savings of $10 with auto-pay by bank account discount ",N,N
+koodo,postpaid,2GB,37.5,2.0,"2GB of Shock-Free® Data at 4G Speed, Unlimited Canada-wide minutes, Unlimited Canada-wide messaging (text & picture)",N,N
+fido,postpaid,"2GB, Talk & Text - BYOP",37.5,2.0,"• Unlimited Canada-wide calling & texting
+• 500 international texts
+• Hotspot available as an add-on
+• Get 3% cash back value with a Rogers Red credit card ",N,N
+fido,postpaid,"60GB, Talk & Text - BYOP",44.0,60.0,"• Unlimited Canada-wide talk and text
+500 international texts
+• Hotspot available as an add-on
+• Get 3% cash back value with a Rogers Red credit card 
+• Data overage protection 
+• Get 5 Extra hours of Data 
+• Price includes savings of $10 after automatic payments discount ",N,N
+fido,postpaid,"80GB, Talk & Text - BYOP",54.0,80.0,"• Unlimited Canada-wide talk and text
+1000 international texts
+• Hotspot available as an add-on
+• Get 3% cash back value with a Rogers Red credit card 
+• Data overage protection 
+• Get 5 Extra hours of Data  
+• Price includes savings of $10 after automatic payments discount ",N,N
+fido,postpaid,Talk & Text Plan (No Data),25.0,0.0,"• Unlimited Canada-wide talk and text 
+• Price includes savings of $10 after automatic payments discount t",N,N
 fido,postpaid,250MB Basic Plan - BYOP,15.0,0.244140625,"• Data 250 MB of data at 3G speed100 Canada-wide outgoing call minutes (additional minutes 0.45/min)
-• unlimited incoming calls. No data available after 250 MB limit100 Canada-wide weekday minutes"
-fido,postpaid,3GB Basic Plan - BYOP,35.0,3.0,• Data 3 GBUnlimited Canada-wide talk and text1
-rogers,postpaid,5G Infinite Essentials NS BYOD,65.0,100.0,"• Access to 5G/5G+ network
-• Unlimited data at reduced speeds beyond high-speed data allotment
-• Unlimited talk and text
-• Call Display with Name Display
-• Enhanced Voicemail
-• Call Waiting
-• Group Calling
-• 2500 Call Forwarding Minutes
-• Mobile hotspot access
-• Access to Roam Like Home"
-rogers,postpaid,5G Infinite Popular NS BYOD,75.0,175.0,"• Data 175 GB at speeds up to 1Gbps
-• Unlimited international texting
-• 1000 long distance minutes from Canada to the U.S.
-• India
-• China + Hong Kong (excluding Macau and Taiwan)
-• the United Kingdom
-• Mexico
-• and Bangladesh
-• HD streaming within high-speed data
-• Get 3% cash back value with a Rogers Red credit card
-• Unlimited Canada-wide talk and text"
-rogers,postpaid,5G Infinite Ultimate NS BYOD,95.0,250.0,"• Data 250 GB at speeds up to 1Gbps
-• Unlimited international texting
-• 1000 long distance minutes from Canada/U.S./Mexico to India
-• China + Hong Kong (excluding Macau and Taiwan)
-• the United Kingdom and Bangladesh
-• HD streaming within high-speed data
-• Free Sportsnet+ for the first 3 months and 50% off Roam Like Home
-• Get 3% cash back value with a Rogers Red credit card
-• plus 2x cash back on Rogers purchases
-• Use your plan’s data and unlimited talk and text in Canada/U.S./Mexico"
-rogers,postpaid,Talk & Text NS BYOD,25.0,0.0,• Unlimited Canada-wide talk and text
-rogers,postpaid,5G mobile plans,None,0.0,
-rogers,postpaid,Talk and Text,None,0.0,
+• unlimited incoming calls. No data available after 250 MB limit",N,N
+fido,postpaid,3GB Basic Plan - BYOP,35.0,3.0,• Data 3 GBUnlimited Canada-wide talk and text1,N,N
+rogers,postpaid,5G Infinite Essentials NS BYOD,65.0,100.0,"	Data 100 GB at speeds up to 250Mbps
+	2,000 international texts
+	HD streaming within high-speed data
+	Get 3% cash back value with a Rogers Red credit card
+	Unlimited Canada-wide talk and text  
+• Price includes savings of $10 after automatic payments discount ",N,N
+rogers,postpaid,5G Infinite Popular NS BYOD,75.0,175.0,"	Data 175 GB at speeds up to 1Gbps
+	Unlimited international texting
+	1000 long distance minutes from Canada and the U.S., to India, China + Hong Kong (excluding Macau and Taiwan), the United Kingdom, Mexico, and Bangladesh
+	HD streaming within high-speed data
+	Get 3% cash back value with a Rogers Red credit card
+	Unlimited Canada-wide talk and text
+• Price includes savings of $10 after automatic payments discount
+",Y,N
+rogers,postpaid,5G Infinite Ultimate NS BYOD,95.0,250.0,"	Data 250 GB at speeds up to 1Gbps
+	Unlimited international texting
+	1000 long distance minutes from Canada/U.S./Mexico to India, China + Hong Kong (excluding Macau and Taiwan), the United Kingdom and Bangladesh
+	HD streaming within high-speed data
+	Plan perks: Free Sportsnet+ for the first 3 months and 50% off Roam Like Home
+	Get 3% cash back value with a Rogers Red credit card, plus 2x cash back on Rogers purchases
+	Use your plan’s data and unlimited talk and text in Canada/U.S./Mexico 
+• Price includes savings of $10 after automatic payments discount ",Y,Y
+rogers,postpaid,Talk and Text,25.0,0.0,"• Unlimited calling
+• texting and picture/video messaging within Canada
+• Price includes savings of $10 after automatic payments discount ",N,N
 bell,postpaid,Talk & Text 35,25.0,0.0,"• Unlimited Canada-wide calling
-• Unlimited Canada-wide text messages"
-bell,postpaid,Ultimate 100,65.0,100.0,"• 100 GB of shareable data at our fastest available 5G+ speeds & unlimited data at up to 512kbps theafter.
+• Unlimited Canada-wide text messages
+• Includes a monthly $10.00/mo Autopay credit",N,N
+bell,postpaid,Ultimate 100,65.0,100.0,"• 100 GB of shareable data at our fastest available 5G+ speeds & unlimited data at up to 512kbps thereafter.
 • 5G+ network access
 • Unlimited calling
 • texting & data in Canada.
-• Standard definition video streaming
+• SD video streaming
 • Hotspot capabilities
 • Unlimited international texting
-• Bonus: Crave Basic"
+• Bonus: Crave Basic
+• Includes a monthly $10.00/mo Autopay credit",N,N
 bell,postpaid,Ultimate 250 CAN/U.S./MEX,95.0,250.0,"• 250 GB of shareable data at our fastest available 5G+ speeds & unlimited data at up to 512 Kbps thereafter
 • 5G+ network access
 • HD video streaming
@@ -95,88 +95,91 @@ bell,postpaid,Ultimate 250 CAN/U.S./MEX,95.0,250.0,"• 250 GB of shareable data
 • texting & data in Canada
 • the U.S. and Mexico
 • Unlimited international texting
-• 1000 international minutes
-• Bonus: Crave Basic"
-telus,postpaid,5G+ Unlimited,70.0,100.0,"• 100GB shareable data at speeds up to 1Gbps and unlimited data at reduced speed
+• Bonus: Crave Basic 
+• Includes a monthly $10.00/mo Autopay credit",Y,Y
+telus,postpaid,5G+ Unlimited,55.0,100.0,"• 100GB shareable data at speeds up to 1Gbps and unlimited data at reduced speed
 • Unlimited nationwide data
 • talk and text
 • Access to mobile hotspot or tethering
 • Save up to 39% off for 6 months when you redeem Stream+ Premium
-• Unlimited international messaging"
-telus,postpaid,5G+ Unlimited,75.0,125.0,"• 125GB shareable data at speeds up to 1Gbps and unlimited data at reduced speed
+• Unlimited international messaging 
+• Price includes $10 pre-authorized bank payment discount",N,N
+telus,postpaid,5G+ Unlimited,65.0,100.0,"• 100GB shareable data at speeds up to 1Gbps and unlimited data at reduced speed
 • Unlimited nationwide data
 • talk and text
 • Access to mobile hotspot or tethering
 • Save up to 39% off for 6 months when you redeem Stream+ Premium
-• Unlimited international messaging"
-telus,postpaid,5G+ Unlimited CAN-US,80.0,150.0,"• 150GB shareable data at speeds up to 1Gbps and unlimited data at reduced speed
+• Unlimited international messaging  
+• Price includes $10 pre-authorized bank payment discount",N,N
+telus,postpaid,5G+ Unlimited CAN-US,75.0,150.0,"• 150GB shareable data at speeds up to 1Gbps and unlimited data at reduced speed
 • Unlimited data
 • talk and text in Canada and the US
 • Access to mobile hotspot or tethering
-• Save up to 39% off for 6 months when you redeem Stream+ Premium
 • Unlimited international messaging
-• $0 data sharing on your first connected device when you finance on a 2-year term."
-telus,postpaid,5G+ Unlimited Canada-US-Mexico,90.0,200.0,"• 200GB shareable data at speeds up to 2Gbps and unlimited data at reduced speed
+• Save up to 39% off for 6 months when you redeem Stream+ Premium  
+• Price includes $10 pre-authorized bank payment discount",Y,Y
+telus,postpaid,5G+ Unlimited Canada-US-Mexico,90.0,250.0,"• 250GB shareable data at speeds up to 2Gbps and unlimited data at reduced speed
 • Unlimited data
 • talk and text in Canada
 • the US and Mexico
 • Access to mobile hotspot or tethering
-• Save up to 39% off for 6 months when you redeem Stream+ Premium
 • Unlimited international messaging
-• Redeem 24 months of TELUS Online Security Complete on us"
-freedom,postpaid,50GB 5G+ plan,35.0,60.0,• Canada + U.S. + Mexico + Roam Beyond
-freedom,postpaid,75GB 5G+ plan,45.0,80.0,• Canada + U.S. + Mexico + Roam Beyond
-freedom,postpaid,100GB 5G+ plan,55.0,100.0,• Canada + U.S. + Mexico + Roam Beyond
-freedom,postpaid,100GB 5G+ plan,40.0,100.0,• Freedom Nationwide
-freedom,postpaid,125GB 5G+ plan,50.0,125.0,• Freedom Nationwide
-freedom,postpaid,150GB 5G+ plan,60.0,150.0,• Freedom Nationwide
-freedom,postpaid,1GB 5G+ plan,19.0,1.0,• Canada + U.S. + Mexico
-freedom,postpaid,10GB 5G+ plan,34.0,10.0,• Canada + U.S. + Mexico + Roam Beyond
-chatr,prepaid,3 GB,25.0,3.0,Unlimited Canada-Wide Talk
-chatr,prepaid,10 GB,34.0,10.0,Unlimited Canada-Wide Talk
-chatr,prepaid,60 GB,39.0,60.0,Unlimited Canada/US Talk
-chatr,prepaid,80GB,45.0,80.0,Unlimited Canada/US Talk
-chatr,prepaid,30 GB,149.0,30.0,Unlimited Canada-Wide Talk
+• Save up to 39% off for 6 months when you redeem Stream+ Premium
+• $0 data sharing on your first connected device when you finance on a 2-year term.
+• Redeem 24 months of TELUS Online Security Complete on us  
+• Price includes $10 pre-authorized bank payment discount",Y,Y
+telus,postpaid,Voice,25.0,0.0,"• Unlimited nationwide talk & text
+• Pay-per-use data
+• TELUS Call Display+
+• Call Waiting and Voicemail 
+• Price includes $10 pre-authorized bank payment discount",N,N
+freedom,postpaid,60GB 5G+ plan,35.0,60.0,• Canada + U.S. + Mexico + Roam Beyond,Y,Y
+freedom,postpaid,80GB 5G+ plan,45.0,80.0,• Canada + U.S. + Mexico + Roam Beyond,Y,Y
+freedom,postpaid,100GB 5G+ plan,55.0,100.0,• Canada + U.S. + Mexico + Roam Beyond,Y,Y
+freedom,postpaid,100GB 5G+ plan,40.0,100.0,• Freedom Nationwide,N,N
+freedom,postpaid,125GB 5G+ plan,50.0,125.0,• Freedom Nationwide,N,N
+freedom,postpaid,150GB 5G+ plan,60.0,150.0,• Freedom Nationwide,N,N
+freedom,postpaid,1GB 5G+ plan,19.0,1.0,• Canada + U.S. + Mexico,Y,Y
+freedom,postpaid,10GB 5G+ plan,34.0,10.0,• Canada + U.S. + Mexico + Roam Beyond,Y,Y
+chatr,prepaid,3 GB,25.0,3.0,Unlimited Canada-Wide Talk,N,N
+chatr,prepaid,10 GB,34.0,10.0,Unlimited Canada-Wide Talk,N,N
+chatr,prepaid,60 GB,39.0,60.0,Unlimited Canada/US Talk,N,N
+chatr,prepaid,80GB,45.0,80.0,Unlimited Canada/US Talk,N,N
 public_mobile,prepaid,Canada-US-Mexico,35.0,60.0,"• 5G Speed¹
 60GB Data
 Unlimited Talk & Text²
 500 International minutes³
-$1.75/mo. in Public Points™"
+$1.75/mo. in Public Points™",N,N
 public_mobile,prepaid,Canada-wide,34.0,60.0,"• 60GB data at 5G speed up to 250Mbps¹¹
 Unlimited data at reduced speed¹⁰
 Unlimited Talk & Text²
-$1.70/mo. in Public Points™"
+$1.70/mo. in Public Points™",N,N
 public_mobile,prepaid,Canada-US-Mexico,29.0,10.0,"• 5G Speed¹
 10GB Data
 Unlimited Talk & Text²
 100 International minutes³
-$1.45/mo. in Public Points™"
+$1.45/mo. in Public Points™",N,N
 public_mobile,prepaid,Canada-wide,25.0,5.0,"• 4G Speed¹
 5GB Data
 Unlimited Talk & Text²
-$1.25/mo. in Public Points™"
+$1.25/mo. in Public Points™",Y,Y
 public_mobile,prepaid,Canada-wide,22.0,3.0,"• 4G Speed¹
 3GB Data
 Unlimited Talk & Text²
-$1.10/mo. in Public Points™"
+$1.10/mo. in Public Points™",N,N
 public_mobile,prepaid,Canada-US-Mexico,45.0,80.0,"• 5G Speed¹
 80GB Data
 Unlimited Talk & Text²
 1000 International minutes³
-$2.25/mo. in Public Points™"
+$2.25/mo. in Public Points™",Y,Y
 public_mobile,prepaid,Canada-wide,19.0,1.0,"• 4G Speed¹
 1GB Data
 Unlimited Talk & Text²
-$0.95/mo. in Public Points™"
-freedom_prepaid,prepaid,50GB 5G+ plan,35.0,60.0,• Canada + U.S. + MexicoRoam Beyond in 100+ destinations$4/mo. ongoing credit when you bring your own phone¹²
-freedom_prepaid,prepaid,75GB 5G+ plan,45.0,80.0,• Canada + U.S. + MexicoRoam Beyond in 100+ destinations$4/mo. ongoing credit when you bring your own phone¹²
-freedom_prepaid,prepaid,100GB 5G+ plan,55.0,100.0,"• Canada + U.S. + MexicoRoam Beyond in 100+ destinations$4/mo. ongoing credit when you bring your own phone¹²Tablet &amp
-• Watch plans included"
-freedom_prepaid,prepaid,100GB 5G+ plan,40.0,100.0,"• Freedom Nationwide$4/mo. ongoing credit when you bring your own phone¹²Tablet &amp
-• Watch plans included"
-freedom_prepaid,prepaid,125GB 5G+ plan,50.0,125.0,"• Freedom Nationwide$4/mo. ongoing credit when you bring your own phone¹²Tablet &amp
-• Watch plans included"
-freedom_prepaid,prepaid,150GB 5G+  plan,60.0,150.0,"• Freedom Nationwide$4/mo. ongoing credit when you bring your own phone¹²Tablet &amp
-• Watch plans included"
-freedom_prepaid,prepaid,1GB  5G + plan,19.0,1.0,• Canada + U.S. + MexicoRoam Beyond in 100+ destinations$14/mo. plan price with Freedom Home Internet¹¹$29/mo. plan price with Freedom Home Internet¹¹
-freedom_prepaid,prepaid,10GB 5G+ plan,34.0,10.0,• Canada + U.S. + MexicoRoam Beyond in 100+ destinations$29/mo. plan price with Freedom Home Internet¹¹
+$0.95/mo. in Public Points™",N,N
+freedom_prepaid,prepaid,50GB 5G+ plan,35.0,60.0,• Canada + U.S. + MexicoRoam Beyond in 100+ destinations,N,N
+freedom_prepaid,prepaid,75GB 5G+ plan,45.0,80.0,• Canada + U.S. + MexicoRoam Beyond in 100+ destinations,Y,Y
+freedom_prepaid,prepaid,100GB 5G+ plan,55.0,100.0,• Canada + U.S. + MexicoRoam Beyond in 100+ destinations,N,N
+freedom_prepaid,prepaid,100GB 5G+ plan,40.0,100.0,• Freedom Nationwide,Y,Y
+freedom_prepaid,prepaid,125GB 5G+ plan,50.0,125.0,• Freedom Nationwide,Y,Y
+freedom_prepaid,prepaid,150GB 5G+  plan,60.0,150.0,• Freedom Nationwide,Y,Y
+freedom_prepaid,prepaid,1GB  5G + plan,19.0,1.0,• Canada + U.S. + MexicoRoam Beyond in 100+ destinations,N,N

@@ -81,72 +81,143 @@ function setupMobileFilters() {
 
 // Setup mobile navigation
 function setupMobileNavigation() {
-  // Create mobile menu button if it doesn't exist
-  if (!document.querySelector('.mobile-menu-button')) {
-    const navbar = document.getElementById('navbar');
-    if (navbar) {
-      // Create mobile menu button
-      const mobileMenuButton = document.createElement('button');
-      mobileMenuButton.classList.add('mobile-menu-button');
-      mobileMenuButton.setAttribute('aria-label', 'Toggle mobile menu');
-      mobileMenuButton.style.display = 'none'; // Will be shown with CSS media query
-      mobileMenuButton.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      `;
-      
-      // Create mobile menu
-      let mobileMenu = document.getElementById('mobile-menu');
-      if (!mobileMenu) {
-        mobileMenu = document.createElement('div');
-        mobileMenu.id = 'mobile-menu';
-        mobileMenu.style.display = 'none';
-        
-        // Get nav links and clone them for mobile menu
-        const navLinks = navbar.querySelectorAll('nav a');
-        if (navLinks.length > 0) {
-          navLinks.forEach(link => {
-            const clonedLink = link.cloneNode(true);
-            clonedLink.classList.add('nav-link');
-            mobileMenu.appendChild(clonedLink);
-          });
-        }
-        
-        // Create close button
-        const closeButton = document.createElement('button');
-        closeButton.id = 'close-menu';
-        closeButton.setAttribute('aria-label', 'Close mobile menu');
-        closeButton.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        `;
-        mobileMenu.appendChild(closeButton);
-        
-        // Add to DOM
-        document.body.appendChild(mobileMenu);
-        
-        // Add click event to button
-        mobileMenuButton.addEventListener('click', function() {
-          mobileMenu.style.display = 'flex';
-        });
-        
-        // Add click event to close button
-        closeButton.addEventListener('click', function() {
-          mobileMenu.style.display = 'none';
-        });
-      }
-      
-      // Add mobile menu button to navbar
-      const navbarContainer = navbar.querySelector('.container');
-      if (navbarContainer) {
-        navbarContainer.appendChild(mobileMenuButton);
+  const navbar = document.getElementById('navbar');
+  if (!navbar) return;
+  
+  // Get or create the mobile menu
+  let mobileMenu = document.getElementById('mobile-menu');
+  if (!mobileMenu) {
+    mobileMenu = document.createElement('div');
+    mobileMenu.id = 'mobile-menu';
+    mobileMenu.className = 'fixed inset-0 bg-white z-[999] flex-col items-center justify-center';
+    mobileMenu.style.display = 'none';
+    document.body.appendChild(mobileMenu);
+  }
+  
+  // Style the mobile menu
+  mobileMenu.style.padding = '4rem 2rem';
+  mobileMenu.style.overflowY = 'auto';
+  
+  // Find existing mobile menu button or create one
+  let mobileMenuButton = document.querySelector('.mobile-menu-button');
+  if (!mobileMenuButton) {
+    mobileMenuButton = document.createElement('button');
+    mobileMenuButton.className = 'mobile-menu-button md:hidden';
+    mobileMenuButton.setAttribute('aria-label', 'Toggle menu');
+    mobileMenuButton.innerHTML = '<i class="ri-menu-line text-2xl"></i>';
+    
+    // Add the button to the navbar
+    const navbarContainer = navbar.querySelector('.container');
+    if (navbarContainer) {
+      const logoElement = navbarContainer.querySelector('a[href="/"]');
+      if (logoElement && logoElement.nextElementSibling) {
+        navbarContainer.insertBefore(mobileMenuButton, logoElement.nextElementSibling);
+      } else if (logoElement) {
+        logoElement.insertAdjacentElement('afterend', mobileMenuButton);
       } else {
-        navbar.appendChild(mobileMenuButton);
+        navbarContainer.querySelector('.flex').appendChild(mobileMenuButton);
       }
+    } else {
+      navbar.appendChild(mobileMenuButton);
     }
   }
+  
+  // Clear existing content and create new content
+  mobileMenu.innerHTML = '';
+  
+  // Create the mobile menu header with close button
+  const menuHeader = document.createElement('div');
+  menuHeader.className = 'flex justify-between items-center w-full mb-8 pb-4 border-b border-gray-200';
+  
+  // Create logo for mobile menu
+  const logoClone = navbar.querySelector('a[href="/"]')?.cloneNode(true);
+  if (logoClone) {
+    menuHeader.appendChild(logoClone);
+  } else {
+    const defaultLogo = document.createElement('a');
+    defaultLogo.href = '/';
+    defaultLogo.className = 'text-3xl font-bold';
+    defaultLogo.textContent = 'SwitchMyPlan';
+    menuHeader.appendChild(defaultLogo);
+  }
+  
+  // Create close button
+  const closeButton = document.createElement('button');
+  closeButton.id = 'close-menu';
+  closeButton.className = 'text-gray-500 hover:text-gray-800';
+  closeButton.setAttribute('aria-label', 'Close mobile menu');
+  closeButton.innerHTML = '<i class="ri-close-line text-3xl"></i>';
+  menuHeader.appendChild(closeButton);
+  mobileMenu.appendChild(menuHeader);
+  
+  // Create menu links container
+  const menuLinks = document.createElement('div');
+  menuLinks.className = 'flex flex-col w-full space-y-6 text-xl';
+  
+  // Get links from desktop menu
+  const desktopMenu = navbar.querySelector('.desktop-menu');
+  if (desktopMenu) {
+    const links = desktopMenu.querySelectorAll('a');
+    links.forEach(link => {
+      const newLink = link.cloneNode(true);
+      newLink.className = 'py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors';
+      menuLinks.appendChild(newLink);
+    });
+  } else {
+    // Fallback links if desktop menu doesn't exist
+    const defaultLinks = [
+      { href: 'all-plans.html', text: 'Plans' },
+      { href: 'faq.html', text: 'FAQ' },
+      { href: 'about.html', text: 'About' }
+    ];
+    
+    defaultLinks.forEach(linkInfo => {
+      const link = document.createElement('a');
+      link.href = linkInfo.href;
+      link.textContent = linkInfo.text;
+      link.className = 'py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors';
+      menuLinks.appendChild(link);
+    });
+  }
+  
+  mobileMenu.appendChild(menuLinks);
+  
+  // Create CTA button
+  const ctaButtons = navbar.querySelector('.md\\:flex.items-center.gap-4');
+  if (ctaButtons) {
+    const ctaClone = ctaButtons.querySelector('a')?.cloneNode(true);
+    if (ctaClone) {
+      ctaClone.className = 'mt-8 py-4 px-6 bg-accent text-white rounded-full text-center w-full';
+      mobileMenu.appendChild(ctaClone);
+    }
+  } else {
+    // Fallback CTA button
+    const defaultCta = document.createElement('a');
+    defaultCta.href = 'all-plans.html';
+    defaultCta.textContent = 'Compare Plans';
+    defaultCta.className = 'mt-8 py-4 px-6 bg-accent text-white rounded-full text-center w-full';
+    mobileMenu.appendChild(defaultCta);
+  }
+  
+  // Add event listeners for opening and closing menu
+  mobileMenuButton.addEventListener('click', function() {
+    mobileMenu.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
+  });
+  
+  closeButton.addEventListener('click', function() {
+    mobileMenu.style.display = 'none';
+    document.body.style.overflow = ''; // Restore scrolling
+  });
+  
+  // Add event listeners to menu links to close menu when clicked
+  const allMenuLinks = mobileMenu.querySelectorAll('a');
+  allMenuLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      mobileMenu.style.display = 'none';
+      document.body.style.overflow = ''; // Restore scrolling
+    });
+  });
 }
 
 // Setup filter sidebar for all-plans.html

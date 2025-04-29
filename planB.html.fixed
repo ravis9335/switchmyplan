@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="SwitchMyPlan - Compare and switch to the best mobile plans in Canada. Switch, Save, Smile!">
-<title>SwitchMyPlan| Mobile Plan Comparison</title>
+<title>SwitchMyPlan | Switch, Save, Smile! | Mobile Plan Comparison</title>
 
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230066FF' d='M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-11v6h2v-6h-2zm0-4v2h2V7h-2z'/%3E%3C/svg%3E">
@@ -829,7 +829,7 @@ body {
   padding: 0;
   border-radius: 0;
   box-shadow: none;
-  transform: scale(1.4) !important; /* Make all logos 40% bigger */
+  transform: scale(1.2); /* Make all logos 20% bigger */
 }
 
 /* Specific adjustments for Virgin and Koodo logos */
@@ -1031,34 +1031,6 @@ body {
   .mobile-menu-button {
     display: block;
   }
-
-  #mobile-menu {
-    transition: opacity 0.3s var(--ease), visibility 0.3s var(--ease);
-    visibility: hidden;
-    opacity: 0;
-    display: flex !important;
-  }
-
-  #mobile-menu.active {
-    visibility: visible;
-    opacity: 1;
-  }
-
-  #mobile-menu a {
-    transform: translateY(20px);
-    opacity: 0;
-    transition: transform 0.4s var(--ease), opacity 0.4s var(--ease);
-  }
-
-  #mobile-menu.active a {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  #mobile-menu.active a:nth-child(1) { transition-delay: 0.1s; }
-  #mobile-menu.active a:nth-child(2) { transition-delay: 0.15s; }
-  #mobile-menu.active a:nth-child(3) { transition-delay: 0.2s; }
-  #mobile-menu.active a:nth-child(4) { transition-delay: 0.25s; }
 
   .nav-link {
     display: block;
@@ -1311,8 +1283,8 @@ a.carrier-logo img[alt="Koodo"] {
 .plan-card {
   flex: 0 0 calc(100% / 3 - 20px);
   margin: 0 10px;
-  background: linear-gradient(to bottom right, rgb(255, 255, 255), #cbdaff);
-  border-radius: 30px;
+  background-color: rgb(215, 233, 254);
+  border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -1489,7 +1461,7 @@ a.carrier-logo img[alt="Koodo"] {
       <div class="flex items-center justify-between w-full">
         <!-- Logo -->
         <a href="/" class="text-4xl font-['Apple_Garamond'] font-semibold" style="font-size: 3.5rem;">
-          <span class="text-black">Swicth</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
+          <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
         </a>
 
         <!-- Mobile menu button -->
@@ -1514,32 +1486,6 @@ a.carrier-logo img[alt="Koodo"] {
       </div>
     </div>
   </nav>
-   
-  <!-- Mobile Menu -->
-  <div id="mobile-menu" class="fixed inset-0 bg-white z-50 hidden flex-col p-8">
-    <div class="flex justify-between items-center w-full mb-12">
-      <a href="/" class="text-4xl font-['Apple_Garamond'] font-semibold">
-        <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
-      </a>
-      <button id="close-menu" class="text-3xl text-gray-800">
-        <i class="ri-close-line"></i>
-      </button>
-    </div>
-    
-    <div class="flex flex-col gap-12 text-xl">
-      <a href="all-plans.html" class="text-gray-800 hover:text-accent transition-colors">Plans</a>
-      <a href="faq.html" class="text-gray-800 hover:text-accent transition-colors">FAQ</a>
-      <a href="about.html" class="text-gray-800 hover:text-accent transition-colors">About</a>
-    </div>
-    
-    <div class="mt-auto pt-8">
-      <a href="all-plans.html" class="w-full block text-center py-4 rounded-full bg-accent hover:bg-accent/90 text-white font-medium shadow-lg shadow-accent/25 transition-all">
-        Compare Plans
-      </a>
-    </div>
-  </div>
-
-  <!-- Hero Section -->
     <section class="min-h-screen relative flex items-center w-full page-section bg-gradient" id="hero">
       <!-- Background gradient effects -->
       <div class="absolute inset-0" style="z-index: 1;">
@@ -1562,11 +1508,11 @@ a.carrier-logo img[alt="Koodo"] {
 
             <!-- Main headline -->
             <div class="overflow-hidden mb-4">
-              <h1 id="main-headline" class="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-[#2a3158] opacity-0 transform translate-y-12 transition-all duration-1000 ease-out">
+              <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-slide-up text-[#2a3158]" style="animation-delay: 0.2s">
                 <span>Find Your</span>
                 <span class="relative inline-block">
                   <span class="gradient-text">Perfect</span>
-                  <svg class="absolute -bottom-3 left-0 w-full opacity-0 transform transition-all duration-1000 delay-500" id="headline-underline" viewBox="0 0 400 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg class="absolute -bottom-3 left-0 w-full" viewBox="0 0 400 44" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M2 30.4917C45.0045 15.4002 148.009 -13.2319 195 30.4917C242.068 74.3086 344.019 42.6234 398 30.4917" stroke="url(#paint0_linear_102_83)" stroke-width="4" stroke-linecap="round"/>
                     <defs>
                       <linearGradient id="paint0_linear_102_83" x1="2" y1="32" x2="398" y2="32" gradientUnits="userSpaceOnUse">
@@ -1580,26 +1526,26 @@ a.carrier-logo img[alt="Koodo"] {
             </div>
             
             <!-- Subheadline -->
-            <p id="subheadline" class="text-lg md:text-xl mb-8 text-[#5a6184] leading-relaxed opacity-0 transform translate-y-8 transition-all duration-1000 ease-out delay-300">
-              Compare and find the Best BYOD plans from all major carriers in Ontario. Save up to 40% on your monthly bill.
+            <p class="text-lg md:text-xl mb-8 text-[#5a6184] leading-relaxed animate-slide-up" style="animation-delay: 0.3s">
+              Compare and find the best mobile phone plans from all major carriers. Save up to 40% on your monthly bill.
             </p>
 
             <!-- Tagline -->
             <div class="overflow-hidden mb-8">
-              <h2 id="tagline" class="text-3xl md:text-4xl gradient-text font-bold opacity-0 transform translate-y-8 transition-all duration-1000 ease-out delay-500">
+              <h2 class="text-3xl md:text-4xl gradient-text font-bold animate-slide-up" style="animation-delay: 0.3s">
                 Switch, Save, Smile!
               </h2>
             </div>
 
             <!-- Description -->
             <div class="overflow-hidden mb-10">
-              <p id="description" class="text-black text-lg opacity-0 transform translate-y-8 transition-all duration-1000 ease-out delay-700">
-              Find the Best BYOD plans tailored to your needs with our Best In Class recommendation engine.
+              <p class="text-black text-lg animate-slide-up" style="animation-delay: 0.4s">
+                Compare all major Canadian carriers in seconds. Find the best plan tailored to your needs with our Best In Class recommendation engine.
               </p>
             </div>
 
             <!-- CTA buttons -->
-            <div id="cta-buttons" class="flex flex-wrap gap-4 opacity-0 transform translate-y-8 transition-all duration-1000 ease-out delay-900">
+            <div class="flex flex-wrap gap-4 animate-slide-up" style="animation-delay: 0.5s">
               <a href="#compare" class="magnetic-btn py-4 px-8 rounded-full bg-accent hover:bg-accent/90 text-white font-medium shadow-lg shadow-accent/25 transition-all flex items-center gap-2">
                 <span>Find My Plan</span>
                 <i class="ri-arrow-right-line"></i>
@@ -1622,46 +1568,46 @@ a.carrier-logo img[alt="Koodo"] {
         
         <!-- Carrier logos grid -->
         <div class="mt-16 animate-slide-up" style="animation-delay: 0.7s; z-index: 3;">
-          <div class="bg-gradient-to-br from-white to-[#4470FF] rounded-3xl p-6 md:p-10 max-w-5xl mx-0 lg:mr-auto shadow-lg">
-            <h3 class="text-xl md:text-2xl gradient-text font-display font-family:helvetica  mb-6 md:mb-10 text-center text-[#2a3158]"> Your Favourite Carriers, All In One Place</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-12">
+          <div class="bg-[rgba(218,228,255,0.9)] rounded-3xl p-6 md:p-10 max-w-5xl mx-0 lg:mr-auto shadow-lg">
+            <h3 class="text-xl md:text-2xl gradient-text font-display font-family:helvetica  mb-6 md:mb-10 text-center text-[#2a3158]"> Your Favourite Carriers All In One Place</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-16">
               <!-- Row 1 -->
           <!-- Bell -->
-              <a href="/all-plans?carrier=Bell" class="carrier-logo flex items-center justify-center h-16 sm:h-20 md:h-24">
-                <img src="/carrierlogos/images.png" alt="Bell" class="w-auto h-auto max-h-[60%] sm:max-h-[70%] md:max-h-[80%] min-h-[10%] object-contain" />
-              </a>
+              <a href="/all-plans?carrier=Bell" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/images.png" alt="Bell" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
               
           <!-- Rogers -->
-              <a href="/all-plans?carrier=Rogers" class="carrier-logo flex items-center justify-center h-16 sm:h-20 md:h-24">
-                <img src="/carrierlogos/Rogers_logo.svg.png" alt="Rogers" class="w-auto h-auto max-h-[60%] sm:max-h-[70%] md:max-h-[80%] min-h-[10%] object-contain" />
-              </a>
+              <a href="/all-plans?carrier=Rogers" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Rogers_logo.svg.png" alt="Rogers" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
           <!-- Telus -->
-              <a href="/all-plans?carrier=Telus" class="carrier-logo flex items-center justify-center h-16 sm:h-20 md:h-24">
-                <img src="/carrierlogos/Telus-Logo-1996.png" alt="Telus" class="w-auto h-auto max-h-[60%] sm:max-h-[70%] md:max-h-[80%] min-h-[10%] object-contain" />
-              </a>
+              <a href="/all-plans?carrier=Telus" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Telus-Logo-1996.png" alt="Telus" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
               <!-- Freedom -->
-              <a href="/all-plans?carrier=Freedom" class="carrier-logo flex items-center justify-center h-16 sm:h-20 md:h-24">
-                <img src="/carrierlogos/Freedom_Mobile_logo.svg.png" alt="Freedom" class="w-auto h-auto max-h-[60%] sm:max-h-[70%] md:max-h-[80%] min-h-[10%] object-contain" />
+              <a href="/all-plans?carrier=Freedom" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Freedom_Mobile_logo.svg.png" alt="Freedom" class="max-h-16 md:max-h-24 object-contain" />
               </a>
               <!-- Row 2 -->
           <!-- Virgin -->
-              <a href="/all-plans?carrier=Virgin" class="carrier-logo flex items-center justify-center h-16 sm:h-20 md:h-24">
-                <img src="/carrierlogos/Virgin_Plus_Web.png" alt="Virgin" class="w-auto h-auto max-h-[60%] sm:max-h-[70%] md:max-h-[80%] min-h-[10%] object-contain" />
-              </a>
+              <a href="/all-plans?carrier=Virgin" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Virgin_Plus_Web.png" alt="Virgin" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
               
           <!-- Fido -->
-              <a href="/all-plans?carrier=Fido" class="carrier-logo flex items-center justify-center h-16 sm:h-20 md:h-24">
-                <img src="/carrierlogos/Fido_Solutions_logo.svg.png" alt="Fido" class="w-auto h-auto max-h-[60%] sm:max-h-[70%] md:max-h-[80%] min-h-[10%] object-contain" />
-              </a>
+              <a href="/all-plans?carrier=Fido" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Fido_Solutions_logo.svg.png" alt="Fido" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
           <!-- Koodo -->
-              <a href="/all-plans?carrier=Koodo" class="carrier-logo flex items-center justify-center h-16 sm:h-20 md:h-24">
-                <img src="/carrierlogos/Koodo_Mobile_-_Color.png" alt="Koodo" class="w-auto h-auto max-h-[80%] sm:max-h-[85%] md:max-h-[90%] min-h-[10%] object-contain" />
-              </a>
+              <a href="/all-plans?carrier=Koodo" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/Koodo_Mobile_-_Color.png" alt="Koodo" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
               
           <!-- Chatr -->
-              <a href="/all-plans?carrier=Chatr" class="carrier-logo flex items-center justify-center h-16 sm:h-20 md:h-24">
-                <img src="/carrierlogos/png-clipart-chatr-mobile-phones-rogers-wireless-mobile-service-provider-company-lucky-mobile-chatr-purple-violet.png" alt="Chatr" class="w-auto h-auto max-h-[60%] sm:max-h-[70%] md:max-h-[80%] min-h-[10%] object-contain" />
-              </a>
+              <a href="/all-plans?carrier=Chatr" class="carrier-logo flex justify-center">
+                <img src="/carrierlogos/png-clipart-chatr-mobile-phones-rogers-wireless-mobile-service-provider-company-lucky-mobile-chatr-purple-violet.png" alt="Chatr" class="max-h-16 md:max-h-24 object-contain" />
+          </a>
         </div>
       </div>
         </div>
@@ -1674,27 +1620,15 @@ a.carrier-logo img[alt="Koodo"] {
     </section>
 
     <!-- Featured Plans Section -->
-<section id="featured-plans" class="py-20 w-full page-section bg-gradient">
-  <div class="container mx-auto px-6">
-    <div class="flex justify-between items-center mb-12">
-      <!-- LEFT side: heading + footnote -->
-      <div class="flex flex-col space-y-1">
-        <h2 class="text-4xl font-display font-bold">
-          Featured Plans
-        </h2>
-        <p class="text-sm text-gray-400 leading-tight">
-          *Ontario only
-        </p>
-      </div>
-
-      <!-- RIGHT side: CTA button -->
-      <a href="/all-plans"
-         class="magnetic-btn py-2 px-6 rounded-full bg-accent text-black font-medium
-                hover:shadow-lg hover:shadow-accent/20 transition-all flex items-center gap-2">
-        <span>View all plans</span>
-        <i class="ri-arrow-right-line"></i>
-      </a>
-    </div>
+    <section id="featured-plans" class="py-20 w-full page-section bg-gradient">
+      <div class="container mx-auto px-6">
+        <div class="flex justify-between items-center mb-12">
+          <h2 class="text-4xl font-display font-bold">Featured Plans</h2>
+          <a href="/all-plans" class="magnetic-btn py-2 px-6 rounded-full bg-accent text-black font-medium hover:shadow-lg hover:shadow-accent/20 transition-all flex items-center gap-2">
+            <span>View all plans</span>
+            <i class="ri-arrow-right-line"></i>
+          </a>
+        </div>
         <!-- Featured Plans Carousel -->
         <div class="plan-carousel-container">
           <div class="plan-carousel" id="planCarousel">
@@ -1730,54 +1664,47 @@ a.carrier-logo img[alt="Koodo"] {
   </section>
 
     <!-- AI Recommendation Section with Chat -->
-    <section class="py-24 w-full page-section bg-black" id="compare">
-            <!-- Gradient border effect -->
-            <div class="absolute inset-0 opacity-20 pointer-events-none">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4470FF] to-[#7C4DFF]"></div>
-              <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#7C4DFF] to-[#4470FF]"></div>
-              <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#4470FF] to-[#7C4DFF]"></div>
-              <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#7C4DFF] to-[#4470FF]"></div>
-            </div>
+    <section class="py-24 w-full page-section bg-gradient" id="compare">
       <div class="container mx-auto px-6">
         <div class="text-center max-w-3xl mx-auto mb-16">
-          <h3 class="text-sm uppercase tracking-wider text-blue-500 mb-2 font-medium">Intelligent Recommendations</h3>
-          <h2 class="text-4xl md:text-5xl font-display font-bold mb-6 text-white">Meet Blue, Your Personal Plan Advisor</h2>
-          <p class="text-white">Blue analyzes your usage patterns to recommend the perfect plan for your needs.</p>
+          <h3 class="text-sm uppercase tracking-wider text-accent mb-2 font-medium">Intelligent Recommendations</h3>
+          <h2 class="text-4xl md:text-5xl font-display font-bold mb-6 text-black">Meet Blue, Your Personal Plan Advisor</h2>
+          <p class="text-gray-700">Our AI assistant analyzes your usage patterns to recommend the perfect plan for your needs.</p>
         </div>
         <div class="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto relative">
           <!-- Info Column -->
-          <div id="info-column" class="bg-gradient-to-br from-[#4470FF] to-black rounded-2xl p-8 shadow-xl border border-white/10 opacity-0 transform translate-y-10 transition-all duration-1000 ease-out">
+          <div class="bg-white rounded-2xl p-8 shadow-xl border border-accent/10">
             <div class="space-y-8">
               <div class="space-y-6">
                 <div class="flex items-center gap-4">
-                  <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white">
+                  <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-white">
                     <i class="ri-brain-line text-xl"></i>
                   </div>
                   <div>
-                    <h3 class="text-xl font-display font-bold text-white">Smart Recommendations</h3>
-                    <p class="text-white/90">Analyzes your data to find the best match</p>
+                    <h3 class="text-xl font-display font-bold text-black">Smart Recommendations</h3>
+                    <p class="text-gray-700">Analyzes your data to find the best match</p>
                   </div>
                 </div>
                 <div class="flex items-center gap-4">
-                  <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white">
+                  <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-white">
                     <i class="ri-time-line text-xl"></i>
                   </div>
                   <div>
-                    <h3 class="text-xl font-display font-bold text-white">Save Time</h3>
-                    <p class="text-white/90">No more hours spent comparing plans</p>
+                    <h3 class="text-xl font-display font-bold text-black">Save Time</h3>
+                    <p class="text-gray-700">No more hours spent comparing plans</p>
                   </div>
                 </div>
                 <div class="flex items-center gap-4">
-                  <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white">
+                  <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-white">
                     <i class="ri-money-dollar-circle-line text-xl"></i>
                   </div>
                   <div>
-                    <h3 class="text-xl font-display font-bold text-white">Save Money</h3>
-                    <p class="text-white/90">Our users save $240/year on average</p>
+                    <h3 class="text-xl font-display font-bold text-black">Save Money</h3>
+                    <p class="text-gray-700">Our users save $240/year on average</p>
                   </div>
                 </div>
               </div>
-              <button onclick="showPlanDetailsModal()" class="block w-full py-4 px-8 rounded-full bg-gradient-to-br from-[#4470FF] to-white text-black font-medium text-center shadow-lg shadow-white/25 transition-all hover:bg-white/90">
+              <button onclick="showPlanDetailsModal()" class="block w-full py-4 px-8 rounded-full bg-accent text-white font-medium text-center shadow-lg shadow-accent/25 transition-all hover:bg-accent/90">
                   <span class="flex items-center justify-center gap-2">
                     <i class="ri-message-3-line text-lg"></i>
                   <span>Find My Perfect Plan</span>
@@ -1786,43 +1713,43 @@ a.carrier-logo img[alt="Koodo"] {
               </div>
             </div>
           <!-- Chat Column -->
-          <div id="chat-column" class="bg-gradient-to-br from-[#4470FF] to-gray rounded-2xl shadow-xl border border-white/10 overflow-hidden opacity-0 transform translate-y-10 transition-all duration-1000 ease-out delay-300">
-            <div class="p-4 border-b border-white/10 flex items-center justify-between">
+          <div class="bg-white rounded-2xl shadow-xl border border-accent/10 overflow-hidden">
+            <div class="p-4 border-b border-accent/10 flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
+                <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-white">
                   <i class="ri-robot-line text-xl"></i>
                 </div>
                 <div>
-                  <h3 class="font-display font-bold text-white">Blue</h3>
-                  <div class="flex items-center gap-1.5 text-xs text-white/80">
+                  <h3 class="font-display font-bold text-black">Blue</h3>
+                  <div class="flex items-center gap-1.5 text-xs text-gray-700">
                     <span class="block w-2 h-2 rounded-full bg-green-400"></span>
                     <span>Online now</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="p-6 space-y-6 min-h-[400px] bg-black/30" id="chat-messages">
+            <div class="p-6 space-y-6 min-h-[400px] bg-gray-50" id="chat-messages">
               <!-- AI welcome message -->
-              <div id="chat-welcome-message" class="flex items-start gap-3 max-w-[80%] opacity-0 transform translate-y-6 transition-all duration-700 ease-out delay-600">
-                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
+              <div class="flex items-start gap-3 max-w-[80%]">
+                <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
                   <i class="ri-robot-line text-sm"></i>
                 </div>
-                <div class="bg-white/10 rounded-2xl rounded-tl-none p-4 shadow-md backdrop-blur-sm">
-                  <p class="text-white">Hi there! 👋 I'm Blue, your personal plan advisor. To help you find the perfect mobile plan, could you share your current plan details with me?</p>
-                  <button onclick="showPlanDetailsModal()" class="mt-4 w-full py-2 px-4 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors text-sm">
+                <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-md">
+                  <p class="text-black">Hi there! 👋 I'm Blue, your personal plan advisor. To help you find the perfect mobile plan, could you share your current plan details with me?</p>
+                  <button onclick="showPlanDetailsModal()" class="mt-4 w-full py-2 px-4 bg-accent/10 text-accent rounded-lg hover:bg-accent/20 transition-colors text-sm">
                     Share Plan Details
                   </button>
                 </div>
               </div>
                 </div>
-            <div class="p-4 border-t border-white/10 bg-black/50">
+            <div class="p-4 border-t border-accent/10 bg-white">
               <form id="chat-form" class="relative">
                 <input type="text" 
                        id="chat-input" 
                        placeholder="Type your message..." 
-                       class="w-full bg-white/10 border border-white/20 rounded-full py-3 px-5 pr-12 focus:outline-none focus:ring-2 focus:ring-white/30 text-white placeholder-white/70">
+                       class="w-full bg-gray-50 border border-accent/10 rounded-full py-3 px-5 pr-12 focus:outline-none focus:ring-2 focus:ring-accent/20">
                 <button type="submit" 
-                        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white flex items-center justify-center text-accent hover:bg-white/90 transition-colors">
+                        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white hover:bg-accent/90 transition-colors">
                   <i class="ri-send-plane-fill"></i>
                 </button>
               </form>
@@ -1834,7 +1761,7 @@ a.carrier-logo img[alt="Koodo"] {
 
     <!-- Modal Dialog Box for Plan Details -->
     <div id="planDetailsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
-      <div class="bg-gradient-to-br from-[#4470FF] to-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl" 
+      <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl" 
            style="transform: translate(0, -20px); opacity: 0; transition: all 0.3s ease-out;">
         <div class="text-center mb-6">
           <h3 class="text-2xl font-display font-bold text-gray-800">Your Current Plan Details</h3>
@@ -1905,69 +1832,61 @@ a.carrier-logo img[alt="Koodo"] {
     </div>
 
   <!-- Why Choose Us Section -->
-    <section class="py-24 w-full page-section bg-black relative overflow-hidden" id="about">
-      <!-- Gradient border effect -->
-      <div class="absolute inset-0 opacity-20 pointer-events-none">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4470FF] to-[#7C4DFF]"></div>
-        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#7C4DFF] to-[#4470FF]"></div>
-        <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#4470FF] to-[#7C4DFF]"></div>
-        <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#7C4DFF] to-[#4470FF]"></div>
-      </div>
-      
-      <div class="container mx-auto px-6 relative z-10">
+    <section class="py-24 w-full page-section bg-white" id="about">
+      <div class="container mx-auto px-6">
         <!-- Section header -->
         <div class="text-center max-w-3xl mx-auto mb-16">
           <h3 class="text-sm uppercase tracking-wider text-accent mb-2 font-medium">Why SwitchMyPlan</h3>
-          <h2 class="text-4xl md:text-5xl font-display font-bold mb-6 text-white">The Smart Way to Choose</h2>
-          <p class="text-white/80">We've built the most advanced mobile plan comparison platform in Canada.</p>
+          <h2 class="text-4xl md:text-5xl font-display font-bold mb-6 text-black">The Smart Way to Choose</h2>
+          <p class="text-gray-700">We've built the most advanced mobile plan comparison platform in Canada.</p>
         </div>
         
         <!-- Features grid -->
         <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           <!-- Feature 1 -->
-          <div id="feature-1" class="bg-gradient-to-br from-[#4470FF] to-black rounded-2xl p-8 shadow-xl border border-white/10 opacity-0 transform translate-y-10 transition-all duration-1000 ease-out">
-            <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-white mb-6">
+          <div class="bg-white rounded-2xl p-8 shadow-xl border border-accent/10">
+            <div class="w-14 h-14 rounded-full bg-accent flex items-center justify-center text-white mb-6">
               <i class="ri-shield-check-line text-2xl"></i>
-            </div>
-            <h3 class="text-xl font-display font-bold mb-3 text-white">Trusted Comparisons</h3>
-            <p class="text-white/90">We analyze thousands of plans to ensure you get the best deal possible.</p>
+      </div>
+            <h3 class="text-xl font-display font-bold mb-3 text-black">Trusted Comparisons</h3>
+            <p class="text-gray-700">We analyze thousands of plans to ensure you get the best deal possible.</p>
             
-            <div class="mt-6 pt-6 border-t border-white/10">
-              <div class="flex items-center gap-2 text-white/90">
-                <i class="ri-check-line text-white"></i>
+            <div class="mt-6 pt-6 border-t border-gray-100">
+              <div class="flex items-center gap-2 text-gray-700">
+                <i class="ri-check-line text-accent"></i>
                 <span>Daily updated plan details</span>
-              </div>
-            </div>
-          </div>
+        </div>
+      </div>
+        </div>
           
           <!-- Feature 2 -->
-          <div id="feature-2" class="bg-gradient-to-br from-black to-[#7C4DFF] rounded-2xl p-8 shadow-xl border border-white/10 ribbon-container opacity-0 transform translate-y-10 transition-all duration-1000 ease-out">
+          <div class="bg-white rounded-2xl p-8 shadow-xl border border-accent/10 ribbon-container">
             <div class="ribbon">Coming Soon</div>
-            <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-white mb-6">
+            <div class="w-14 h-14 rounded-full bg-accent flex items-center justify-center text-white mb-6">
               <i class="ri-robot-line text-2xl"></i>
             </div>
-            <h3 class="text-xl font-display font-bold mb-3 text-white">AI-Powered</h3>
-            <p class="text-white/90">Blue provides personalized recommendations based on your usage.</p>
+            <h3 class="text-xl font-display font-bold mb-3 text-black">AI-Powered</h3>
+            <p class="text-gray-700">Blue provides personalized recommendations based on your usage.</p>
             
-            <div class="mt-6 pt-6 border-t border-white/10">
-              <div class="flex items-center gap-2 text-white/90">
-                <i class="ri-check-line text-white"></i>
+            <div class="mt-6 pt-6 border-t border-gray-100">
+              <div class="flex items-center gap-2 text-gray-700">
+                <i class="ri-check-line text-accent"></i>
                 <span>Smart suggestions</span>
               </div>
             </div>
           </div>
           
           <!-- Feature 3 -->
-          <div id="feature-3" class="bg-gradient-to-br from-[#4470FF] to-black rounded-2xl p-8 shadow-xl border border-white/10 opacity-0 transform translate-y-10 transition-all duration-1000 ease-out">
-            <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-white mb-6">
+          <div class="bg-white rounded-2xl p-8 shadow-xl border border-accent/10">
+            <div class="w-14 h-14 rounded-full bg-accent flex items-center justify-center text-white mb-6">
               <i class="ri-timer-line text-2xl"></i>
             </div>
-            <h3 class="text-xl font-display font-bold mb-3 text-white">Save Time & Money</h3>
-            <p class="text-white/90">Our users save an average of $240 annually on their plans.</p>
+            <h3 class="text-xl font-display font-bold mb-3 text-black">Save Time & Money</h3>
+            <p class="text-gray-700">Our users save an average of $240 annually on their plans.</p>
             
-            <div class="mt-6 pt-6 border-t border-white/10">
-              <div class="flex items-center gap-2 text-white/90">
-                <i class="ri-check-line text-white"></i>
+            <div class="mt-6 pt-6 border-t border-gray-100">
+              <div class="flex items-center gap-2 text-gray-700">
+                <i class="ri-check-line text-accent"></i>
                 <span>Quick comparison</span>
               </div>
             </div>
@@ -1976,7 +1895,18 @@ a.carrier-logo img[alt="Koodo"] {
       </div>
     </section>
 
-    
+    <!-- Our Mission Section -->
+    <section id="our-mission" class="py-24 w-full page-section bg-gradient">
+      <!-- inner content stays centered -->
+      <div class="max-w-5xl mx-auto px-6">
+        <h3 class="text-4xl md:text-6xl font-display font-bold mb-6 text-black">
+          Our Mission
+        </h3>
+        <p class="text-2xl md:text-4xl leading-relaxed text-gray-700">
+          At SwitchMyPlan, our mission is to empower customers with clear and unbiased plan comparisons. We understand that carriers often favor new subscribers, leaving long-time customers with outdated, costly plans. Our technology-driven service, guided by our virtual advisor Blue, simplifies switching so you get the fair value and respect you deserve.
+        </p>
+      </div>
+    </section>
   
   <!-- Footer -->
     <footer class="backdrop-blur-sm border-t border-accent/10 py-16 relative">
@@ -2040,10 +1970,16 @@ a.carrier-logo img[alt="Koodo"] {
             
             <!-- Social icons -->
         <div class="flex space-x-4">
-              <a href="https://www.instagram.com/switchmyplan?igsh=MWhhcHFxMW9nbGF2ag%3D%3D&utm_source=qr" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
+              <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
+                <i class="ri-twitter-fill"></i>
+              </a>
+              <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
+                <i class="ri-facebook-fill"></i>
+              </a>
+              <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
                 <i class="ri-instagram-line"></i>
               </a>
-              <a href="https://www.linkedin.com/in/ravi-solanki-datanerd" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
+              <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
                 <i class="ri-linkedin-fill"></i>
               </a>
         </div>
@@ -2154,36 +2090,6 @@ a.carrier-logo img[alt="Koodo"] {
       });
     });
 
-    // Mobile menu
-    const menuButton = document.querySelector('.mobile-menu-button');
-    const closeButton = document.querySelector('#close-menu');
-    const mobileMenu = document.querySelector('#mobile-menu');
-    
-    if (menuButton && mobileMenu) {
-      menuButton.addEventListener('click', () => {
-        mobileMenu.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    });
-    
-      if (closeButton) {
-      closeButton.addEventListener('click', () => {
-        mobileMenu.classList.remove('active');
-      document.body.style.overflow = '';
-    });
-      }
-
-      // Close menu when clicking a link
-      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-      if (mobileMenuLinks.length > 0) {
-        mobileMenuLinks.forEach(link => {
-        link.addEventListener('click', () => {
-          mobileMenu.classList.remove('active');
-          document.body.style.overflow = '';
-        });
-      });
-      }
-    }
-
     // Navbar scroll effect
     const navbar = document.getElementById('navbar');
     let lastScroll = 0;
@@ -2260,72 +2166,10 @@ a.carrier-logo img[alt="Koodo"] {
     }
 
     // Initialize particles and stars
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', () => {
       createParticles();
       createStars();
       loadPlans(); // Add this line to load the plans when the page loads
-      
-      // Headline animation
-      const animateHeroSection = () => {
-        const elements = [
-          document.getElementById('main-headline'),
-          document.getElementById('headline-underline'),
-          document.getElementById('subheadline'),
-          document.getElementById('tagline'),
-          document.getElementById('description'),
-          document.getElementById('cta-buttons')
-        ];
-        
-        // Filter out any null elements
-        const validElements = elements.filter(el => el !== null);
-        
-        if (validElements.length > 0) {
-          // Animate main headline first
-          setTimeout(() => {
-            if (elements[0]) {
-              elements[0].classList.add('opacity-100');
-              elements[0].classList.remove('translate-y-12');
-            }
-            
-            // Animate remaining elements with staggered delays
-            for (let i = 1; i < validElements.length; i++) {
-              setTimeout(() => {
-                validElements[i].classList.add('opacity-100');
-                if (validElements[i].classList.contains('translate-y-8')) {
-                  validElements[i].classList.remove('translate-y-8');
-                }
-              }, i * 200); // 200ms delay between each element
-            }
-          }, 300);
-        }
-      };
-      
-      // Use Intersection Observer for hero section if supported
-      if ('IntersectionObserver' in window) {
-        const heroObserver = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              animateHeroSection();
-              heroObserver.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.1 }); // Lower threshold to trigger earlier
-        
-        // Start observing hero section
-        const heroSection = document.getElementById('hero');
-        if (heroSection) {
-          heroObserver.observe(heroSection);
-        } else {
-          // Fallback to observing headline if hero section not found
-          const headline = document.getElementById('main-headline');
-          if (headline) {
-            heroObserver.observe(headline);
-          }
-        }
-      } else {
-        // Fallback for browsers without IntersectionObserver
-        animateHeroSection();
-      }
     });
 
     // Global variables for carousel management
@@ -2615,7 +2459,7 @@ case 'Telus':
         'Rogers': 'Rogers_logo.svg.png',
         'Telus': 'Telus-Logo-1996.png',
         'Chatr': 'png-clipart-chatr-mobile-phones-rogers-wireless-mobile-service-provider-company-lucky-mobile-chatr-purple-violet.png',
-        'Public Mobile': 'publicmobile.png',
+        'Public Mobile': 'public-mobile-logo.png',
         'Lucky': 'lucky-mobile-logo.png'
       };
       return logoMap[carrier] || `${carrier.toLowerCase()}_logo.png`;
@@ -3098,83 +2942,6 @@ case 'Telus':
                 }
             }
         });
-        
-        // Chat UI animations on scroll
-        const animateChatUI = () => {
-            const elements = [
-                document.getElementById('info-column'),
-                document.getElementById('chat-column'),
-                document.getElementById('chat-welcome-message')
-            ];
-            
-            const chatObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        // Add the opacity and reset transform when visible
-                        entry.target.classList.add('opacity-100');
-                        entry.target.classList.remove('translate-y-10', 'translate-y-6');
-                        
-                        // Stop observing after animation
-                        chatObserver.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.1,
-                rootMargin: '-50px 0px'
-            });
-            
-            // Start observing each element
-            elements.forEach(el => {
-                if (el) {
-                    chatObserver.observe(el);
-                }
-            });
-        };
-        
-        // Initialize chat UI animations
-        animateChatUI();
-        
-        // Why SwitchMyPlan section animations
-        const animateFeatures = () => {
-            const features = [
-                document.getElementById('feature-1'),
-                document.getElementById('feature-2'),
-                document.getElementById('feature-3')
-            ];
-            
-            const featureObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        // Get the feature number from the ID to calculate delay
-                        const featureId = entry.target.id;
-                        const featureNumber = parseInt(featureId.split('-')[1]);
-                        const delay = (featureNumber - 1) * 300; // 300ms staggered delay
-                        
-                        // Animate with appropriate delay
-                        setTimeout(() => {
-                            entry.target.classList.add('opacity-100');
-                            entry.target.classList.remove('translate-y-10');
-                        }, delay);
-                        
-                        // Stop observing after animation starts
-                        featureObserver.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.2,
-                rootMargin: '-50px 0px'
-            });
-            
-            // Start observing each feature
-            features.forEach(feature => {
-                if (feature) {
-                    featureObserver.observe(feature);
-                }
-            });
-        };
-        
-        // Initialize features animations
-        animateFeatures();
     });
 
     // Function to show plan details modal
@@ -3232,8 +2999,8 @@ case 'Telus':
               <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
                 <i class="ri-user-line text-sm"></i>
               </div>
-              <div class="bg-accent rounded-2xl rounded-tr-none p-4">
-                <p class="text-white">I'm currently paying $${planPrice} for ${dataUsage}GB with ${provider}.</p>
+              <div class="bg-accent/10 rounded-2xl rounded-tr-none p-4">
+                <p class="text-black">I'm currently paying $${planPrice} for ${dataUsage}GB with ${provider}.</p>
               </div>
             </div>
           `;
@@ -3245,8 +3012,8 @@ case 'Telus':
               <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
                 <i class="ri-robot-line text-sm"></i>
               </div>
-              <div class="bg-white/10 rounded-2xl rounded-tl-none p-4 shadow-md backdrop-blur-sm">
-                <p class="text-white">Analyzing your plan details<span class="dots">...</span></p>
+              <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-md">
+                <p class="text-black">Analyzing your plan details<span class="dots">...</span></p>
               </div>
             </div>
           `;
@@ -3340,8 +3107,8 @@ case 'Telus':
               <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
                 <i class="ri-user-line text-sm"></i>
               </div>
-              <div class="bg-accent rounded-2xl rounded-tr-none p-4">
-                <p class="text-white">${userMessage}</p>
+              <div class="bg-accent/10 rounded-2xl rounded-tr-none p-4">
+                <p class="text-black">${userMessage}</p>
               </div>
             </div>
           `;
@@ -3356,9 +3123,9 @@ case 'Telus':
                 <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
                   <i class="ri-robot-line text-sm"></i>
                 </div>
-                <div class="bg-white/10 rounded-2xl rounded-tl-none p-4 shadow-md backdrop-blur-sm">
-                  <p class="text-white">To help you better, I need some information about your current plan. Could you please share your plan details?</p>
-                  <button onclick="showPlanDetailsModal()" class="mt-4 w-full py-2 px-4 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors text-sm">
+                <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-md">
+                  <p class="text-black">To help you better, I need some information about your current plan. Could you please share your plan details?</p>
+                  <button onclick="showPlanDetailsModal()" class="mt-4 w-full py-2 px-4 bg-accent/10 text-accent rounded-lg hover:bg-accent/20 transition-colors text-sm">
                     Share Plan Details
                   </button>
                 </div>
@@ -3387,8 +3154,8 @@ case 'Telus':
         <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
           <i class="ri-robot-line text-sm"></i>
         </div>
-        <div class="bg-white/10 rounded-2xl rounded-tl-none p-4 shadow-md backdrop-blur-sm">
-          <p class="text-white mb-4">${messageText}</p>
+        <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-md">
+          <p class="text-black mb-4">${messageText}</p>
           <div class="space-y-4 mt-4" id="plan-recommendations">
           </div>
         </div>
@@ -3457,9 +3224,9 @@ case 'Telus':
         <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
           <i class="ri-robot-line text-sm"></i>
         </div>
-        <div class="bg-white/10 rounded-2xl rounded-tl-none p-4 shadow-md backdrop-blur-sm">
-          <p class="text-white">${message}</p>
-          <button onclick="showPlanDetailsModal()" class="mt-3 w-full py-2 px-4 bg-white/20 text-white rounded-full hover:bg-white/30 transition-all">
+        <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-md">
+          <p class="text-black">${message}</p>
+          <button onclick="showPlanDetailsModal()" class="mt-3 w-full py-2 px-4 bg-accent text-white rounded-full hover:bg-accent/90 transition-all">
             Try Again
           </button>
         </div>
@@ -3539,6 +3306,3 @@ case 'Telus':
       // Update buttons state
       updateNavButtons();
     }
-</script>
-</body>
-</html>

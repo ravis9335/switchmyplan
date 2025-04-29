@@ -228,30 +228,15 @@
 
                 <!-- CTA buttons -->
                 <div class="hidden md:flex items-center gap-4">
-                    <a href="all-plans.html" class="magnetic-btn">
-                        Compare Plans
+                    <a href="planB.html#compare" class="magnetic-btn">
+                        Find My Plan
                     </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Mobile menu overlay -->
-    <div class="mobile-menu-overlay fixed inset-0 bg-white/95 backdrop-blur-sm z-40 hidden">
-        <div class="container mx-auto px-6 py-8">
-            <div class="flex justify-end mb-8">
-                <button class="mobile-menu-close text-gray-700 hover:text-black transition-colors">
-                    <i class="ri-close-line text-2xl"></i>
-                </button>
-            </div>
-            <div class="flex flex-col gap-6 text-center">
-                <a href="all-plans.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Plans</a>
-                <a href="faq.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">FAQ</a>
-                <a href="about.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">About</a>
-                <a href="all-plans.html" class="magnetic-btn mt-4 mx-auto inline-block" style="font-family: Helvetica, Arial, sans-serif;">Compare Plans</a>
-            </div>
-        </div>
-    </div>
+    
 
     <!-- Hero section with image placeholder -->
     <section class="pt-32 md:pt-30 pb-16 md:pb-24 relative">
@@ -269,10 +254,8 @@
 
                     <h2 class="text-xl md:text-2xl text-gray-700 mb-6 text-left" style="font-family: Helvetica, Arial, sans-serif;">To Give You The Power.</h2>
                     <div class="max-w-lg">
-                        <p class="text-xl text-gray-700 leading-relaxed mb-9 text-left" style="font-family: Helvetica, sans-serif;">
-                        Mobile plans in Canada are broken. Hidden fees, confusing promos, and plans that reward new customers while punishing loyal ones.
-Across the industry, plans are sold based on what earns the most — not what's best for you. Salespeople at many companies push phones and overpriced plans just to hit targets.
-That's why we built Switch My Plan — to bring transparency, unlock real savings, and put the power back where it belongs: In your hands.
+                        <p class="text-2xl text-gray-700 leading-relaxed mb-9 text-left" style="font-family: Helvetica, sans-serif;">
+                        Mobile plans in Canada are broken. Too many Canadians waste money on outdated cell plans, unaware that switching can save them hundreds. Carriers thrive on hidden fees and confusing promos. At SwitchMyPlan, we make plan comparisons insanely simple and transparent—so you find the best BYOD plan and keep your hard-earned money where it belongs.
                         </p>
                         <p class="text-lg text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
                             Switch smart. Save better. Own your freedom.
@@ -282,7 +265,7 @@ That's why we built Switch My Plan — to bring transparency, unlock real saving
                 
                 <!-- Hero image placeholder - larger and on the right side -->
                 <div class="w-full md:w-3/5 overflow-hidden">
-                    <img src="public/images/newabt.jpeg" alt="About SwitchMyPlan" class="w-full scale-[0.8] rounded-3xl shadow-xl transform-origin-center">
+                    <img id="mission-image" src="public/images/newabt.jpeg" alt="About SwitchMyPlan" class="w-full scale-[0.8] rounded-3xl shadow-xl transform-origin-center opacity-0 translate-y-16 transition-all duration-1000 ease-out">
                 </div>
             </div>
         </div>
@@ -291,64 +274,70 @@ That's why we built Switch My Plan — to bring transparency, unlock real saving
     
 
    <!-- What We Do Section with Updated Animation -->
-<section class="py-16 md:py-24 relative">
+<section class="py-16 md:py-24 relative bg-black relative overflow-hidden">
     <div class="container mx-auto px-6">
         <div class="section-divider"></div>
         
         <div class="flex flex-col md:flex-row gap-10">
             <!-- New Animation on the left side -->
             <div class="w-full md:w-2/6">
-                <div class="flex flex-col items-center justify-center h-full rounded-3xl p-8 bg-gray-100 shadow-xl max-w-sm mx-auto">
-                    <p class="text-4xl font-bold text-black mb-2" style="font-family: Helvetica, Arial, sans-serif;">
-                        Save up to <span id="saving" class="text-8xl font-bold text-green-700 block mt-2">0%</span> on your plan
+                <div class="flex flex-col items-center justify-center h-full rounded-3xl p-8 bg-gradient-to-br from-gray-900 to-[#7C4DFF] shadow-xl max-w-sm mx-auto transform transition-all duration-700 opacity-0 translate-y-10" id="savings-container">
+                    <p class="text-4xl font-bold text-white mb-2" style="font-family: Helvetica, Arial, sans-serif;">
+                        Save up to <span id="saving" class="text-8xl font-bold block mt-2" style="background: linear-gradient(135deg, #a0fa73, #18a118); -webkit-background-clip: text; background-clip: text; color: transparent;">0%</span> on your plan
                     </p>
                 </div>
             </div>
                 
                 <!-- What We Do content on the right side -->
                 <div class="w-full md:w-3/5">
-                    <h2 class="text-3xl md:text-5xl font-bold mb-8 text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">What We Do</h2>
+                    <h2 class="text-3xl md:text-5xl font-bold mb-8 text-white" style="font-family: Helvetica, Arial, sans-serif;">What We Do</h2>
                     
-                    <p class="text-2xl text-gray-700 leading-relaxed mb-8" style="font-family: Helvetica, Arial, sans-serif;">
-                        We're like Trivago for mobile plans — but better. Built for Canadians. Built for clarity.
-                    </p>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-8">
+                        <div id="feature-1" class="feature-item opacity-0 transform translate-y-8 transition-all duration-700 ease-out bg-gradient-to-br from-black to-[#4470FF] backdrop-blur-sm rounded-xl p-6 shadow-lg border-l-4 border-[#FF4D94">
                         <div class="flex items-start gap-4">
-                            <div class="w-8 h-8 rounded-full bg-accent/10 flex-shrink-0 flex items-center justify-center mt-1">
-                                <i class="ri-check-line text-accent"></i>
+                                <div class="w-12 h-12 rounded-full bg-green-900 flex-shrink-0 flex items-center justify-center mt-1">
+                                    <i class="ri-search-line text-white text-xl"></i>
                             </div>
                             <div>
-                                <p class="text-xl text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
-                                    <span class="font-semibold">Compare instantly:</span> View real-time deals across major Canadian carriers—all in one place.
+                                    <h3 class="text-xl font-bold text-white mb-2" style="font-family: Helvetica, Arial, sans-serif;">Compare instantly</h3>
+                                    <p class="text-lg text-white leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
+                                        View real-time deals across major Canadian carriers—all in one place.
                                 </p>
+                                </div>
                             </div>
                         </div>
                         
+                        <div id="feature-2" class="feature-item opacity-0 transform translate-y-8 transition-all duration-700 ease-out bg-gradient-to-br from-black to-[#4470FF] backdrop-blur-sm rounded-xl p-6 shadow-lg border-l-4 border-[#FF4D94">
                         <div class="flex items-start gap-4">
-                            <div class="w-8 h-8 rounded-full bg-accent/10 flex-shrink-0 flex items-center justify-center mt-1">
-                                <i class="ri-check-line text-accent"></i>
+                                <div class="w-12 h-12 rounded-full bg-pink-900 flex-shrink-0 flex items-center justify-center mt-1">
+                                    <i class="ri-robot-2-line text-white text-tertiary text-xl"></i>
                             </div>
                             <div>
-                                <p class="text-xl text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
-                                    <span class="font-semibold">Switch effortlessly:</span> For carriers like Bell and Virgin, we've built direct integrations so you can activate plans right from our site.
+                                    <h3 class="text-xl font-bold text-white mb-2" style="font-family: Helvetica, Arial, sans-serif;">Personalized Recommendations</h3>
+                                    <p class="text-lg text-white leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
+                                        If you don't know what you want, If you're suffering from analysis paralysis, we still got you. Blue will recommend the best plan for you based on your usage.
                                 </p>
+                                </div>
                             </div>
                         </div>
                         
+                        <div id="feature-3" class="feature-item opacity-0 transform translate-y-8 transition-all duration-700 ease-out bg-gradient-to-br from-black to-[#4470FF] backdrop-blur-sm rounded-xl p-6 shadow-lg border-l-4 border-white">
                         <div class="flex items-start gap-4">
-                            <div class="w-8 h-8 rounded-full bg-accent/10 flex-shrink-0 flex items-center justify-center mt-1">
-                                <i class="ri-check-line text-accent"></i>
+                                <div class="w-12 h-12 rounded-full bg-red-900 flex-shrink-0 flex items-center justify-center mt-1">
+                                    <i class="ri-flashlight-line text-yellow-500 text-xl"></i>
                             </div>
                             <div>
-                                <p class="text-xl text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
-                                    <span class="font-semibold">Redirect smartly:</span> For others, we'll send you straight to their best available offers—no fluff, no up-selling.
+                                    <h3 class="text-xl font-bold text-white mb-2" style="font-family: Helvetica, Arial, sans-serif;">Redirect smartly</h3>
+                                    <p class="text-lg text-white leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
+                                        We send you straight to the carrier's best available offers—no fluff, no up-selling.
                                 </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <p class="text-lg text-gray-700 leading-relaxed mt-8 font-medium" style="font-family: Helvetica, Arial, sans-serif;">
+                    <p class="text-lg text-white leading-relaxed mt-8 font-medium" style="font-family: Helvetica, Arial, sans-serif;">
                         We don't sell you plans. We help you find your plan.
                     </p>
                 </div>
@@ -364,38 +353,46 @@ That's why we built Switch My Plan — to bring transparency, unlock real saving
                 
                 <h2 class="text-3xl md:text-5xl font-bold mb-8 text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">How We're Different</h2>
                 
-                <div class="space-y-4">
+                <div class="space-y-8">
+                    <div id="diff-1" class="diff-item opacity-0 transform translate-y-8 transition-all duration-700 ease-out bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border-l-4 border-[#4470FF]">
                     <div class="flex items-start gap-4">
-                        <div class="w-8 h-8 rounded-full bg-accent/10 flex-shrink-0 flex items-center justify-center mt-1">
-                            <i class="ri-check-line text-accent"></i>
+                            <div class="w-12 h-12 rounded-full bg-[#4470FF]/20 flex-shrink-0 flex items-center justify-center mt-1">
+                                <i class="ri-shield-star-line text-[#4470FF] text-xl"></i>
                         </div>
                         <div>
-                            <p class="text-xl text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
-                                <span class="font-semibold">Experience:</span> We've been on the industry. We know the tricks—and we're using that knowledge to protect you.
+                                <h3 class="text-xl font-bold text-gray-800 mb-2" style="font-family: Helvetica, Arial, sans-serif;">Experience</h3>
+                                <p class="text-lg text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
+                                    We've worked in the industry, seen every trick—and now we flip the script to protect you.
                             </p>
+                            </div>
                         </div>
                     </div>
                     
+                    <div id="diff-2" class="diff-item opacity-0 transform translate-y-8 transition-all duration-700 ease-out bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border-l-4 border-[#7C4DFF]">
                     <div class="flex items-start gap-4">
-                        <div class="w-8 h-8 rounded-full bg-accent/10 flex-shrink-0 flex items-center justify-center mt-1">
-                            <i class="ri-check-line text-accent"></i>
+                            <div class="w-12 h-12 rounded-full bg-[#7C4DFF]/20 flex-shrink-0 flex items-center justify-center mt-1">
+                                <i class="ri-hand-heart-line text-[#7C4DFF] text-xl"></i>
                         </div>
                         <div>
-                            <p class="text-xl text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
-                                <span class="font-semibold">No pressure, no pitch:</span> We're not chasing quotas. We're not here to sell. We're here to serve. When you save — we win.
-
-                            </p>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2" style="font-family: Helvetica, Arial, sans-serif;">No pressure, no pitch</h3>
+                                <p class="text-lg text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
+                                    No sales quotas here. When you save, we win.
+                                </p>
+                            </div>
                         </div>
                     </div>
                     
+                    <div id="diff-3" class="diff-item opacity-0 transform translate-y-8 transition-all duration-700 ease-out bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border-l-4 border-[#FF4D94]">
                     <div class="flex items-start gap-4">
-                        <div class="w-8 h-8 rounded-full bg-accent/10 flex-shrink-0 flex items-center justify-center mt-1">
-                            <i class="ri-check-line text-accent"></i>
+                            <div class="w-12 h-12 rounded-full bg-[#FF4D94]/20 flex-shrink-0 flex items-center justify-center mt-1">
+                                <i class="ri-scales-3-line text-[#FF4D94] text-xl"></i>
                         </div>
                         <div>
-                            <p class="text-xl text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
-                                <span class="font-semibold">Built for trust:</span> We partner with providers, but we work for the customer. That means transparent comparisons and clear recommendations, every time.
+                                <h3 class="text-xl font-bold text-gray-800 mb-2" style="font-family: Helvetica, Arial, sans-serif;">Built for trust</h3>
+                                <p class="text-lg text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
+                                    We may partner with carriers but we work for YOU. Always clear, always fair.
                             </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -404,24 +401,28 @@ That's why we built Switch My Plan — to bring transparency, unlock real saving
     </section>
 
     <!-- Our Vision -->
-    <section class="py-16 md:py-24 relative">
+    <section class="py-16 md:py-24 relative bg-black relative overflow-hidden">
         <div class="container mx-auto px-6">
             <div class="max-w-3xl mx-auto">
                 <div class="section-divider"></div>
                 
-                <h2 class="text-3xl md:text-5xl font-bold mb-8 text-gray-900" style="font-family: Helvetica, Arial, sans-serif;">Our Vision</h2>
-                
-                <p class="text-xl text-gray-700 leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
-                    Right now, we're focused on helping people in Ontario find the best BYOD (Bring Your Own Device) plans.
-
-                    But this is just the start.
+                <div id="vision-container" class="bg-gradient-to-br from-black to-[#7C4DFF] rounded-2xl p-8 shadow-xl border border-white/10 opacity-0 transform translate-y-10 transition-all duration-1000 ease-out">
+                    <h2 class="text-5xl md:text-6xl font-bold mb-8 vision-title" style="font-family: Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #ffffff, #4470FF, #7C4DFF); -webkit-background-clip: text; background-clip: text; color: transparent;">Our Vision</h2>
                     
-                    Our goal is to become Canada's first fully online, commission-free mobile dealer. No stores. No salespeople. Just smart, simple service—where you can compare plans, get a phone on contract, and activate everything online. Your device gets shipped to your door or picked up from your nearest carrier store.
-                    
-                    Right now, we're doing this with no backing from carriers. We're not paid for what we do—we do it because we believe this industry needs change. One day, we'll partner directly with carriers as an affiliate or independent dealer.
-                    
-                    Until then, we'll keep proving there's a better way.
-                </p>
+                    <div id="vision-content" class="space-y-4 text-white opacity-0 transform translate-y-8 transition-all duration-700 delay-300">
+                        <p class="text-2xl leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
+                            Today, we're focused on Ontario's BYOD market. Tomorrow, we'll be Canada's first fully online, commission-free mobile dealer—no stores, no salespeople, just a smarter way to compare, buy, and activate plans.   
+                        </p>
+                        
+                        <p class="text-2xl leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
+                            Our RPA-powered checkout is already built and ready: once we secure final carrier approval, you'll complete your activation (and receive your eSIM) right here—no more redirects to carrier sites.    
+                        </p>
+                        
+                        <p class="text-2xl leading-relaxed" style="font-family: Helvetica, Arial, sans-serif;">
+                            Phones arrive at your door or nearest store pickup. One day we'll partner as affiliates or independent dealers—but until then, we'll keep providing you the best services we can.    
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -436,7 +437,7 @@ That's why we built Switch My Plan — to bring transparency, unlock real saving
                 
                 <div class="bg-white rounded-2xl p-8 md:p-10 shadow-xl border border-accent/10">
                     <p class="text-lg text-gray-700 leading-relaxed italic mb-6" style="font-family: Helvetica, Arial, sans-serif;">
-                        "I started Switch My Plan because I saw good people being taken advantage of. The industry needed someone to stand up for the customer. That's what we're here to do—bring clarity, fairness, and freedom back to mobile plans."
+                        "At SwitchMyPlan, our north star is your experience. We've crafted every interaction and feature so comparing plans feels effortless—and finding the perfect fit is always within reach."
                     </p>
                     
                     <div class="flex items-center gap-4">
@@ -537,63 +538,52 @@ That's why we built Switch My Plan — to bring transparency, unlock real saving
         </div>
     </footer>
 
-    <!-- Add the anime.js script before the closing body tag -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <!-- Scripts -->
+    <script src="responsive.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile menu toggle
             const mobileMenuBtn = document.querySelector('.mobile-menu-button');
             const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
             const mobileMenuClose = document.querySelector('.mobile-menu-close');
-            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-overlay a');
             
             if (mobileMenuBtn && mobileMenuOverlay && mobileMenuClose) {
+                // Open mobile menu
                 mobileMenuBtn.addEventListener('click', () => {
-                    mobileMenuOverlay.classList.toggle('hidden');
-                    document.body.style.overflow = 'hidden';
+                    mobileMenuOverlay.style.display = 'block';
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
                 });
                 
+                // Close mobile menu
                 mobileMenuClose.addEventListener('click', () => {
-                    mobileMenuOverlay.classList.add('hidden');
-                    document.body.style.overflow = '';
+                    mobileMenuOverlay.style.display = 'none';
+                    document.body.style.overflow = ''; // Restore scrolling
                 });
                 
+                // Close menu when clicking on links
+                const mobileMenuLinks = mobileMenuOverlay.querySelectorAll('a');
                 mobileMenuLinks.forEach(link => {
                     link.addEventListener('click', () => {
-                        mobileMenuOverlay.classList.add('hidden');
-                        document.body.style.overflow = '';
+                        mobileMenuOverlay.style.display = 'none';
+                        document.body.style.overflow = ''; // Restore scrolling
                     });
                 });
             }
 
             // Navbar scroll effect
-            let lastScroll = 0;
+            window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
-            
             if (navbar) {
-                window.addEventListener('scroll', () => {
-                    const currentScroll = window.pageYOffset;
-                    
-                    if (currentScroll <= 0) {
-                        navbar.classList.remove('scrolled');
-                        return;
-                    }
-                    
-                    if (currentScroll > lastScroll && !navbar.classList.contains('scrolled')) {
-                        // Scrolling down
+                    if (window.scrollY > 20) {
                         navbar.classList.add('scrolled');
-                    } else if (currentScroll < lastScroll && navbar.classList.contains('scrolled')) {
-                        // Scrolling up
+                    } else {
                         navbar.classList.remove('scrolled');
                     }
-                    
-                    lastScroll = currentScroll;
+                }
                 });
-            }
 
             // Magnetic button effect
             const magneticBtns = document.querySelectorAll('.magnetic-btn');
-            
             magneticBtns.forEach(btn => {
                 btn.addEventListener('mousemove', (e) => {
                     const rect = btn.getBoundingClientRect();
@@ -603,10 +593,10 @@ That's why we built Switch My Plan — to bring transparency, unlock real saving
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
                     
-                    const deltaX = (x - centerX) / centerX;
-                    const deltaY = (y - centerY) / centerY;
+                    const moveX = (x - centerX) / 10;
+                    const moveY = (y - centerY) / 10;
                     
-                    btn.style.transform = `translate(${deltaX * 5}px, ${deltaY * 5}px)`;
+                    btn.style.transform = `translateY(-2px) translate(${moveX}px, ${moveY}px)`;
                 });
                 
                 btn.addEventListener('mouseleave', () => {
@@ -614,31 +604,261 @@ That's why we built Switch My Plan — to bring transparency, unlock real saving
                 });
             });
 
-            // Percentage counter animation
-            function startCountAnimation() {
-                const data = { count: 0 };
-                
-                anime({
-                    targets: data,
-                    count: 40,
-                    duration: 2000,
-                    easing: 'easeOutExpo',
-                    round: 1,
-                    update: function() {
-                        document.getElementById('saving').textContent = data.count + '%';
-                    },
-                    complete: function() {
-                        // Hold at 40% for 2 seconds, then instantly reset to 0 and start again
-                        setTimeout(() => {
-                            document.getElementById('saving').textContent = '0%';
-                            setTimeout(startCountAnimation, 500); // Wait 0.5s before starting next cycle
-                        }, 2000); // Hold at 40% for 2s
+            // Looping savings percentage animation
+            const savingElement = document.getElementById('saving');
+            const savingsContainer = document.getElementById('savings-container');
+            
+            if (savingElement && savingsContainer) {
+                // Function to animate the percentage number in a continuous loop
+                const animatePercentageLoop = () => {
+                    const targetPercentage = 40;
+                    let currentPercentage = 0;
+                    const animationDuration = 2000; // 2 seconds to reach 40%
+                    const stayDuration = 3000; // 3 seconds at 40%
+                    const interval = 20; // update every 20ms
+                    const steps = animationDuration / interval;
+                    const increment = targetPercentage / steps;
+                    
+                    // Clear any existing animation
+                    if (window.percentageTimer) {
+                        clearInterval(window.percentageTimer);
                     }
+                    
+                    // Start fresh animation
+                    savingElement.textContent = '0%';
+                    
+                    // Animate up to 40%
+                    window.percentageTimer = setInterval(() => {
+                        currentPercentage += increment;
+                        if (currentPercentage >= targetPercentage) {
+                            currentPercentage = targetPercentage;
+                            clearInterval(window.percentageTimer);
+                            
+                            // Stay at 40% for stayDuration
+                            setTimeout(() => {
+                                // Reset to 0 and start again
+                                savingElement.textContent = '0%';
+                                setTimeout(animatePercentageLoop, 300); // Small delay before restarting
+                            }, stayDuration);
+                        }
+                        savingElement.textContent = Math.round(currentPercentage) + '%';
+                    }, interval);
+                };
+                
+                // Add a reveal animation for the container
+                const savingsObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            // First reveal the container
+                            savingsContainer.classList.add('opacity-100');
+                            savingsContainer.classList.remove('translate-y-10');
+                            
+                            // Then start the percentage animation after a short delay
+                            setTimeout(() => {
+                                animatePercentageLoop();
+                            }, 500);
+                            
+                            // Add glow effect
+                            setTimeout(() => {
+                                savingsContainer.classList.add('vision-glow');
+                            }, 1000);
+                            
+                            // Don't unobserve to keep restarting animation when in view
+                        } else {
+                            // Stop animation when out of view
+                            if (window.percentageTimer) {
+                                clearInterval(window.percentageTimer);
+                            }
+                        }
+                    });
+                }, { 
+                    threshold: 0.3,
+                    rootMargin: '-50px 0px'
                 });
+                
+                savingsObserver.observe(savingsContainer);
             }
-
-            // Start the initial animation
-            startCountAnimation();
+            
+            // Animate feature items with staggered reveal
+            const animateFeatures = () => {
+                const featureItems = document.querySelectorAll('.feature-item');
+                
+                // Use Intersection Observer to detect when features are in viewport
+                const featureObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        // When feature is visible
+                        if (entry.isIntersecting) {
+                            // Remove from observation since we only need to animate once
+                            featureObserver.unobserve(entry.target);
+                            
+                            // Calculate delay based on feature number
+                            const featureNumber = parseInt(entry.target.id.split('-')[1]);
+                            const delay = (featureNumber - 1) * 300; // 300ms delay between each
+                            
+                            // Start animation after the calculated delay
+                            setTimeout(() => {
+                                entry.target.classList.add('opacity-100');
+                                entry.target.classList.remove('translate-y-8');
+                                
+                                // Add a subtle pulse effect after appearing
+                        setTimeout(() => {
+                                    entry.target.classList.add('pulse-effect');
+                                }, 500);
+                            }, delay);
+                        }
+                    });
+                }, {
+                    threshold: 0.2 // Trigger when 20% of item is visible
+                });
+                
+                // Start observing each feature
+                featureItems.forEach(item => {
+                    featureObserver.observe(item);
+                });
+            };
+            
+            // Add pulse effect styling
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.02); }
+                    100% { transform: scale(1); }
+                }
+                .pulse-effect {
+                    animation: pulse 2s ease-in-out;
+                }
+                .feature-item {
+                    transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Initialize the feature animations
+            animateFeatures();
+            
+            // Mission image animation
+            const missionImage = document.getElementById('mission-image');
+            if (missionImage) {
+                // Add floating animation CSS
+                const imageStyle = document.createElement('style');
+                imageStyle.textContent = `
+                    .image-revealed {
+                        opacity: 1 !important;
+                        transform: translateY(0) scale(0.8) !important;
+                        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                    }
+                `;
+                document.head.appendChild(imageStyle);
+                
+                // Create intersection observer for mission image with higher threshold
+                const imageObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            console.log('Mission image in view, starting animation');
+                            // Add the reveal class to trigger the animation
+                            entry.target.classList.add('image-revealed');
+                            imageObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { 
+                    threshold: 0.3,  // Higher threshold to ensure it's more visible
+                    rootMargin: '-100px 0px' // Trigger slightly before it's in view
+                });
+                
+                // Start observing the image
+                imageObserver.observe(missionImage);
+            }
+            
+            // Animate the "How We're Different" items with staggered reveal
+            const animateDiffItems = () => {
+                const diffItems = document.querySelectorAll('.diff-item');
+                
+                // Use Intersection Observer to detect when items are in viewport
+                const diffObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        // When item is visible
+                        if (entry.isIntersecting) {
+                            // Remove from observation since we only need to animate once
+                            diffObserver.unobserve(entry.target);
+                            
+                            // Calculate delay based on item number
+                            const itemNumber = parseInt(entry.target.id.split('-')[1]);
+                            const delay = (itemNumber - 1) * 300; // 300ms delay between each
+                            
+                            // Start animation after the calculated delay
+                            setTimeout(() => {
+                                entry.target.classList.add('opacity-100');
+                                entry.target.classList.remove('translate-y-8');
+                                
+                                // Add a subtle pulse effect after appearing
+                                setTimeout(() => {
+                                    entry.target.classList.add('pulse-effect');
+                                }, 500);
+                            }, delay);
+                        }
+                    });
+                }, {
+                    threshold: 0.2 // Trigger when 20% of item is visible
+                });
+                
+                // Start observing each item
+                diffItems.forEach(item => {
+                    diffObserver.observe(item);
+                });
+            };
+            
+            // Initialize the difference items animations
+            animateDiffItems();
+            
+            // Animate the Vision section
+            const visionContainer = document.getElementById('vision-container');
+            const visionContent = document.getElementById('vision-content');
+            
+            if (visionContainer && visionContent) {
+                const visionObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            // First reveal the container
+                            visionContainer.classList.add('opacity-100');
+                            visionContainer.classList.remove('translate-y-10');
+                            
+                            // Then reveal the content after a short delay
+                            setTimeout(() => {
+                                visionContent.classList.add('opacity-100');
+                                visionContent.classList.remove('translate-y-8');
+                            }, 500);
+                            
+                            visionObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { 
+                    threshold: 0.3,
+                    rootMargin: '-50px 0px'
+                });
+                
+                visionObserver.observe(visionContainer);
+                
+                // Add subtle light flicker effect to vision container
+                const flickerStyle = document.createElement('style');
+                flickerStyle.textContent = `
+                    @keyframes subtle-glow {
+                        0% { box-shadow: 0 0 15px rgba(68, 112, 255, 0.3); }
+                        50% { box-shadow: 0 0 25px rgba(124, 77, 255, 0.4); }
+                        100% { box-shadow: 0 0 15px rgba(68, 112, 255, 0.3); }
+                    }
+                    
+                    .vision-glow {
+                        animation: subtle-glow 4s infinite ease-in-out;
+                    }
+                `;
+                document.head.appendChild(flickerStyle);
+                
+                // Add glow effect after reveal animation is complete
+                setTimeout(() => {
+                    visionContainer.classList.add('vision-glow');
+                }, 1500);
+            }
         });
     </script>
 </body>

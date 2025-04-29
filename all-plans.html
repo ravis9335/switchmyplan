@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="SwitchMyPlan - Compare and switch to the best mobile plans in Canada. Switch, Save, Smile!">
-    <title>All Plans | SwitchMyPlan</title>
+    <title>BYOD Plans | SwitchMyPlan</title>
 
     <!-- Stylesheets -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -64,7 +64,7 @@
             border: 1px solid rgba(255, 255, 255, 0.8);
             overflow: hidden;
             transition: all 0.3s ease;
-            height: 540px;
+            height: 540px; /* Fixed height */
             width: 100%;
             min-width: 305px;
             display: flex !important;
@@ -121,31 +121,27 @@
 
         /* Card header section */
         .plan-card-header {
-            height: 100px;
+            height: auto;
+            min-height: 100px;
             padding: 1.25rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: linear-gradient(to bottom, rgba(218, 228, 255, 0.9), rgba(255, 255, 255, 0.5));
+            flex-wrap: nowrap;
         }
 
         /* Plan name section */
         .plan-card-name {
-            height: 100px;
+            height: auto;
+            min-height: 100px;
             padding: 1.25rem;
             background: rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(10px);
             margin-bottom: 0.5rem;
         }
 
-        .plan-card-name .text-2xl {
-            font-size: 1.5rem;
-            line-height: 1.3;
-        }
 
-        .plan-card-name .text-gray-500 {
-            font-size: 0.75rem;
-        }
 
         /* Features section */
         .plan-card-features {
@@ -156,6 +152,7 @@
             scrollbar-width: thin;
             scrollbar-color: rgba(68, 112, 255, 0.3) transparent;
             margin-bottom: 1rem;
+            max-height: 220px; /* Set consistent max height */
         }
 
         .plan-card-features::-webkit-scrollbar {
@@ -173,16 +170,19 @@
 
         /* Footer section */
         .plan-card-footer {
-            height: 100px;
+            height: auto;
+            min-height: 100px;
             padding: 1.25rem;
             background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.5));
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
         }
 
         .plan-card-footer .text-xs {
             font-size: 0.75rem;
+            margin-bottom: 1rem;
         }
 
         /* Select plan button */
@@ -200,9 +200,12 @@
             align-items: center;
             justify-content: center;
             width: 100%;
+            max-width: 100%;
             box-shadow: 0 4px 12px rgba(68, 112, 255, 0.25);
             font-size: 0.8rem;
             margin-top: auto;
+            white-space: nowrap;
+            box-sizing: border-box;
         }
 
         .select-plan-button:hover {
@@ -230,6 +233,19 @@
         .filter-section {
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             padding: 1.5rem 0;
+            transition: all 0.3s var(--ease);
+        }
+
+        .active-filter-section {
+            background: rgba(68, 112, 255, 0.05);
+            border-radius: 0.75rem;
+            padding: 1.5rem 1rem;
+            box-shadow: 0 0 0 1px rgba(68, 112, 255, 0.2);
+            margin: 0 -0.5rem 1rem;
+        }
+
+        .active-filter-section h3 {
+            color: var(--color-accent);
         }
 
         .filter-section:last-child {
@@ -333,9 +349,9 @@
             align-items: center;
             justify-content: center;
             height: 60px;
-            width: auto;
+            min-width: 80px;
             max-width: 115px;
-            transition: transform 0.3s var(--ease-bounce);
+            margin-right: 0.5rem;
         }
 
         .carrier-logo img {
@@ -359,17 +375,68 @@
         .price-text {
             font-size: 2.25rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-family: 'Space Grotesk', sans-serif;
+            white-space: nowrap;
+            margin-left: auto;
+            color: #4470FF;
+            display: flex;
+            align-items: baseline;
         }
 
         .price-suffix {
             font-size: 1rem;
-            color: #64748b;
+            font-weight: 500;
             margin-left: 0.25rem;
-            -webkit-text-fill-color: #64748b;
+            opacity: 0.8;
+        }
+
+        /* Roaming indicators by price */
+        .roaming-indicators {
+            display: flex;
+            gap: 0.3rem;
+            position: absolute;
+            top: 8px;
+            right: 12px;
+        }
+
+        .roaming-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
+            color: white;
+            font-size: 0.65rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s var(--ease-bounce);
+        }
+
+        .roaming-indicator:hover {
+            transform: scale(1.2);
+        }
+
+        .roaming-indicator-tooltip {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            padding: 0.4rem 0.5rem;
+            border-radius: 0.3rem;
+            font-size: 0.65rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #334155;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(5px);
+            transition: all 0.2s var(--ease);
+            z-index: 10;
+        }
+
+        .roaming-indicator:hover .roaming-indicator-tooltip {
+            opacity: 1;
+            transform: translateY(2px);
         }
 
         /* Gradient text */
@@ -409,6 +476,34 @@
             font-size: 0.875rem;
             color: #334155;
             line-height: 1.5;
+        }
+
+        /* Roaming badge styles */
+        .roaming-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: linear-gradient(135deg, rgba(68, 112, 255, 0.1), rgba(124, 77, 255, 0.1));
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--color-accent);
+            margin-left: auto;
+        }
+
+        .roaming-icon {
+            font-size: 0.75rem;
+        }
+
+        /* Roaming feature highlight */
+        .feature-item.roaming-feature {
+            background: rgba(68, 112, 255, 0.05);
+            border-left: 2px solid var(--color-accent);
+        }
+
+        .feature-item.roaming-feature:hover {
+            background: rgba(68, 112, 255, 0.1);
         }
 
         /* Container and layout styles */
@@ -602,6 +697,432 @@
             100% { transform: translateX(-50%); }
         }
 
+        /* Mobile filter overlay */
+        .filter-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: none;
+            overflow: hidden;
+        }
+
+        .filter-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 85%;
+            max-width: 360px;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 101;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s var(--ease-out);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-overlay.active .filter-panel {
+            transform: translateX(0);
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .close-filter {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .close-filter:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .filter-actions {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-button {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-accent);
+            color: white;
+            border-radius: 50%;
+            width: 1.25rem;
+            height: 1.25rem;
+            font-size: 0.75rem;
+        }
+
+        .mobile-view-options {
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .sidebar-filters {
+                display: none;
+            }
+            
+            .filter-button, .mobile-view-options {
+                display: flex;
+            }
+            
+            .mobile-top-bar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+            
+            .desktop-view-options {
+                display: none;
+            }
+            
+            .plan-card {
+                height: auto;
+                min-height: 500px;
+            }
+            
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+            
+            .plan-card {
+                min-height: 450px;
+            }
+            
+            .list-view .plan-card {
+                min-height: 80px !important;
+            }
+            
+            
+            
+            .list-view .carrier-logo {
+                min-width: 60px;
+                max-width: 60px;
+            }
+            
+            .list-view .select-plan-button {
+                padding: 0 1rem;
+                font-size: 0.7rem;
+            }
+        }
+
+        .apply-filters-btn {
+            background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
+            color: white;
+            font-weight: 500;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(68, 112, 255, 0.25);
+        }
+
+        .list-view .plan-card {
+            height: auto;
+            flex-direction: row;
+            padding: 0;
+            min-height: 96px !important;
+            overflow: hidden;
+        }
+        
+        .list-view .plan-card-header {
+            width: auto;
+            height: 100%;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 1rem;
+            background: none;
+        }
+        
+        .list-view .carrier-logo {
+            height: 40px;
+            min-width: 80px;
+            max-width: 80px;
+            margin-right: 1rem;
+        }
+        
+        .list-view .price-text {
+            font-size: 1.5rem;
+            margin-left: auto;
+            margin-right: 1rem;
+        }
+        
+       
+        
+        
+        
+        .list-view .plan-card-features,
+        .list-view .plan-card-footer {
+            display: none;
+        }
+        
+        .list-view .select-plan-button {
+            height: 100%;
+            width: auto;
+            margin: 0;
+            padding: 0 1.5rem;
+            white-space: nowrap;
+            border-radius: 0;
+        }
+        
+        .list-view .roaming-indicators {
+            position: static;
+            margin-right: 0.5rem;
+        }
+
+        /* Update the grid styles to be more specific and prevent overlapping */
+        .grid.grid-cols-1,
+        .grid.grid-cols-2,
+        .grid.grid-cols-3 {
+            display: grid;
+            width: 100%;
+            gap: 2rem;
+        }
+
+        .grid.grid-cols-1 {
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        .grid.grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid.grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        /* Ensure plan cards have a minimum width */
+        .plan-card {
+            min-width: 280px;
+            width: 100%;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1280px) {
+            #plansGrid.grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 768px) {
+            #plansGrid.grid {
+                grid-template-columns: repeat(1, 1fr) !important;
+            }
+            
+            .plan-card {
+                min-width: 100%;
+            }
+        }
+
+        /* Ensure consistent card height across screen sizes */
+        @media (max-width: 768px) {
+            .plan-card {
+                height: auto; /* Change from fixed height to auto */
+                min-height: 540px; /* Minimum height instead of fixed height */
+                overflow: visible; /* Allow content to be fully visible */
+            }
+            
+            .plan-card-features {
+                max-height: 180px; /* Slightly smaller on mobile */
+                overflow-y: auto;
+            }
+            
+            /* Ensure footer and select button are fully visible */
+            .plan-card-footer {
+                height: auto;
+                min-height: 100px;
+                padding: 1.25rem;
+                flex-direction: column;
+            }
+            
+            /* Prevent price text from moving/resizing */
+            .price-text {
+                font-size: 2rem !important; /* Keep consistent font size */
+                margin-left: auto;
+                white-space: nowrap; /* Prevent wrapping */
+            }
+            
+            /* Ensure select plan button is fully visible */
+            .select-plan-button {
+                width: 100%;
+                padding: 0.8rem 1rem;
+                white-space: nowrap;
+                font-size: 0.8rem;
+            }
+            
+            /* Ensure card header maintains proper layout */
+            .plan-card-header {
+                height: auto;
+                min-height: 80px;
+                padding: 1rem;
+                flex-wrap: wrap; /* Allow wrapping on very small screens if needed */
+            }
+            
+            /* Adjust logo size for consistency */
+            .carrier-logo {
+                height: 50px;
+                min-width: 60px;
+                max-width: 100px;
+                margin-right: 0.5rem;
+            }
+        }
+        
+        /* Extra small screens - ensure nothing gets cut off */
+        @media (max-width: 400px) {
+            .plan-card {
+                min-width: 280px;
+                width: 100%;
+                overflow: visible !important;
+            }
+            
+            .plan-card-header {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                height: auto;
+                min-height: 100px;
+            }
+            
+            /* On very small screens, adjust header layout */
+            .carrier-logo {
+                height: 40px;
+                min-width: 50px;
+            }
+            
+            .roaming-indicators {
+                position: static;
+                margin-left: auto;
+            }
+            
+            /* Ensure select button is fully visible */
+            .plan-card-footer {
+                padding: 1rem;
+                height: auto;
+                min-height: 90px;
+            }
+            
+            .select-plan-button {
+                width: 100%;
+                max-width: 100%;
+                padding: 0.7rem 1rem;
+                font-size: 0.75rem;
+                overflow: visible;
+            }
+        }
+        
+        /* Ultra small screens */
+        @media (max-width: 320px) {
+            .plan-card-footer {
+                padding: 0.75rem;
+            }
+            
+            .select-plan-button {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.7rem;
+            }
+            
+            .plan-card-footer .text-xs {
+                font-size: 0.7rem;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Hide the plan-header-info in grid view */
+        .plan-header-info {
+            display: none;
+        }
+
+        /* Show plan-header-info only in list view */
+        .list-view .plan-header-info {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            justify-content: center;
+            margin: 0 1rem;
+        }
+
+        
+
+        .list-view .plan-header-info .network-speed {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        /* tweak spacing so price stays right-aligned */
+        .list-view .price-text {
+            margin-left: auto;
+            margin-right: 1rem;
+        }
+
+        /* Make sure grid-view-expanded cards show the correct sections */
+        .list-view .plan-card.grid-view-expanded .plan-header-info {
+            display: none; /* Always hide header info in expanded cards */
+        }
+
+        .list-view .plan-card.grid-view-expanded .plan-card-name {
+            display: block !important; /* Always show plan-card-name in expanded cards */
+        }
+        
+        /* Fix for plan name duplication in expanded cards */
+        .plan-card-header .plan-header-info .plan-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.25rem;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#e8f0ff]">
@@ -614,6 +1135,11 @@
                     <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
                 </a>
 
+        <!-- Mobile menu button -->
+        <button class="mobile-menu-button md:hidden" aria-label="Toggle menu">
+          <i class="ri-menu-line text-2xl"></i>
+        </button>
+
                 <!-- Desktop menu -->
                 <div class="desktop-menu hidden md:flex items-center gap-8 justify-center">
                     <a href="all-plans.html" class="nav-link">Plans</a>
@@ -623,8 +1149,9 @@
 
                 <!-- CTA buttons -->
                 <div class="hidden md:flex items-center gap-4">
-                    <a href="#compare" class="magnetic-btn py-3 px-6 bg-gradient-to-r from-accent to-tertiary text-white rounded-full">
-                        Compare Plans
+          <a href="planB.html#compare" class="magnetic-btn py-4 px-8 rounded-full bg-accent hover:bg-accent/90 text-white font-medium shadow-lg shadow-accent/25 transition-all flex items-center gap-2">
+                <span>Find My Plan</span>
+                <i class="ri-user-search-line"></i>
                     </a>
                 </div>
             </div>
@@ -645,9 +1172,20 @@
                 <p class="text-gray-600">Compare and find the perfect plan for your needs</p>
             </div>
 
+            <!-- Mobile filter button -->
+            <div class="mobile-top-bar">
+                <button class="filter-button" id="openFilters">
+                    <i class="ri-filter-3-line"></i>
+                    <span>Filters</span>
+                    <span class="filter-count" id="filterCount">0</span>
+                </button>
+                
+                <!-- Removing the mobile-view-options div from here to avoid duplication -->
+            </div>
+
             <div class="flex gap-8">
-                <!-- Filter sidebar -->
-                <div class="w-[320px] flex-shrink-0">
+                <!-- Filter sidebar (desktop) -->
+                <div class="w-[320px] flex-shrink-0 sidebar-filters">
                     <div class="bg-white rounded-xl p-6 shadow-lg">
                         <h2 class="font-display font-bold text-xl mb-6">Filters</h2>
                         
@@ -722,10 +1260,20 @@
                             </div>
                         </div>
 
-                        <!-- Clear Filters Button -->
-                        <button class="w-full py-2 px-4 border border-accent text-accent rounded-lg hover:bg-accent hover:text-white transition-colors">
-                            Clear All Filters
-                        </button>
+                        <!-- Roaming -->
+                        <div class="filter-section">
+                            <h3 class="font-semibold mb-4">Roaming</h3>
+                            <div class="space-y-2">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="usa" name="roaming">
+                                    <span>USA Roaming</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="mexico" name="roaming">
+                                    <span>Mexico Roaming</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -743,12 +1291,12 @@
                                 <option value="data-high">Data: High to Low</option>
                             </select>
                         </div>
-                        <div class="flex items-center gap-6">
+                        <div class="desktop-view-options flex items-center gap-6">
                             <span class="text-gray-600 text-lg">View:</span>
-                            <button class="p-3 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors">
+                            <button class="p-3 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors" onclick="setViewMode('grid')">
                                 <i class="ri-grid-fill text-2xl"></i>
                             </button>
-                            <button class="p-3 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors">
+                            <button class="p-3 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors" onclick="setViewMode('list')">
                                 <i class="ri-list-check text-2xl"></i>
                             </button>
                         </div>
@@ -765,76 +1313,185 @@
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="mt-16 bg-white/80 backdrop-blur-sm pt-16 pb-8">
-            <!-- Footer content -->
-            <div class="container mx-auto px-6">
-                <!-- Main footer sections -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-                    <!-- Company section -->
+        <!-- Filter overlay for mobile -->
+        <div class="filter-overlay" id="filterOverlay">
+            <div class="filter-panel">
+                <div class="filter-header">
+                    <h2 class="font-display font-bold text-xl">Filters</h2>
+                    <div class="close-filter" id="closeFilters">
+                        <i class="ri-close-line"></i>
+                    </div>
+                </div>
+                
+                <div class="filter-content">
+                    <!-- Price Range -->
+                    <div class="filter-section">
+                        <h3 class="font-semibold mb-4">Price Range</h3>
                     <div class="space-y-4">
-                        <a href="/" class="inline-block mb-6 text-4xl font-['Apple_Garamond'] font-semibold" style="font-size: 2.5rem;">
+                            <div class="flex justify-between text-sm">
+                                <span>$0</span>
+                                <span>$150+</span>
+                            </div>
+                            <input type="range" min="0" max="150" class="w-full" id="mobilePriceRange">
+                            <div class="text-sm text-center" id="mobilePriceValue">Up to $75</div>
+                        </div>
+                    </div>
+
+                    <!-- Data Amount -->
+                    <div class="filter-section">
+                        <h3 class="font-semibold mb-4">Data Amount</h3>
+                        <div class="space-y-2" id="mobileDataFilters">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="0" name="mobileData">
+                                <span>Talk & Text Only (No Data)</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="0-1" name="mobileData">
+                                <span>Up to 1 GB</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="1-5" name="mobileData">
+                                <span>1-5 GB</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="6-10" name="mobileData">
+                                <span>6-10 GB</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="11-20" name="mobileData">
+                                <span>11-20 GB</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="21-50" name="mobileData">
+                                <span>21-50 GB</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="50+" name="mobileData">
+                                <span>50+ GB</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Carriers -->
+                    <div class="filter-section">
+                        <h3 class="font-semibold mb-4">Carriers</h3>
+                        <div class="space-y-2" id="mobileCarrierFilters">
+                            <!-- Carrier checkboxes will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <!-- Plan Type -->
+                    <div class="filter-section">
+                        <h3 class="font-semibold mb-4">Plan Type</h3>
+                        <div class="space-y-2">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="postpaid" name="mobilePlanType" checked>
+                                <span>Postpaid</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="prepaid" name="mobilePlanType">
+                                <span>Prepaid</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Roaming -->
+                    <div class="filter-section">
+                        <h3 class="font-semibold mb-4">Roaming</h3>
+                        <div class="space-y-2">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="usa" name="mobileRoaming">
+                                <span>USA Roaming</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="mexico" name="mobileRoaming">
+                                <span>Mexico Roaming</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-actions">
+                    <button class="apply-filters-btn" id="applyFilters">
+                        Apply Filters
+                    </button>
+                    <button class="w-full py-2 px-4 mt-3 border border-accent text-accent rounded-lg hover:bg-accent hover:text-white transition-colors" id="clearMobileFilters">
+                        Clear All Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+    <footer class="backdrop-blur-sm border-t border-accent/10 py-16 relative">
+        <!-- Background pattern -->
+        <div class="absolute inset-0 z-0 opacity-5">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent"></div>
+            <div class="grid grid-cols-10 h-full">
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div class="border-r border-accent/10"></div>
+                <div></div>
+            </div>
+        </div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <!-- Logo & about -->
+                <div class="col-span-1 md:col-span-2">
+                    <a href="/" class="text-3xl font-['Apple_Garamond'] font-semibold inline-block mb-4">
                             <span class="text-black">Switch</span><span class="gradient-text">My</span><span class="text-black">Plan</span>
                         </a>
-                        <p class="text-gray-600">Helping Canadians find the best mobile plans for their needs.</p>
-                        <div class="flex space-x-4 mt-8">
-                            <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
-                                <i class="ri-twitter-fill"></i>
-                            </a>
-                            <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
-                                <i class="ri-facebook-fill"></i>
-                            </a>
-                            <a href="#" class="h-10 w-10 rounded-full bg-accent/5 flex items-center justify-center text-accent hover:bg-accent/10 transition-colors">
+                    <p class="text-gray-600 mb-6 max-w-sm" style="font-family: Helvetica, Arial, sans-serif;">
+                        Helping Canadians find the perfect mobile plan without the sales pressure or confusion.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-accent hover:text-white transition-colors">
+                            <i class="ri-twitter-x-line"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-accent hover:text-white transition-colors">
+                            <i class="ri-linkedin-line"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-accent hover:text-white transition-colors">
                                 <i class="ri-instagram-line"></i>
                             </a>
                         </div>
                     </div>
                     
-                    <!-- Pages -->
+                <!-- Quick links -->
                     <div>
-                        <h4 class="font-bold text-lg mb-6 text-gray-800">Pages</h4>
-                        <ul class="space-y-4">
-                            <li><a href="all-plans.html" class="text-gray-600 hover:text-accent transition-colors">All Plans</a></li>
-                            <li><a href="faq.html" class="text-gray-600 hover:text-accent transition-colors">FAQ</a></li>
-                            <li><a href="about.html" class="text-gray-600 hover:text-accent transition-colors">About Us</a></li>
-                            <li><a href="contact.html" class="text-gray-600 hover:text-accent transition-colors">Contact</a></li>
+                    <h3 class="text-gray-900 font-medium mb-4" style="font-family: Helvetica, Arial, sans-serif;">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="all-plans.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">All Plans</a></li>
+                        <li><a href="faq.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">FAQ</a></li>
+                        <li><a href="about.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Contact</a></li>
                         </ul>
                     </div>
                     
-                    <!-- Legal -->
+                <!-- Legal links -->
                     <div>
-                        <h4 class="font-bold text-lg mb-6 text-gray-800">Legal</h4>
-                        <ul class="space-y-4">
-                            <li><a href="privacy-policy.html" class="text-gray-600 hover:text-accent transition-colors">Privacy Policy</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-accent transition-colors">Terms of Service</a></li>
+                    <h3 class="text-gray-900 font-medium mb-4" style="font-family: Helvetica, Arial, sans-serif;">Legal</h3>
+                    <ul class="space-y-3">
+                        <li><a href="privacy-policy.html" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Privacy Policy</a></li>
+                        <li><a href="https://crtc.gc.ca/eng/internet/codesimpl.htm" class="text-gray-600 hover:text-accent transition-colors" style="font-family: Helvetica, Arial, sans-serif;">CRTC</a></li>
                         </ul>
-                    </div>
-                    
-                    <!-- Contact -->
-                    <div>
-                        <h4 class="font-bold text-lg mb-6 text-gray-800">Contact</h4>
-                        <address class="not-italic text-gray-600">
-                            <p>Email: <a href="mailto:info@switchmyplan.ca" class="text-accent">info@switchmyplan.ca</a></p>
-                            <p class="mt-2">Phone: <a href="tel:+14165551234" class="text-accent">+1 (416) 555-1234</a></p>
-                        </address>
                     </div>
                 </div>
                 
-                <!-- Copyright -->
-                <div class="text-center pt-8 border-t border-gray-200">
-                    <p class="text-gray-500">&copy; 2023 SwitchMyPlan. All rights reserved.</p>
+            <div class="border-t border-gray-200 mt-12 pt-6 text-center text-gray-500 text-sm" style="font-family: Helvetica, Arial, sans-serif;">
+                &copy; 2025 SwitchMyPlan. All rights reserved.
                 </div>
             </div>
         </footer>
 
-        <!-- Loading spinner -->
-        <div id="loadingSpinner" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" style="display: none;">
-            <div class="bg-white rounded-xl p-8 flex flex-col items-center max-w-md mx-auto">
-                <div class="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mb-6"></div>
-                <h3 class="text-xl font-semibold mb-2">Loading plans...</h3>
-                <p class="text-gray-600">Please wait while we fetch the best plans.</p>
-            </div>
-        </div>
+        
     </main>
 
     <!-- Scripts -->
@@ -858,7 +1515,7 @@
 
             // Define carrier-specific features or use plan_features
             let features = [];
-            if (['Fido', 'Rogers', 'Bell', 'Telus'].includes(plan.carrier)) {
+            if (['Fido','Koodo', 'Rogers', 'Bell', 'Telus'].includes(plan.carrier)) {
                 if (plan.plan_features) {
                     features = plan.plan_features.split('\n')
                         .map(feature => {
@@ -927,10 +1584,28 @@
                         features = plan.features || [];
                 }
             }
+            
+            // Add roaming information to features if available
+            if (plan.usa_roaming === 'Y') {
+                features.push({ 
+                    text: 'USA Roaming', 
+                    included: true,
+                    isRoaming: true,
+                    icon: 'plane-line'
+                });
+            }
+            if (plan.mexico_roaming === 'Y') {
+                features.push({ 
+                    text: 'Mexico Roaming', 
+                    included: true,
+                    isRoaming: true,
+                    icon: 'plane-line'
+                });
+            }
 
             return `
                 <div class="w-full">
-                    <div class="plan-card relative shadow-xl hover:shadow-2xl transition-all">
+                    <div class="plan-card relative shadow-xl hover:shadow-2xl transition-all" data-carrier="${plan.carrier}">
                         ${bestValueBadge}
                         
                         <!-- Card Header -->
@@ -940,12 +1615,43 @@
                                      alt="${plan.carrier}" 
                                      class="h-full w-auto object-contain">
                             </div>
+
+                            <!-- Plan name info that shows in list view -->
+                            <div class="plan-header-info">
+                                <div class="plan-name">${
+                                    plan.carrier === 'Koodo' 
+                                    ? (plan.data === '0' || plan.data === '0MB' || plan.data === '0GB' 
+                                        ? plan.plan_name 
+                                        : (plan.data.includes('MB') 
+                                            ? `${plan.data.replace('GB', '')}` 
+                                            : `${parseFloat(plan.data)} GB`))
+                                    : plan.plan_name
+                                }</div>
+                                <div class="network-speed text-xs text-gray-500">
+                                    <i class="ri-speed-up-line"></i>
+                                    <span>${networkSpeedText}</span>
+                                </div>
+                            </div>
+
                             <div class="price-text">
                                 $${plan.price}<span class="price-suffix">/mo</span>
                             </div>
+                            ${(plan.usa_roaming === 'Y' || plan.mexico_roaming === 'Y') ? `
+                            <div class="roaming-indicators">
+                                ${plan.usa_roaming === 'Y' ? `
+                                <div class="roaming-indicator">
+                                    <i class="ri-flag-2-line"></i>
+                                    <span class="roaming-indicator-tooltip">USA Roaming</span>
+                                </div>` : ''}
+                                ${plan.mexico_roaming === 'Y' ? `
+                                <div class="roaming-indicator">
+                                    <i class="ri-flag-line"></i>
+                                    <span class="roaming-indicator-tooltip">Mexico Roaming</span>
+                                </div>` : ''}
+                            </div>` : ''}
                         </div>
                         
-                        <!-- Plan Name -->
+                        <!-- Plan Name (only visible in grid view) -->
                         <div class="plan-card-name">
                             <div class="text-2xl font-display font-bold text-gray-800 mb-2">${
                                 plan.carrier === 'Koodo' 
@@ -966,11 +1672,12 @@
                         <div class="plan-card-features">
                             <div class="space-y-2">
                                 ${features.map(feature => `
-                                    <div class="feature-item">
+                                    <div class="feature-item ${feature.isRoaming ? 'roaming-feature' : ''}">
                                         <div class="feature-icon">
-                                            <i class="ri-${feature.included ? 'check' : 'close'}-line"></i>
+                                            <i class="ri-${feature.icon || (feature.included ? 'check' : 'close')}-line"></i>
                                         </div>
                                         <span class="feature-text">${feature.text}</span>
+                                        ${feature.isRoaming ? `<span class="roaming-badge"><i class="ri-earth-line roaming-icon"></i> Included</span>` : ''}
                                     </div>
                                 `).join('')}
                             </div>
@@ -982,7 +1689,7 @@
                             <a href="javascript:void(0)" 
                                onclick="selectPlan('${plan.carrier}', ${plan.price}, '${plan.data}', '${plan.id}', '${plan.plan_name}')"
                                class="select-plan-button">
-                                Select ${plan.carrier} Plan
+                                Select Plan
                             </a>
                         </div>
                     </div>
@@ -1080,6 +1787,11 @@
             document.querySelectorAll('input[name="planType"]').forEach(checkbox => {
                 checkbox.addEventListener('change', applyFilters);
             });
+            
+            // Roaming listeners
+            document.querySelectorAll('input[name="roaming"]').forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
 
             // Sort dropdown listener
             document.querySelector('select').addEventListener('change', applyFilters);
@@ -1147,11 +1859,42 @@
                 allPlans.forEach(plan => carriers.add(plan.carrier));
                 console.log('Found carriers:', Array.from(carriers));
                 
+                // Count plans with roaming features
+                const usaRoamingCount = allPlans.filter(plan => plan.usa_roaming === 'Y').length;
+                const mexicoRoamingCount = allPlans.filter(plan => plan.mexico_roaming === 'Y').length;
+                
+                // Update checkbox labels with count
+                const usaCheckbox = document.querySelector('input[name="roaming"][value="usa"]');
+                const mexicoCheckbox = document.querySelector('input[name="roaming"][value="mexico"]');
+                const mobileUsaCheckbox = document.querySelector('input[name="mobileRoaming"][value="usa"]');
+                const mobileMexicoCheckbox = document.querySelector('input[name="mobileRoaming"][value="mexico"]');
+                
+                if (usaCheckbox && usaCheckbox.parentNode.querySelector('span')) {
+                    usaCheckbox.parentNode.querySelector('span').textContent = `USA Roaming (${usaRoamingCount})`;
+                }
+                
+                if (mexicoCheckbox && mexicoCheckbox.parentNode.querySelector('span')) {
+                    mexicoCheckbox.parentNode.querySelector('span').textContent = `Mexico Roaming (${mexicoRoamingCount})`;
+                }
+                
+                if (mobileUsaCheckbox && mobileUsaCheckbox.parentNode.querySelector('span')) {
+                    mobileUsaCheckbox.parentNode.querySelector('span').textContent = `USA Roaming (${usaRoamingCount})`;
+                }
+                
+                if (mobileMexicoCheckbox && mobileMexicoCheckbox.parentNode.querySelector('span')) {
+                    mobileMexicoCheckbox.parentNode.querySelector('span').textContent = `Mexico Roaming (${mexicoRoamingCount})`;
+                }
+                
                 // Populate carrier filters
                 const carrierFilters = document.getElementById('carrierFilters');
-                if (carrierFilters) {
+                const mobileCarrierFilters = document.getElementById('mobileCarrierFilters');
+                
+                if (carrierFilters && mobileCarrierFilters) {
                     carrierFilters.innerHTML = ''; // Clear existing filters
+                    mobileCarrierFilters.innerHTML = ''; // Clear existing mobile filters
+                    
                     Array.from(carriers).sort().forEach(carrier => {
+                        // Desktop filter
                         const label = document.createElement('label');
                         label.className = 'checkbox-label';
                         label.innerHTML = `
@@ -1159,6 +1902,15 @@
                             <span>${carrier}</span>
                         `;
                         carrierFilters.appendChild(label);
+                        
+                        // Mobile filter
+                        const mobileLabel = document.createElement('label');
+                        mobileLabel.className = 'checkbox-label';
+                        mobileLabel.innerHTML = `
+                            <input type="checkbox" value="${carrier}" name="mobileCarrier" checked>
+                            <span>${carrier}</span>
+                        `;
+                        mobileCarrierFilters.appendChild(mobileLabel);
                     });
                 }
 
@@ -1187,6 +1939,104 @@
             }
         }
 
+        // Function to set view mode (grid/list)
+        function setViewMode(mode) {
+            const container = document.getElementById('plansGrid');
+            const gridBtns = document.querySelectorAll('button[onclick="setViewMode(\'grid\')"]');
+            const listBtns = document.querySelectorAll('button[onclick="setViewMode(\'list\')"]');
+            
+            // Get current view mode before changing it
+            const currentMode = container.classList.contains('list-view') ? 'list' : 'grid';
+            const isViewChanging = currentMode !== mode;
+
+            if (mode === 'grid') {
+                // Reset any expanded cards and clean up first
+                resetExpandedCards(container);
+                
+                // Remove list-view class
+                container.classList.remove('list-view');
+                
+                // Apply responsive grid based on screen width
+                if (window.innerWidth < 768) {
+                    container.className = 'grid grid-cols-1 gap-6';
+                } else if (window.innerWidth < 1280) {
+                    container.className = 'grid grid-cols-2 gap-6';
+                } else {
+                    container.className = 'grid grid-cols-3 gap-6';
+                }
+                
+                // Update button styling
+                gridBtns.forEach(btn => btn.classList.add('text-accent'));
+                listBtns.forEach(btn => btn.classList.remove('text-accent'));
+                
+                // If view is changing, ensure all plan cards are properly displayed for grid view
+                if (isViewChanging) {
+                    // Make sure all sections are visible in all cards
+                    container.querySelectorAll('.plan-card').forEach(card => {
+                        // Reset any inline styles that may have been applied
+                        card.style.height = '';
+                        card.style.maxHeight = '';
+                        card.style.width = '';
+                        card.style.maxWidth = '';
+                        card.style.margin = '';
+                        
+                        // Ensure all sections are visible in grid view
+                        card.querySelectorAll('.plan-card-name, .plan-card-features, .plan-card-footer').forEach(section => {
+                            section.style.display = 'block';
+                        });
+                        
+                        // Hide plan-header-info in grid view
+                        const header = card.querySelector('.plan-card-header');
+                        if (header) {
+                            const headerInfo = header.querySelector('.plan-header-info');
+                            if (headerInfo) {
+                                headerInfo.style.display = 'none';
+                            }
+                        }
+                    });
+                }
+                
+                // Update local storage
+                localStorage.setItem('viewMode', 'grid');
+            } else {
+                // Reset any expanded cards first
+                resetExpandedCards(container);
+                
+                // Set list view class
+                container.className = 'grid grid-cols-1 gap-6 list-view';
+                
+                // Update button styling
+                listBtns.forEach(btn => btn.classList.add('text-accent'));
+                gridBtns.forEach(btn => btn.classList.remove('text-accent'));
+                
+                // If view is changing, ensure all plan cards are properly displayed for list view
+                if (isViewChanging) {
+                    // Apply list view specific styles to all cards
+                    container.querySelectorAll('.plan-card').forEach(card => {
+                        // Reset any inline styles that may have been applied
+                        card.style = '';
+                        
+                        // Hide sections that should be hidden in list view
+                        card.querySelectorAll('.plan-card-name, .plan-card-features, .plan-card-footer').forEach(section => {
+                            section.style.display = 'none';
+                        });
+                        
+                        // Show plan-header-info in list view
+                        const header = card.querySelector('.plan-card-header');
+                        if (header) {
+                            const headerInfo = header.querySelector('.plan-header-info');
+                            if (headerInfo) {
+                                headerInfo.style.display = 'flex';
+                            }
+                        }
+                    });
+                }
+                
+                // Update local storage
+                localStorage.setItem('viewMode', 'list');
+            }
+        }
+
         // Update applyFilters function to handle plans with no data
         function applyFilters() {
             console.log('Starting to apply filters...');
@@ -1202,6 +2052,7 @@
             const selectedCarriers = Array.from(document.querySelectorAll('#carrierFilters input[type="checkbox"]:checked')).map(cb => cb.value);
             const selectedDataRanges = Array.from(document.querySelectorAll('input[name="data"]:checked')).map(cb => cb.value);
             const selectedPlanTypes = Array.from(document.querySelectorAll('input[name="planType"]:checked')).map(cb => cb.value);
+            const selectedRoaming = Array.from(document.querySelectorAll('input[name="roaming"]:checked')).map(cb => cb.value);
             const sortBy = document.querySelector('select').value;
 
             console.log('Filter criteria:', {
@@ -1209,8 +2060,19 @@
                 selectedCarriers,
                 selectedDataRanges,
                 selectedPlanTypes,
+                selectedRoaming,
                 sortBy
             });
+            
+            // Highlight active roaming filter section
+            const roamingSection = document.querySelector('.filter-section:has(input[name="roaming"])');
+            if (roamingSection) {
+                if (selectedRoaming.length > 0) {
+                    roamingSection.classList.add('active-filter-section');
+                } else {
+                    roamingSection.classList.remove('active-filter-section');
+                }
+            }
 
             // Get carrier from URL if present
             const urlParams = new URLSearchParams(window.location.search);
@@ -1251,6 +2113,21 @@
                 if (!selectedPlanTypes.includes(planType)) {
                     console.log('Plan rejected: plan type not selected');
                     return false;
+                }
+
+                // Roaming filter
+                if (selectedRoaming.length > 0) {
+                    let matches = false;
+                    if (selectedRoaming.includes('usa') && plan.usa_roaming === 'Y') {
+                        matches = true;
+                    }
+                    if (selectedRoaming.includes('mexico') && plan.mexico_roaming === 'Y') {
+                        matches = true;
+                    }
+                    if (!matches) {
+                        console.log('Plan rejected: roaming options not matched');
+                        return false;
+                    }
                 }
 
                 // Data range filter
@@ -1331,42 +2208,38 @@
                 return createPlanCard(plan);
             }).join('');
             console.log('Finished displaying plans');
+            
+            // Initialize list view click handlers
+            initializeListViewHandlers();
         }
 
         // Function to clear all filters
         function clearFilters() {
             document.getElementById('priceRange').value = 150;
+            document.getElementById('priceValue').textContent = 'Up to $150';
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            document.querySelectorAll('input[name="roaming"]').forEach(cb => cb.checked = false);
             document.querySelector('select').value = 'recommended';
             applyFilters();
         }
 
-        // Function to set view mode (grid/list)
-        function setViewMode(mode) {
-            const container = document.getElementById('plansGrid');
-            const gridBtn = document.querySelector('button[onclick="setViewMode(\'grid\')"]');
-            const listBtn = document.querySelector('button[onclick="setViewMode(\'list\')"]');
-
-            if (mode === 'grid') {
-                container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-                gridBtn.classList.add('text-accent');
-                listBtn.classList.remove('text-accent');
-            } else {
-                container.className = 'grid grid-cols-1 gap-6';
-                listBtn.classList.add('text-accent');
-                gridBtn.classList.remove('text-accent');
-            }
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                // Get carrier from URL if present
+        // Mobile filter functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterOverlay = document.getElementById('filterOverlay');
+            const openFiltersBtn = document.getElementById('openFilters');
+            const closeFiltersBtn = document.getElementById('closeFilters');
+            const applyFiltersBtn = document.getElementById('applyFilters');
+            const clearMobileFiltersBtn = document.getElementById('clearMobileFilters');
+            const mobilePriceRange = document.getElementById('mobilePriceRange');
+            const mobilePriceValue = document.getElementById('mobilePriceValue');
+            
+            // Load plans immediately when page loads
+            loadPlans().then(() => {
+                console.log('Plans loaded successfully on page initialization');
+                
+                // Check for carrier in URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const selectedCarrier = urlParams.get('carrier');
-
-                // Load plans first
-                await loadPlans();
 
                 if (selectedCarrier) {
                     // Wait for carrier checkboxes to be populated
@@ -1377,6 +2250,15 @@
                         checkboxes.forEach(cb => {
                             cb.checked = false;
                         });
+                        
+                        // Also uncheck all mobile carriers except the selected one
+                        const mobileCarrierFilters = document.getElementById('mobileCarrierFilters');
+                        if (mobileCarrierFilters) {
+                            const mobileCheckboxes = mobileCarrierFilters.querySelectorAll('input[type="checkbox"]');
+                            mobileCheckboxes.forEach(cb => {
+                                cb.checked = cb.value === selectedCarrier;
+                            });
+                        }
 
                         // Find and check only the selected carrier
                         const targetCheckbox = Array.from(checkboxes).find(cb => cb.value === selectedCarrier);
@@ -1401,6 +2283,14 @@
                                 clearButton.onclick = () => {
                                     // Reset all checkboxes
                                     checkboxes.forEach(cb => cb.checked = true);
+                                    
+                                    // Reset mobile checkboxes too
+                                    if (mobileCarrierFilters) {
+                                        mobileCarrierFilters.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                                            cb.checked = true;
+                                        });
+                                    }
+                                    
                                     // Reset title
                                     pageTitle.textContent = 'All Mobile Plans';
                                     // Remove button
@@ -1413,23 +2303,6 @@
                                     window.history.pushState({}, '', newUrl);
                                 };
                                 headerDiv.appendChild(clearButton);
-                            }
-
-                            // Highlight the carrier section
-                            const filterSection = targetCheckbox.closest('.filter-section');
-                            if (filterSection) {
-                                filterSection.style.backgroundColor = 'rgba(68, 112, 255, 0.05)';
-                                filterSection.style.padding = '1.5rem';
-                                filterSection.style.margin = '0 -1.5rem';
-                                filterSection.style.borderRadius = '0.5rem';
-                                filterSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                                // Remove highlight after animation
-                                setTimeout(() => {
-                                    filterSection.style.backgroundColor = '';
-                                    filterSection.style.padding = '1.5rem 0';
-                                    filterSection.style.margin = '0';
-                                }, 3000);
                             }
 
                             // Apply filters to show only selected carrier
@@ -1449,80 +2322,474 @@
                     document.querySelectorAll('input[name="carrier"]').forEach(cb => {
                         cb.checked = true;
                     });
+                    document.querySelectorAll('input[name="mobileCarrier"]').forEach(cb => {
+                        cb.checked = true;
+                    });
                     applyFilters();
                 }
 
+                // Set initial view mode from local storage
+                const savedViewMode = localStorage.getItem('viewMode') || 'grid';
+                setViewMode(savedViewMode);
+            }).catch(error => {
+                console.error('Error loading plans on initialization:', error);
+            });
+            
+            // Open filter overlay
+            openFiltersBtn.addEventListener('click', () => {
+                filterOverlay.style.display = 'block';
+                setTimeout(() => {
+                    filterOverlay.classList.add('active');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            });
+            
+            // Close filter overlay
+            const closeFilterOverlay = () => {
+                filterOverlay.classList.remove('active');
+                setTimeout(() => {
+                    filterOverlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 300);
+            };
+            
+            closeFiltersBtn.addEventListener('click', closeFilterOverlay);
+            
+            // Close when clicking outside the panel
+            filterOverlay.addEventListener('click', (e) => {
+                if (e.target === filterOverlay) {
+                    closeFilterOverlay();
+                }
+            });
+            
+            // Apply filters button
+            applyFiltersBtn.addEventListener('click', () => {
+                // Transfer mobile filter values to desktop filters
+                const priceRange = document.getElementById('priceRange');
+                priceRange.value = mobilePriceRange.value;
+                document.getElementById('priceValue').textContent = mobilePriceValue.textContent;
+                
+                // Transfer data filters
+                const dataCheckboxes = document.querySelectorAll('input[name="data"]');
+                const mobileDataCheckboxes = document.querySelectorAll('input[name="mobileData"]');
+                mobileDataCheckboxes.forEach((checkbox, index) => {
+                    if (index < dataCheckboxes.length) {
+                        dataCheckboxes[index].checked = checkbox.checked;
+                    }
+                });
+                
+                // Transfer carrier filters
+                const carrierCheckboxes = document.querySelectorAll('input[name="carrier"]');
+                const mobileCarrierCheckboxes = document.querySelectorAll('input[name="mobileCarrier"]');
+                mobileCarrierCheckboxes.forEach((checkbox) => {
+                    const value = checkbox.value;
+                    const desktopCheckbox = Array.from(carrierCheckboxes).find(cb => cb.value === value);
+                    if (desktopCheckbox) {
+                        desktopCheckbox.checked = checkbox.checked;
+                    }
+                });
+                
+                // Transfer plan type filters
+                const planTypeCheckboxes = document.querySelectorAll('input[name="planType"]');
+                const mobilePlanTypeCheckboxes = document.querySelectorAll('input[name="mobilePlanType"]');
+                mobilePlanTypeCheckboxes.forEach((checkbox, index) => {
+                    if (index < planTypeCheckboxes.length) {
+                        planTypeCheckboxes[index].checked = checkbox.checked;
+                    }
+                });
+                
+                // Transfer roaming filters
+                const roamingCheckboxes = document.querySelectorAll('input[name="roaming"]');
+                const mobileRoamingCheckboxes = document.querySelectorAll('input[name="mobileRoaming"]');
+                mobileRoamingCheckboxes.forEach((checkbox, index) => {
+                    if (index < roamingCheckboxes.length) {
+                        roamingCheckboxes[index].checked = checkbox.checked;
+                    }
+                });
+                
+                // Update filter count
+                updateFilterCount();
+                
+                // Apply filters and close overlay
+                applyFilters();
+                closeFilterOverlay();
+            });
+            
+            // Clear mobile filters
+            clearMobileFiltersBtn.addEventListener('click', () => {
+                mobilePriceRange.value = 150;
+                mobilePriceValue.textContent = 'Up to $150';
+                document.querySelectorAll('#mobileDataFilters input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('#mobileCarrierFilters input[type="checkbox"]').forEach(cb => cb.checked = true);
+                document.querySelectorAll('input[name="mobilePlanType"]').forEach(cb => cb.checked = true);
+                document.querySelectorAll('input[name="mobileRoaming"]').forEach(cb => cb.checked = false);
+                
+                // Update count immediately
+                updateFilterCount();
+            });
+            
+            // Sync price range
+            mobilePriceRange.addEventListener('input', function() {
+                mobilePriceValue.textContent = `Up to $${this.value}`;
+            });
+            
+            // Update filter count badge
+            function updateFilterCount() {
+                let count = 0;
+                
+                // Count data filters
+                document.querySelectorAll('input[name="mobileData"]:checked').forEach(() => count++);
+                
+                // Count carrier filters (only if not all carriers are selected)
+                const totalCarriers = document.querySelectorAll('input[name="mobileCarrier"]').length;
+                const selectedCarriers = document.querySelectorAll('input[name="mobileCarrier"]:checked').length;
+                if (selectedCarriers > 0 && selectedCarriers < totalCarriers) {
+                    count++;
+                }
+                
+                // Count plan types (only if not all are selected)
+                const totalPlanTypes = document.querySelectorAll('input[name="mobilePlanType"]').length;
+                const selectedPlanTypes = document.querySelectorAll('input[name="mobilePlanType"]:checked').length;
+                if (selectedPlanTypes > 0 && selectedPlanTypes < totalPlanTypes) {
+                    count++;
+                }
+                
+                // Count roaming filters
+                document.querySelectorAll('input[name="mobileRoaming"]:checked').forEach(() => count++);
+                
+                // Price range (if not at max)
+                if (parseInt(mobilePriceRange.value) < 150) {
+                    count++;
+                }
+                
+                document.getElementById('filterCount').textContent = count;
+            }
+            
+            // Attach event listeners to update filter count
+            document.querySelectorAll('#mobileDataFilters input, #mobileCarrierFilters input, input[name="mobilePlanType"], input[name="mobileRoaming"]')
+                .forEach(checkbox => {
+                    checkbox.addEventListener('change', updateFilterCount);
+                });
+            
+            mobilePriceRange.addEventListener('input', updateFilterCount);
+            
+            // Initial count update
+            updateFilterCount();
+        });
+
+        // Add window resize event listener to adjust grid layout
+        window.addEventListener('resize', function() {
+            const currentViewMode = localStorage.getItem('viewMode') || 'grid';
+            if (currentViewMode === 'grid') {
                 setViewMode('grid');
-            } catch (error) {
-                console.error('Error during initialization:', error);
             }
         });
 
-        // Add this at the beginning of your script section
+        // Initialize click handlers for list view cards
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu toggle
-            const mobileMenuBtn = document.querySelector('.mobile-menu-button');
-            const desktopMenu = document.querySelector('.desktop-menu');
-            
-            if (mobileMenuBtn && desktopMenu) {
-                mobileMenuBtn.addEventListener('click', () => {
-                    desktopMenu.classList.toggle('active');
-                    const icon = mobileMenuBtn.querySelector('i');
-                    if (icon) {
-                        icon.classList.toggle('ri-menu-line');
-                        icon.classList.toggle('ri-close-line');
-                    }
-                });
-            }
-
-            // Navbar scroll effect
-            let lastScroll = 0;
-            const navbar = document.getElementById('navbar');
-            
-            if (navbar) {
-                window.addEventListener('scroll', () => {
-                    const currentScroll = window.pageYOffset;
-                    
-                    if (currentScroll <= 0) {
-                        navbar.classList.remove('scrolled');
+            // Apply click handlers after plans are loaded
+            setTimeout(initializeListViewHandlers, 1000);
+        });
+        
+        // Function to initialize list view click handlers
+        function initializeListViewHandlers() {
+            if (document.getElementById('plansGrid')) {
+                const plansGrid = document.getElementById('plansGrid');
+                
+                // Delegate click events to the container
+                plansGrid.addEventListener('click', function(event) {
+                    // Only process in list view mode
+                    if (!plansGrid.classList.contains('list-view')) {
                         return;
                     }
                     
-                    if (currentScroll > lastScroll && !navbar.classList.contains('scrolled')) {
-                        // Scrolling down
-                        navbar.classList.add('scrolled');
-                    } else if (currentScroll < lastScroll && navbar.classList.contains('scrolled')) {
-                        // Scrolling up
-                        navbar.classList.remove('scrolled');
+                    // Find the plan card that was clicked
+                    const planCard = event.target.closest('.plan-card');
+                    if (!planCard) return;
+                    
+                    // Ignore clicks on buttons
+                    if (event.target.closest('a') || event.target.closest('button')) {
+                        return;
                     }
                     
-                    lastScroll = currentScroll;
+                    // Toggle the expanded state for this card
+                    toggleExpandedState(planCard, plansGrid);
                 });
             }
-
-            // Magnetic button effect
-            const magneticBtns = document.querySelectorAll('.magnetic-btn');
+        }
+        
+        // Function to toggle the expanded state of a plan card
+        function toggleExpandedState(planCard, container) {
+            // If any card is currently expanded, collapse it first
+            const expandedCard = container.querySelector('.plan-card.grid-view-expanded');
+            if (expandedCard && expandedCard !== planCard) {
+                collapseCard(expandedCard);
+            }
             
-            magneticBtns.forEach(btn => {
-                btn.addEventListener('mousemove', (e) => {
-                    const rect = btn.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    
-                    const deltaX = (x - centerX) / centerX;
-                    const deltaY = (y - centerY) / centerY;
-                    
-                    btn.style.transform = `translate(${deltaX * 5}px, ${deltaY * 5}px)`;
+            // Toggle the expanded state of the clicked card
+            if (planCard.classList.contains('grid-view-expanded')) {
+                collapseCard(planCard);
+            } else {
+                expandCard(planCard);
+            }
+        }
+        
+        // Function to expand a card into grid view
+        function expandCard(planCard) {
+            // Add expanded class
+            planCard.classList.add('grid-view-expanded');
+            
+            // Get the parent container (plan grid)
+            const container = document.getElementById('plansGrid');
+            
+            if (container && container.classList.contains('list-view')) {
+                // Store original styles to restore later
+                planCard.dataset.originalStyles = JSON.stringify({
+                    width: planCard.style.width,
+                    display: planCard.style.display,
+                    flexDirection: planCard.style.flexDirection,
+                    height: planCard.style.height
                 });
                 
-                btn.addEventListener('mouseleave', () => {
-                    btn.style.transform = '';
+                // Make the card span full width
+                planCard.parentElement.style.gridColumn = '1 / -1';
+                
+                // Transform the card to look like a grid card
+                planCard.style.width = '100%';
+                planCard.style.maxWidth = '600px';
+                planCard.style.margin = '0 auto';
+                planCard.style.height = 'auto';
+                planCard.style.minHeight = '540px';
+                planCard.style.display = 'flex';
+                planCard.style.flexDirection = 'column';
+                planCard.style.overflow = 'visible'; /* Ensure content is fully visible */
+                
+                // Handle header and content display
+                const header = planCard.querySelector('.plan-card-header');
+                if (header) {
+                    header.style.height = 'auto';
+                    header.style.minHeight = '100px';
+                    header.style.padding = '1.25rem';
+                    header.style.width = '100%';
+                    
+                    // Reset header layout
+                    header.style.display = 'flex';
+                    header.style.justifyContent = 'space-between';
+                    header.style.alignItems = 'center';
+                    
+                    // Adjust carrier logo in header
+                    const logo = header.querySelector('.carrier-logo');
+                    if (logo) {
+                        logo.style.height = '60px';
+                        logo.style.minWidth = 'auto';
+                        logo.style.maxWidth = '115px';
+                        logo.style.margin = '0';
+                    }
+                    
+                    // Adjust price text
+                    const price = header.querySelector('.price-text');
+                    if (price) {
+                        price.style.fontSize = '2.25rem';
+                        price.style.marginLeft = 'auto';
+                        price.style.marginRight = '0';
+                        price.style.whiteSpace = 'nowrap';
+                    }
+                    
+                    // Hide the plan-header-info when expanded
+                    const headerInfo = header.querySelector('.plan-header-info');
+                    if (headerInfo) {
+                        headerInfo.style.display = 'none';
+                    }
+                }
+                
+                // Show all sections that would normally be hidden in list view
+                const sections = planCard.querySelectorAll('.plan-card-name, .plan-card-features, .plan-card-footer');
+                sections.forEach(section => {
+                    section.style.display = 'block';
+                    section.style.padding = '1.25rem';
+                    
+                    if (section.classList.contains('plan-card-features')) {
+                        section.style.flex = '1';
+                        section.style.overflowY = 'auto';
+                        
+                        // Set a consistent max height for features section
+                        if (window.innerWidth <= 768) {
+                            section.style.maxHeight = '180px';
+                        } else {
+                            section.style.maxHeight = '220px';
+                        }
+                    }
+                    
+                    if (section.classList.contains('plan-card-footer')) {
+                        section.style.height = 'auto';
+                        section.style.minHeight = '100px';
+                        section.style.display = 'flex';
+                        section.style.alignItems = 'center';
+                        section.style.justifyContent = 'center';
+                        section.style.flexDirection = 'column';
+                        section.style.padding = window.innerWidth <= 320 ? '0.75rem' : (window.innerWidth <= 400 ? '1rem' : '1.25rem');
+                        
+                        // Ensure the disclaimer text is properly spaced
+                        const disclaimer = section.querySelector('.text-xs');
+                        if (disclaimer) {
+                            disclaimer.style.marginBottom = window.innerWidth <= 320 ? '0.5rem' : '1rem';
+                            disclaimer.style.fontSize = window.innerWidth <= 320 ? '0.7rem' : '0.75rem';
+                        }
+                    }
                 });
+                
+                // Ensure feature items are styled correctly
+                const featureItems = planCard.querySelectorAll('.feature-item');
+                featureItems.forEach(item => {
+                    item.style.display = 'flex';
+                    item.style.alignItems = 'center';
+                    item.style.gap = '0.75rem';
+                    item.style.padding = '0.5rem';
+                    item.style.borderRadius = '0.5rem';
+                });
+                
+                // Ensure select plan button is properly styled
+                const selectButton = planCard.querySelector('.select-plan-button');
+                if (selectButton) {
+                    selectButton.style.width = '100%';
+                    selectButton.style.maxWidth = '100%';
+                    selectButton.style.boxSizing = 'border-box';
+                    selectButton.style.overflow = 'visible';
+                    
+                    // Responsive padding and font size based on screen width
+                    if (window.innerWidth <= 320) {
+                        selectButton.style.padding = '0.6rem 0.8rem';
+                        selectButton.style.fontSize = '0.7rem';
+                    } else if (window.innerWidth <= 400) {
+                        selectButton.style.padding = '0.7rem 1rem';
+                        selectButton.style.fontSize = '0.75rem';
+                    } else {
+                        selectButton.style.padding = '0.8rem 1.5rem';
+                        selectButton.style.fontSize = '0.8rem';
+                    }
+                    
+                    selectButton.style.whiteSpace = 'nowrap';
+                    selectButton.style.display = 'inline-flex';
+                    selectButton.style.justifyContent = 'center';
+                }
+                
+                // Scroll to the expanded card
+                setTimeout(() => {
+                    planCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        }
+        
+        // Function to collapse a card back to list view
+        function collapseCard(planCard) {
+            // Remove expanded class
+            planCard.classList.remove('grid-view-expanded');
+            
+            // Reset parent grid column
+            if (planCard.parentElement) {
+                planCard.parentElement.style.gridColumn = '';
+            }
+            
+            // Restore original styles
+            if (planCard.dataset.originalStyles) {
+                try {
+                    const originalStyles = JSON.parse(planCard.dataset.originalStyles);
+                    for (const [prop, value] of Object.entries(originalStyles)) {
+                        planCard.style[prop] = value;
+                    }
+                } catch (e) {
+                    console.error('Error restoring original styles:', e);
+                }
+                delete planCard.dataset.originalStyles;
+            }
+            
+            // Reset all inline styles on the card itself
+            planCard.style = '';
+            
+            // Reset all child elements to their original state
+            const allElements = planCard.querySelectorAll('*');
+            allElements.forEach(el => {
+                el.style = '';
             });
-        });
+            
+            // Since we're in list view, adjust list view specific styles
+            if (document.getElementById('plansGrid').classList.contains('list-view')) {
+                // Hide sections that should be hidden in list view
+                const sections = planCard.querySelectorAll('.plan-card-name, .plan-card-features, .plan-card-footer');
+                sections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                // Make sure header is properly displayed in list view
+                const header = planCard.querySelector('.plan-card-header');
+                if (header) {
+                    header.style.display = 'flex';
+                    header.style.justifyContent = 'space-between';
+                    header.style.alignItems = 'center';
+                    header.style.height = 'auto';
+                    header.style.minHeight = '80px';
+                    header.style.padding = '1rem';
+                    
+                    // Ensure carrier logo is visible
+                    const logo = header.querySelector('.carrier-logo');
+                    if (logo) {
+                        logo.style.display = 'block';
+                        logo.style.height = '50px';
+                        logo.style.minWidth = '60px';
+                        logo.style.maxWidth = '100px';
+                    }
+                    
+                    // Ensure price is visible
+                    const price = header.querySelector('.price-text');
+                    if (price) {
+                        price.style.display = 'block';
+                        price.style.marginLeft = 'auto';
+                        price.style.whiteSpace = 'nowrap';
+                    }
+                    
+                    // Ensure plan-header-info is visible (only in list view)
+                    const headerInfo = header.querySelector('.plan-header-info');
+                    if (headerInfo) {
+                        headerInfo.style.display = 'flex';
+                        headerInfo.style.flex = '1';
+                    }
+                }
+            } else {
+                // If we're in grid view, make sure all sections are visible
+                const sections = planCard.querySelectorAll('.plan-card-name, .plan-card-features, .plan-card-footer');
+                sections.forEach(section => {
+                    section.style.display = 'block';
+                });
+                
+                // Hide plan-header-info in grid view
+                const header = planCard.querySelector('.plan-card-header');
+                if (header) {
+                    const headerInfo = header.querySelector('.plan-header-info');
+                    if (headerInfo) {
+                        headerInfo.style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        // Function to reset any expanded cards
+        function resetExpandedCards(container) {
+            // Find any cards with grid-view-expanded class
+            container.querySelectorAll('.plan-card.grid-view-expanded').forEach(card => {
+                collapseCard(card);
+            });
+            
+            // When switching from list to grid, ensure all plan cards show all sections
+            if (!container.classList.contains('list-view')) {
+                // Make sure all sections are visible in grid view
+                container.querySelectorAll('.plan-card').forEach(card => {
+                    const sections = card.querySelectorAll('.plan-card-name, .plan-card-features, .plan-card-footer');
+                    sections.forEach(section => {
+                        section.style.display = 'block';
+                    });
+                });
+            }
+        }
     </script>
 </body>
 </html> 

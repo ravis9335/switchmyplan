@@ -69,6 +69,18 @@
             color: var(--color-accent);
         }
 
+        /* Navigation styles */
+        #navbar {
+            background: linear-gradient(135deg, #f0f4ff, #d2e0f9);
+            transition: all 0.3s var(--ease-out);
+        }
+
+        #navbar.scrolled {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+        }
+
         .magnetic-btn {
             position: relative;
             background: linear-gradient(135deg, var(--color-accent), var(--color-tertiary));
@@ -106,8 +118,8 @@
 
                 <!-- CTA buttons -->
                 <div class="hidden md:flex items-center gap-4">
-                    <a href="all-plans.html" class="magnetic-btn">
-                        Compare Plans
+                    <a href="planB.html#compare" class="magnetic-btn">
+                        Find My Plan
                     </a>
                 </div>
             </div>

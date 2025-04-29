@@ -63,51 +63,92 @@
 @media (max-width: 768px) {
   /* Hide desktop menu by default */
   .desktop-menu {
+    display: none !important;
+  }
+  
+  /* Mobile menu button styling */
+  .mobile-menu-button {
+    display: block !important;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: auto;
+    transition: transform 0.3s ease;
+    color: #333;
+    z-index: 50;
+  }
+  
+  .mobile-menu-button:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Mobile menu styling */
+  #mobile-menu {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #fff;
-    z-index: 40;
+    background-color: white;
+    z-index: 999;
+    padding: 2rem;
+    overflow-y: auto;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  #mobile-menu.active {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transform: translateY(-100%);
-    transition: transform var(--transition-speed) ease-in-out;
-    padding: 2rem;
+    align-items: stretch;
   }
   
-  /* Show mobile menu when active */
-  .desktop-menu.active {
-    transform: translateY(0);
+  #mobile-menu a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #333;
+    font-size: 1.125rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
   }
   
-  /* Mobile menu button styling */
-  .mobile-menu-button {
-    display: flex !important;
-    z-index: 50;
+  #mobile-menu a:hover {
+    background-color: rgba(68, 112, 255, 0.1);
+    color: var(--color-accent);
   }
   
-  /* Nav links in mobile menu */
-  .desktop-menu a {
-    font-size: 1.25rem !important;
-    margin: 0.75rem 0 !important;
-    padding: 0.5rem !important;
+  #close-menu {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform 0.3s ease;
+    color: #666;
+  }
+  
+  #close-menu:hover {
+    transform: scale(1.1);
+    color: #333;
   }
   
   /* Navbar scroll effect */
   #navbar.scrolled {
-    transform: translateY(-100%);
-  }
-  
-  #navbar {
-    transition: transform 0.3s ease-in-out;
+    padding: 0.75rem 0;
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  #navbar {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* Make logo smaller on mobile */
+  #navbar a[href="/"] {
+    font-size: 2.5rem !important;
   }
 }
 

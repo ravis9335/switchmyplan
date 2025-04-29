@@ -257,30 +257,13 @@
 
         <!-- CTA buttons -->
         <div class="hidden md:flex items-center gap-4">
-          <a href="all-plans.html" class="magnetic-btn">
-            Compare Plans
+          <a href="planB.html#compare" class="magnetic-btn">
+            Find My Plan
           </a>
         </div>
       </div>
     </div>
   </nav>
-
-  <!-- Mobile menu overlay -->
-  <div class="mobile-menu-overlay fixed inset-0 bg-white/95 backdrop-blur-sm z-40 hidden">
-    <div class="container mx-auto px-6 py-8">
-      <div class="flex justify-end mb-8">
-        <button class="mobile-menu-close text-gray-700 hover:text-black transition-colors">
-          <i class="ri-close-line text-2xl"></i>
-        </button>
-      </div>
-      <div class="flex flex-col gap-6 text-center">
-        <a href="all-plans.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">Plans</a>
-        <a href="faq.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">FAQ</a>
-        <a href="about.html" class="text-xl text-gray-700 hover:text-black transition-colors" style="font-family: Helvetica, Arial, sans-serif;">About</a>
-        <a href="all-plans.html" class="magnetic-btn mt-4 mx-auto inline-block" style="font-family: Helvetica, Arial, sans-serif;">Compare Plans</a>
-      </div>
-    </div>
-  </div>
 
   <!-- Hero section -->
   <section class="pt-32 md:pt-30 pb-16 md:pb-24 relative">
@@ -458,50 +441,103 @@
     </div>
   </footer>
 
-  <!-- Combined JavaScript (Place near the end of the document before </body>) -->
+  <!-- Scripts -->
+  <script src="responsive.js"></script>
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Feedback form submission
-    const feedbackForm = document.getElementById('feedbackForm');
-    const successMessage = document.getElementById('successMessage');
-    const errorMessage = document.getElementById('errorMessage');
-  
-    if (feedbackForm) {
-      feedbackForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(feedbackForm);
-        try {
-          // Send POST request to /contact-feedback (exactly as defined in the backend)
-          const response = await fetch('/contact-feedback', {
-            method: 'POST',
-            body: formData  // FormData sends data as multipart/form-data
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu toggle
+      const mobileMenuBtn = document.querySelector('.mobile-menu-button');
+      const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+      const mobileMenuClose = document.querySelector('.mobile-menu-close');
+      
+      if (mobileMenuBtn && mobileMenuOverlay && mobileMenuClose) {
+        // Open mobile menu
+        mobileMenuBtn.addEventListener('click', () => {
+          mobileMenuOverlay.style.display = 'block';
+          document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
+        });
+        
+        // Close mobile menu
+        mobileMenuClose.addEventListener('click', () => {
+          mobileMenuOverlay.style.display = 'none';
+          document.body.style.overflow = ''; // Restore scrolling
+        });
+        
+        // Close menu when clicking on links
+        const mobileMenuLinks = mobileMenuOverlay.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+          link.addEventListener('click', () => {
+            mobileMenuOverlay.style.display = 'none';
+            document.body.style.overflow = ''; // Restore scrolling
           });
-          
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        });
+      }
+      
+      // Navbar scroll effect
+      window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        if (navbar) {
+          if (window.scrollY > 20) {
+            navbar.classList.add('scrolled');
+          } else {
+            navbar.classList.remove('scrolled');
           }
-          
-          const result = await response.json();
-          if (result.message) {
-            successMessage.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
-            feedbackForm.reset();
-            setTimeout(() => {
-              successMessage.classList.add('hidden');
-            }, 5000);
-          } else if (result.error) {
-            throw new Error(result.error);
-          }
-        } catch (error) {
-          console.error('Error submitting feedback:', error);
-          errorMessage.textContent = error.message || 'There was an error submitting your feedback. Please try again later.';
-          errorMessage.classList.remove('hidden');
-          successMessage.classList.add('hidden');
         }
       });
-    }
-  });
+      
+      // Feedback form submission
+      const feedbackForm = document.getElementById('feedbackForm');
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+      
+      if (feedbackForm) {
+        feedbackForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const submitBtn = feedbackForm.querySelector('button[type="submit"]');
+          const initialBtnText = submitBtn.textContent;
+          
+          // Show loading state
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending...';
+          
+          // Hide any previous messages
+          successMessage.classList.add('hidden');
+          errorMessage.classList.add('hidden');
+          
+          try {
+            // Prepare form data
+            const formData = new FormData(feedbackForm);
+            
+            // Send POST request to the server
+            const response = await fetch('/feedback-submit', {
+              method: 'POST',
+              body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+              // Show success message
+              successMessage.classList.remove('hidden');
+              feedbackForm.reset();
+            } else {
+              // Show error message
+              errorMessage.textContent = result.error || 'There was an error submitting your feedback. Please try again later.';
+              errorMessage.classList.remove('hidden');
+            }
+          } catch (error) {
+            console.error('Error submitting form:', error);
+            errorMessage.textContent = 'Network error. Please check your connection and try again.';
+            errorMessage.classList.remove('hidden');
+          } finally {
+            // Reset button state
+            submitBtn.disabled = false;
+            submitBtn.textContent = initialBtnText;
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
